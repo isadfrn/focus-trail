@@ -1,0 +1,32 @@
+{
+  "default": "diddy",
+  "scenarios": [
+    {
+      "id": "diddy",
+      "name": "Diddy Kong",
+      "skyColor": "#123a2a",
+      "background": "forest-background.png",
+      "terrain": "forest-ground.png",
+      "sheet": "diddy.png",
+      "terrainHeight": 450,
+      "baseline": 54,
+      "spriteSpeed": 3
+    },
+    {
+      "id": "mario-frog",
+      "name": "Mario Frog",
+      "skyColor": "#8ec7ff",
+      "background": "light-blue-sky.png",
+      "terrain": "land-dark-grass.png",
+      "sheet": "mario-frog.png"
+    },
+    {
+      "id": "mario-kart",
+      "name": "Mario Kart",
+      "skyColor": "#f4d06f",
+      "background": "grass-yellow-sky.png",
+      "terrain": "land-with-grass.png",
+      "sheet": "mario-kart.png"
+    }
+  ]
+}
