@@ -1,0 +1,51 @@
+{
+  "name": "focus-trail-backend",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24.20.0"
+  },
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "start": "tsx src/server.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:studio": "prisma studio"
+  },
+  "dependencies": {
+    "@fastify/cookie": "^11.0.0",
+    "@fastify/cors": "^10.0.0",
+    "@fastify/jwt": "^10.2.2",
+    "@fastify/swagger": "^9.8.1",
+    "@fastify/swagger-ui": "^6.1.1",
+    "@node-rs/argon2": "^2.0.0",
+    "@prisma/client": "~6.12.0",
+    "fastify": "^5.2.0",
+    "figlet": "^1.11.4",
+    "zod": "^3.23.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/figlet": "^1.7.0",
+    "@types/node": "^22.0.0",
+    "@vitest/coverage-v8": "^5.0.0",
+    "eslint": "^10.10.0",
+    "eslint-config-prettier": "^10.1.8",
+    "pino-pretty": "^13.0.0",
+    "prettier": "^3.9.6",
+    "prisma": "~6.12.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0",
+    "typescript-eslint": "^8.70.0",
+    "vitest": "^5.0.0"
+  }
+}

@@ -1,0 +1,5 @@
+node_modules
+bruno
+prisma/migrations
+package-lock.json
+coverage

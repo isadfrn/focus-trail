@@ -1,0 +1,37 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: focus
+      POSTGRES_PASSWORD: focus
+      POSTGRES_DB: focustrail
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U focus -d focustrail"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build: ./backend
+    profiles: ["full"]
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://focus:focus@db:5432/focustrail?schema=public
+      PORT: 3001
+      NODE_ENV: production
+      JWT_SECRET: dev-change-me-please-use-a-long-random-string
+      CORS_ORIGIN: http://localhost:5173
+      SESSION_MAX_AGE: 604800
+    ports:
+      - "3001:3001"
+
+volumes:
+  db_data:
