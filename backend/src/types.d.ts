@@ -4,6 +4,7 @@ import type { FastifyReply, FastifyRequest } from "fastify";
 interface SessionToken {
   sub: string;
   email: string;
+  jti: string;
 }
 
 declare module "@fastify/jwt" {
