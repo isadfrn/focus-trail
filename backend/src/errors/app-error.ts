@@ -18,7 +18,7 @@ export class ValidationError extends AppError {
 }
 
 export class ConflictError extends AppError {
-  constructor(message = "Email Taken") {
+  constructor(message = "Unable to complete registration") {
     super(message, 409, "CONFLICT");
     this.name = "ConflictError";
   }

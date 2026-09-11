@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import { describe, expect, it, vi } from "vitest";
 
 import {
@@ -7,7 +8,7 @@ import {
   UnauthorizedError,
   ValidationError,
 } from "./app-error.js";
-import { sendAppError } from "./send-app-error.js";
+import { sendAppError, serializeError } from "./send-app-error.js";
 
 describe("AppError hierarchy", () => {
   it("creates base AppError", () => {
@@ -27,7 +28,7 @@ describe("AppError hierarchy", () => {
       name: "ValidationError",
     });
     expect(new ConflictError()).toMatchObject({
-      message: "Email Taken",
+      message: "Unable to complete registration",
       statusCode: 409,
       code: "CONFLICT",
     });
@@ -54,7 +55,9 @@ describe("sendAppError", () => {
     sendAppError(reply as never, new ConflictError());
 
     expect(reply.code).toHaveBeenCalledWith(409);
-    expect(send).toHaveBeenCalledWith({ error: "Email Taken" });
+    expect(send).toHaveBeenCalledWith({
+      error: "Unable to complete registration",
+    });
   });
 
   it("rethrows unknown errors", () => {
@@ -62,5 +65,25 @@ describe("sendAppError", () => {
     expect(() => sendAppError(reply as never, new Error("nope"))).toThrow(
       "nope",
     );
+  });
+});
+
+describe("serializeError", () => {
+  it("maps prisma unique conflicts", () => {
+    const error = new Prisma.PrismaClientKnownRequestError("unique", {
+      code: "P2002",
+      clientVersion: "test",
+    });
+    expect(serializeError(error)).toEqual({
+      statusCode: 409,
+      body: { error: "Unable to complete registration" },
+    });
+  });
+
+  it("maps unknown errors to generic 500", () => {
+    expect(serializeError(new Error("db down"))).toEqual({
+      statusCode: 500,
+      body: { error: "Internal Server Error" },
+    });
   });
 });
