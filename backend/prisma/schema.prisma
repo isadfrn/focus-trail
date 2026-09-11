@@ -14,9 +14,22 @@ model User {
   character    String   @default("mario")
   createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
 
-  sessions PomodoroSession[]
+  sessions     PomodoroSession[]
+  authSessions AuthSession[]
 
   @@map("users")
+}
+
+model AuthSession {
+  id        String    @id @default(uuid()) @db.Uuid
+  userId    String    @map("user_id") @db.Uuid
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime  @map("expires_at") @db.Timestamptz(6)
+  revokedAt DateTime? @map("revoked_at") @db.Timestamptz(6)
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@index([userId])
+  @@map("auth_sessions")
 }
 
 model PomodoroSession {
