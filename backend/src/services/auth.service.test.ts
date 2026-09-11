@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { ConflictError, InvalidCredentialsError } from "../errors/app-error.js";
 import type { UserRepository } from "../repositories/user.repository.js";
-import { AuthService } from "./auth.service.js";
+import { AuthService, DUMMY_PASSWORD_HASH } from "./auth.service.js";
 
 vi.mock("@node-rs/argon2", () => ({
   hash: vi.fn(async () => "hashed"),
@@ -47,7 +47,7 @@ describe("AuthService", () => {
     expect(user.email).toBe("user@example.com");
   });
 
-  it("rejects duplicate email", async () => {
+  it("rejects duplicate email after dummy hash work", async () => {
     users.findByEmail.mockResolvedValue({ id: "1" });
     await expect(
       service.register({
@@ -55,6 +55,7 @@ describe("AuthService", () => {
         password: "password123",
       }),
     ).rejects.toBeInstanceOf(ConflictError);
+    expect(hash).toHaveBeenCalledWith("password123");
   });
 
   it("logs in with valid credentials", async () => {
@@ -77,7 +78,7 @@ describe("AuthService", () => {
     });
   });
 
-  it("rejects unknown user", async () => {
+  it("rejects unknown user after dummy verify", async () => {
     users.findByEmail.mockResolvedValue(null);
     await expect(
       service.login({
@@ -85,6 +86,7 @@ describe("AuthService", () => {
         password: "password123",
       }),
     ).rejects.toBeInstanceOf(InvalidCredentialsError);
+    expect(verify).toHaveBeenCalledWith(DUMMY_PASSWORD_HASH, "password123");
   });
 
   it("rejects invalid password", async () => {

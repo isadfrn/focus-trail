@@ -19,4 +19,22 @@ describe("credentialsSchema", () => {
       }).success,
     ).toBe(false);
   });
+
+  it("rejects password without a letter", () => {
+    expect(
+      credentialsSchema.safeParse({
+        email: "user@example.com",
+        password: "1234567890",
+      }).success,
+    ).toBe(false);
+  });
+
+  it("rejects password without a digit", () => {
+    expect(
+      credentialsSchema.safeParse({
+        email: "user@example.com",
+        password: "passwordonly",
+      }).success,
+    ).toBe(false);
+  });
 });

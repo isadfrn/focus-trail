@@ -8,11 +8,13 @@ import { AuthController } from "./auth.controller.js";
 vi.mock("../lib/session.js", () => ({
   COOKIE_NAME: "ft_token",
   issueSession: vi.fn(async () => undefined),
+  revokeSession: vi.fn(async () => undefined),
   sessionCookieOptions: vi.fn(() => ({ path: "/" })),
 }));
 
 import {
   issueSession,
+  revokeSession,
   sessionCookieOptions,
 } from "../lib/session.js";
 
@@ -116,13 +118,35 @@ describe("AuthController", () => {
     expect(reply.code).toHaveBeenCalledWith(409);
   });
 
-  it("clears cookie on logout", async () => {
+  it("revokes session and clears cookie on logout", async () => {
     const reply = createReply();
-    await controller.logout({} as FastifyRequest, reply as never);
+    const request = {
+      jwtVerify: vi.fn().mockResolvedValue(undefined),
+      user: { sub: "1", email: "a@b.com", jti: "session-1" },
+    };
+
+    await controller.logout(request as never, reply as never);
+
+    expect(request.jwtVerify).toHaveBeenCalled();
+    expect(revokeSession).toHaveBeenCalledWith("session-1");
     expect(reply.clearCookie).toHaveBeenCalledWith(
       "ft_token",
       sessionCookieOptions(),
     );
+    expect(reply.send).toHaveBeenCalledWith({ ok: true });
+  });
+
+  it("clears cookie even when jwt verify fails", async () => {
+    const reply = createReply();
+    const request = {
+      jwtVerify: vi.fn().mockRejectedValue(new Error("invalid")),
+      user: undefined,
+    };
+
+    await controller.logout(request as never, reply as never);
+
+    expect(revokeSession).not.toHaveBeenCalled();
+    expect(reply.clearCookie).toHaveBeenCalled();
     expect(reply.send).toHaveBeenCalledWith({ ok: true });
   });
 });
