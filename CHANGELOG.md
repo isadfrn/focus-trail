@@ -1,6 +1,23 @@
 # Changelog
 
 
+## v0.1.2
+
+[compare changes](https://github.com/isadfrn/focus-trail/compare/v0.1.1...v0.1.2)
+
+### 🚀 Enhancements
+
+- Implement session deletion functionality ([eb93268](https://github.com/isadfrn/focus-trail/commit/eb93268))
+- Add production environment setup with Docker and deployment workflow ([b5024ec](https://github.com/isadfrn/focus-trail/commit/b5024ec))
+
+### 🏡 Chore
+
+- **release:** V0.1.1 ([4c44202](https://github.com/isadfrn/focus-trail/commit/4c44202))
+
+### ❤️ Contributors
+
+- Isadfrn ([@isadfrn](https://github.com/isadfrn))
+
 ## v0.1.1
 
 [compare changes](https://github.com/isadfrn/focus-trail/compare/v0.1.0...v0.1.1)
