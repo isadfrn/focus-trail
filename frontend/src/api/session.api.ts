@@ -9,4 +9,16 @@ export const sessionApi = {
       body: JSON.stringify(data),
     }),
   list: () => request<{ sessions: PomodoroSession[] }>("/sessions"),
+  remove: (id: string) =>
+    request<{ deleted: number }>(`/sessions/${id}`, { method: "DELETE" }),
+  removeMany: (ids: string[]) =>
+    request<{ deleted: number }>("/sessions", {
+      method: "DELETE",
+      body: JSON.stringify({ ids }),
+    }),
+  removeAll: () =>
+    request<{ deleted: number }>("/sessions", {
+      method: "DELETE",
+      body: JSON.stringify({ all: true }),
+    }),
 };

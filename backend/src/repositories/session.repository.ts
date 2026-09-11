@@ -22,6 +22,20 @@ export class SessionRepository {
       take: 100,
     });
   }
+
+  deleteByIdForUser(userId: string, id: string) {
+    return prisma.pomodoroSession.deleteMany({ where: { id, userId } });
+  }
+
+  deleteManyForUser(userId: string, ids: string[]) {
+    return prisma.pomodoroSession.deleteMany({
+      where: { id: { in: ids }, userId },
+    });
+  }
+
+  deleteAllForUser(userId: string) {
+    return prisma.pomodoroSession.deleteMany({ where: { userId } });
+  }
 }
 
 export const sessionRepository = new SessionRepository();

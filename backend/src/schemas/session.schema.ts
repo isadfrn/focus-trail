@@ -18,3 +18,20 @@ export const createSessionSchema = z
   });
 
 export type CreateSessionInput = z.infer<typeof createSessionSchema>;
+
+export const sessionIdParamSchema = z.object({
+  id: z.string().uuid(),
+});
+
+export type SessionIdParam = z.infer<typeof sessionIdParamSchema>;
+
+export const deleteSessionsSchema = z
+  .object({
+    ids: z.array(z.string().uuid()).min(1).max(500).optional(),
+    all: z.literal(true).optional(),
+  })
+  .refine((v) => (v.all === true) !== (v.ids !== undefined), {
+    message: "Provide either 'ids' or 'all'",
+  });
+
+export type DeleteSessionsInput = z.infer<typeof deleteSessionsSchema>;

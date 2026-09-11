@@ -224,3 +224,60 @@ export const listSessionsSchema = {
     401: errorResponseSchema,
   },
 } satisfies FastifySchema;
+
+export const deleteResultSchema = {
+  type: "object",
+  required: ["deleted"],
+  additionalProperties: false,
+  properties: {
+    deleted: { type: "integer", minimum: 0 },
+  },
+} as const;
+
+export const deleteSessionsBodySchema = {
+  type: "object",
+  additionalProperties: false,
+  properties: {
+    ids: {
+      type: "array",
+      items: { type: "string", format: "uuid" },
+      minItems: 1,
+      maxItems: 500,
+    },
+    all: { type: "boolean", enum: [true] },
+  },
+} as const;
+
+export const deleteSessionSchemaDoc = {
+  tags: ["Sessions"],
+  summary: "Delete a pomodoro session",
+  security: cookieAuthSecurity,
+  params: {
+    type: "object",
+    required: ["id"],
+    additionalProperties: false,
+    properties: {
+      id: { type: "string", format: "uuid" },
+    },
+  },
+  response: {
+    200: deleteResultSchema,
+    400: errorResponseSchema,
+    401: errorResponseSchema,
+    404: errorResponseSchema,
+  },
+} satisfies FastifySchema;
+
+export const deleteSessionsSchemaDoc = {
+  tags: ["Sessions"],
+  summary: "Delete pomodoro sessions (some or all)",
+  description:
+    "Provide `ids` to delete specific sessions, or `all: true` to delete every session of the authenticated user.",
+  security: cookieAuthSecurity,
+  body: deleteSessionsBodySchema,
+  response: {
+    200: deleteResultSchema,
+    400: errorResponseSchema,
+    401: errorResponseSchema,
+  },
+} satisfies FastifySchema;

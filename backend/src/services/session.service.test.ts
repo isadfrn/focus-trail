@@ -9,6 +9,9 @@ describe("SessionService", () => {
   const sessions = {
     create: vi.fn(),
     listByUserId: vi.fn(),
+    deleteByIdForUser: vi.fn(),
+    deleteManyForUser: vi.fn(),
+    deleteAllForUser: vi.fn(),
   } satisfies SessionRepository;
 
   const users = {
@@ -59,5 +62,28 @@ describe("SessionService", () => {
   it("lists sessions", async () => {
     sessions.listByUserId.mockResolvedValue([{ id: "s1" }]);
     await expect(service.list("u1")).resolves.toEqual([{ id: "s1" }]);
+  });
+
+  it("deletes one and returns the count", async () => {
+    sessions.deleteByIdForUser.mockResolvedValue({ count: 1 });
+    await expect(service.deleteOne("u1", "s1")).resolves.toBe(1);
+    expect(sessions.deleteByIdForUser).toHaveBeenCalledWith("u1", "s1");
+  });
+
+  it("returns 0 when deleting a missing session", async () => {
+    sessions.deleteByIdForUser.mockResolvedValue({ count: 0 });
+    await expect(service.deleteOne("u1", "missing")).resolves.toBe(0);
+  });
+
+  it("deletes many and returns the count", async () => {
+    sessions.deleteManyForUser.mockResolvedValue({ count: 2 });
+    await expect(service.deleteMany("u1", ["s1", "s2"])).resolves.toBe(2);
+    expect(sessions.deleteManyForUser).toHaveBeenCalledWith("u1", ["s1", "s2"]);
+  });
+
+  it("deletes all and returns the count", async () => {
+    sessions.deleteAllForUser.mockResolvedValue({ count: 5 });
+    await expect(service.deleteAll("u1")).resolves.toBe(5);
+    expect(sessions.deleteAllForUser).toHaveBeenCalledWith("u1");
   });
 });

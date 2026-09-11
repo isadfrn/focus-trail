@@ -1,8 +1,13 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
 
+import { NotFoundError } from "../errors/app-error.js";
 import { sendAppError } from "../errors/send-app-error.js";
 import { parseBody } from "../lib/parse-body.js";
-import { createSessionSchema } from "../schemas/session.schema.js";
+import {
+  createSessionSchema,
+  deleteSessionsSchema,
+  sessionIdParamSchema,
+} from "../schemas/session.schema.js";
 import {
   sessionService,
   type SessionService,
@@ -26,6 +31,25 @@ export class SessionController {
   async list(request: FastifyRequest) {
     const sessions = await this.sessions.list(request.user.sub);
     return { sessions };
+  }
+
+  async remove(request: FastifyRequest, reply: FastifyReply) {
+    const params = parseBody(sessionIdParamSchema, request.params, reply);
+    if (!params) return;
+
+    const deleted = await this.sessions.deleteOne(request.user.sub, params.id);
+    if (deleted === 0) return sendAppError(reply, new NotFoundError());
+    return reply.send({ deleted });
+  }
+
+  async removeMany(request: FastifyRequest, reply: FastifyReply) {
+    const body = parseBody(deleteSessionsSchema, request.body, reply);
+    if (!body) return;
+
+    const deleted = body.all
+      ? await this.sessions.deleteAll(request.user.sub)
+      : await this.sessions.deleteMany(request.user.sub, body.ids ?? []);
+    return reply.send({ deleted });
   }
 }
 

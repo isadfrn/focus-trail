@@ -37,3 +37,10 @@ export class InvalidCredentialsError extends AppError {
     this.name = "InvalidCredentialsError";
   }
 }
+
+export class NotFoundError extends AppError {
+  constructor(message = "Not Found") {
+    super(message, 404, "NOT_FOUND");
+    this.name = "NotFoundError";
+  }
+}

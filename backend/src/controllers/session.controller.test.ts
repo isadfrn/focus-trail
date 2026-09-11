@@ -19,7 +19,12 @@ describe("SessionController", () => {
   const sessions = {
     create: vi.fn(),
     list: vi.fn(),
+    deleteOne: vi.fn(),
+    deleteMany: vi.fn(),
+    deleteAll: vi.fn(),
   } as unknown as SessionService;
+
+  const uuid = "11111111-1111-1111-1111-111111111111";
 
   const controller = new SessionController(sessions);
 
@@ -81,5 +86,66 @@ describe("SessionController", () => {
         user: { sub: "u1", email: "a@b.com" },
       } as FastifyRequest),
     ).resolves.toEqual({ sessions: [{ id: "s1" }] });
+  });
+
+  it("rejects a delete with an invalid id", async () => {
+    const reply = createReply();
+    await controller.remove(
+      { params: { id: "nope" }, user: { sub: "u1" } } as never,
+      reply as never,
+    );
+    expect(reply.code).toHaveBeenCalledWith(400);
+  });
+
+  it("deletes one session", async () => {
+    const reply = createReply();
+    vi.mocked(sessions.deleteOne).mockResolvedValue(1 as never);
+    await controller.remove(
+      { params: { id: uuid }, user: { sub: "u1" } } as never,
+      reply as never,
+    );
+    expect(sessions.deleteOne).toHaveBeenCalledWith("u1", uuid);
+    expect(reply.send).toHaveBeenCalledWith({ deleted: 1 });
+  });
+
+  it("returns 404 when the session is not found", async () => {
+    const reply = createReply();
+    vi.mocked(sessions.deleteOne).mockResolvedValue(0 as never);
+    await controller.remove(
+      { params: { id: uuid }, user: { sub: "u1" } } as never,
+      reply as never,
+    );
+    expect(reply.code).toHaveBeenCalledWith(404);
+  });
+
+  it("rejects a bulk delete with neither ids nor all", async () => {
+    const reply = createReply();
+    await controller.removeMany(
+      { body: {}, user: { sub: "u1" } } as never,
+      reply as never,
+    );
+    expect(reply.code).toHaveBeenCalledWith(400);
+  });
+
+  it("deletes selected sessions", async () => {
+    const reply = createReply();
+    vi.mocked(sessions.deleteMany).mockResolvedValue(2 as never);
+    await controller.removeMany(
+      { body: { ids: [uuid] }, user: { sub: "u1" } } as never,
+      reply as never,
+    );
+    expect(sessions.deleteMany).toHaveBeenCalledWith("u1", [uuid]);
+    expect(reply.send).toHaveBeenCalledWith({ deleted: 2 });
+  });
+
+  it("deletes all sessions", async () => {
+    const reply = createReply();
+    vi.mocked(sessions.deleteAll).mockResolvedValue(5 as never);
+    await controller.removeMany(
+      { body: { all: true }, user: { sub: "u1" } } as never,
+      reply as never,
+    );
+    expect(sessions.deleteAll).toHaveBeenCalledWith("u1");
+    expect(reply.send).toHaveBeenCalledWith({ deleted: 5 });
   });
 });

@@ -5,6 +5,7 @@ const { prismaMock } = vi.hoisted(() => ({
     pomodoroSession: {
       create: vi.fn(),
       findMany: vi.fn(),
+      deleteMany: vi.fn(),
     },
   },
 }));
@@ -44,6 +45,30 @@ describe("SessionRepository", () => {
       where: { userId: "u1" },
       orderBy: { startedAt: "desc" },
       take: 100,
+    });
+  });
+
+  it("deletes one session scoped to the user", async () => {
+    prismaMock.pomodoroSession.deleteMany.mockResolvedValue({ count: 1 });
+    await repository.deleteByIdForUser("u1", "s1");
+    expect(prismaMock.pomodoroSession.deleteMany).toHaveBeenCalledWith({
+      where: { id: "s1", userId: "u1" },
+    });
+  });
+
+  it("deletes many sessions scoped to the user", async () => {
+    prismaMock.pomodoroSession.deleteMany.mockResolvedValue({ count: 2 });
+    await repository.deleteManyForUser("u1", ["s1", "s2"]);
+    expect(prismaMock.pomodoroSession.deleteMany).toHaveBeenCalledWith({
+      where: { id: { in: ["s1", "s2"] }, userId: "u1" },
+    });
+  });
+
+  it("deletes all sessions of the user", async () => {
+    prismaMock.pomodoroSession.deleteMany.mockResolvedValue({ count: 5 });
+    await repository.deleteAllForUser("u1");
+    expect(prismaMock.pomodoroSession.deleteMany).toHaveBeenCalledWith({
+      where: { userId: "u1" },
     });
   });
 });

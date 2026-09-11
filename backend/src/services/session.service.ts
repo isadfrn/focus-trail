@@ -33,6 +33,21 @@ export class SessionService {
   list(userId: string) {
     return this.sessions.listByUserId(userId);
   }
+
+  async deleteOne(userId: string, id: string) {
+    const { count } = await this.sessions.deleteByIdForUser(userId, id);
+    return count;
+  }
+
+  async deleteMany(userId: string, ids: string[]) {
+    const { count } = await this.sessions.deleteManyForUser(userId, ids);
+    return count;
+  }
+
+  async deleteAll(userId: string) {
+    const { count } = await this.sessions.deleteAllForUser(userId);
+    return count;
+  }
 }
 
 export const sessionService = new SessionService();
