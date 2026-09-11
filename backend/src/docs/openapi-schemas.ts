@@ -44,8 +44,9 @@ export const credentialsBodySchema = {
     },
     password: {
       type: "string",
-      minLength: 8,
+      minLength: 10,
       maxLength: 200,
+      description: "At least 10 characters with one letter and one digit",
     },
   },
 } as const;
