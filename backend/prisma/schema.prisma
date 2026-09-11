@@ -1,0 +1,36 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(uuid()) @db.Uuid
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  character    String   @default("mario")
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  sessions PomodoroSession[]
+
+  @@map("users")
+}
+
+model PomodoroSession {
+  id              String   @id @default(uuid()) @db.Uuid
+  userId          String   @map("user_id") @db.Uuid
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  startedAt       DateTime @map("started_at") @db.Timestamptz(6)
+  endedAt         DateTime @map("ended_at") @db.Timestamptz(6)
+  durationSeconds Int      @map("duration_seconds")
+  type            String
+  completed       Boolean
+  character       String   @default("mario")
+  createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@index([userId, startedAt])
+  @@map("pomodoro_sessions")
+}
