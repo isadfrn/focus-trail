@@ -1,0 +1,210 @@
+@import "tailwindcss";
+
+@theme {
+  /* ---------- Paleta ---------- */
+  --color-charcoal-blue-50: #eef4f7;
+  --color-charcoal-blue-100: #dceaef;
+  --color-charcoal-blue-200: #b9d4df;
+  --color-charcoal-blue-300: #96bfcf;
+  --color-charcoal-blue-400: #73a9bf;
+  --color-charcoal-blue-500: #5094af;
+  --color-charcoal-blue-600: #40768c;
+  --color-charcoal-blue-700: #305969;
+  --color-charcoal-blue-800: #203b46;
+  --color-charcoal-blue-900: #101e23;
+  --color-charcoal-blue-950: #0b1518;
+
+  --color-verdigris-50: #ebfaf8;
+  --color-verdigris-100: #d7f4f1;
+  --color-verdigris-200: #aeeae3;
+  --color-verdigris-300: #86dfd5;
+  --color-verdigris-400: #5ed4c6;
+  --color-verdigris-500: #36c9b8;
+  --color-verdigris-600: #2ba193;
+  --color-verdigris-700: #20796f;
+  --color-verdigris-800: #15514a;
+  --color-verdigris-900: #0b2825;
+  --color-verdigris-950: #071c1a;
+
+  --color-tuscan-sun-50: #fcf6e9;
+  --color-tuscan-sun-100: #f8eed3;
+  --color-tuscan-sun-200: #f2dca6;
+  --color-tuscan-sun-300: #ebcb7a;
+  --color-tuscan-sun-400: #e4ba4e;
+  --color-tuscan-sun-500: #dea821;
+  --color-tuscan-sun-600: #b1871b;
+  --color-tuscan-sun-700: #856514;
+  --color-tuscan-sun-800: #59430d;
+  --color-tuscan-sun-900: #2c2207;
+  --color-tuscan-sun-950: #1f1805;
+
+  --color-sandy-brown-50: #fdf1e7;
+  --color-sandy-brown-100: #fce3cf;
+  --color-sandy-brown-200: #f8c8a0;
+  --color-sandy-brown-300: #f5ac70;
+  --color-sandy-brown-400: #f29040;
+  --color-sandy-brown-500: #ee7411;
+  --color-sandy-brown-600: #bf5d0d;
+  --color-sandy-brown-700: #8f460a;
+  --color-sandy-brown-800: #5f2f07;
+  --color-sandy-brown-900: #301703;
+  --color-sandy-brown-950: #211002;
+
+  --color-burnt-peach-50: #fcece9;
+  --color-burnt-peach-100: #f9dad2;
+  --color-burnt-peach-200: #f3b5a5;
+  --color-burnt-peach-300: #ed9078;
+  --color-burnt-peach-400: #e76a4b;
+  --color-burnt-peach-500: #e0451f;
+  --color-burnt-peach-600: #b43718;
+  --color-burnt-peach-700: #872a12;
+  --color-burnt-peach-800: #5a1c0c;
+  --color-burnt-peach-900: #2d0e06;
+  --color-burnt-peach-950: #1f0a04;
+
+  /* ---------- Tokens semanticos (light) ---------- */
+  --color-background: var(--color-charcoal-blue-50);
+  --color-surface: #ffffff;
+  --color-foreground: var(--color-charcoal-blue-900);
+  --color-muted: var(--color-charcoal-blue-700);
+  --color-border: var(--color-charcoal-blue-200);
+  --color-primary: var(--color-verdigris-700);
+  --color-primary-foreground: #ffffff;
+  --color-danger: var(--color-burnt-peach-600);
+  --color-ok: var(--color-verdigris-700);
+
+  /* Cena do timer: valores default (fundo escuro). Sao sobrescritos por
+     personagem via variaveis inline (resolveScenePalette/sceneVars), que
+     derivam a paleta do skyColor de cada background. */
+  --color-scene-foreground: var(--color-tuscan-sun-100);
+  --color-scene-accent: var(--color-tuscan-sun-400);
+  --color-scene-panel: rgba(16, 30, 35, 0.55);
+  --color-scene-panel-border: rgba(255, 255, 255, 0.15);
+  --color-scene-on-accent: var(--color-charcoal-blue-900);
+
+  --shadow-app: 0 1px 3px rgba(11, 21, 24, 0.1), 0 8px 24px rgba(11, 21, 24, 0.08);
+
+  --animate-bg-scroll: bgScroll 20s linear infinite;
+  --animate-ground-scroll: groundScroll 0.7s linear infinite;
+  --animate-toast-in: toastIn 160ms cubic-bezier(0.16, 1, 0.3, 1);
+  --animate-toast-out: toastOut 110ms ease-in;
+  --animate-fade-in: fadeIn 120ms ease-out;
+  --animate-fade-out: fadeOut 100ms ease-in;
+  --animate-menu-in: menuIn 140ms cubic-bezier(0.16, 1, 0.3, 1);
+  --animate-menu-out: menuOut 100ms ease-in;
+  --animate-drawer-in: drawerIn 190ms cubic-bezier(0.16, 1, 0.3, 1);
+  --animate-drawer-out: drawerOut 150ms ease-in;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-background: var(--color-charcoal-blue-950);
+    --color-surface: var(--color-charcoal-blue-900);
+    --color-foreground: var(--color-charcoal-blue-100);
+    --color-muted: var(--color-charcoal-blue-400);
+    --color-border: var(--color-charcoal-blue-800);
+    --color-primary: var(--color-verdigris-500);
+    --color-primary-foreground: var(--color-verdigris-950);
+    --color-danger: var(--color-burnt-peach-500);
+    --color-ok: var(--color-verdigris-400);
+    --shadow-app: 0 1px 3px rgba(0, 0, 0, 0.5), 0 8px 24px rgba(0, 0, 0, 0.4);
+  }
+}
+
+body {
+  margin: 0;
+  font-family:
+    system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background: var(--color-background);
+  color: var(--color-foreground);
+}
+
+/* Pixel-art scene: the scrolling sky and ground can't be expressed as utilities. */
+@keyframes bgScroll {
+  from {
+    background-position: 0 bottom;
+  }
+  to {
+    background-position: calc(-1 * var(--bg-tile-w, 1024px)) bottom;
+  }
+}
+@keyframes groundScroll {
+  from {
+    background-position: 0 bottom;
+  }
+  to {
+    background-position: calc(-1 * var(--ground-tile-w, 96px)) bottom;
+  }
+}
+@keyframes toastIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+@keyframes toastOut {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+@keyframes menuIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes menuOut {
+  from {
+    opacity: 1;
+    transform: none;
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.98);
+  }
+}
+@keyframes drawerIn {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+@keyframes drawerOut {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-100%);
+  }
+}

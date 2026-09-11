@@ -1,0 +1,26 @@
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { BrowserRouter } from "react-router-dom";
+
+import App from "./App";
+import { AuthProvider } from "./providers/AuthProvider";
+import { CharacterProvider } from "./providers/CharacterProvider";
+import { TimerActivityProvider } from "./providers/TimerActivityProvider";
+import { ToastProvider } from "./providers/ToastProvider";
+import "./styles/global.css";
+
+ReactDOM.createRoot(document.getElementById("root")!).render(
+  <React.StrictMode>
+    <BrowserRouter>
+      <AuthProvider>
+        <CharacterProvider>
+          <TimerActivityProvider>
+            <ToastProvider>
+              <App />
+            </ToastProvider>
+          </TimerActivityProvider>
+        </CharacterProvider>
+      </AuthProvider>
+    </BrowserRouter>
+  </React.StrictMode>,
+);
