@@ -1,6 +1,18 @@
 # Changelog
 
 
+## v0.1.1
+
+[compare changes](https://github.com/isadfrn/focus-trail/compare/v0.1.0...v0.1.1)
+
+### 🚀 Enhancements
+
+- Implement session deletion functionality ([eb93268](https://github.com/isadfrn/focus-trail/commit/eb93268))
+
+### ❤️ Contributors
+
+- Isadfrn ([@isadfrn](https://github.com/isadfrn))
+
 ## v0.1.0
 
 
