@@ -42,6 +42,9 @@ jobs:
           ssh-keyscan -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts 2>/dev/null || true
 
       - name: Deploy on VPS
+        env:
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GHCR_USER: ${{ github.actor }}
         run: |
           ssh -p ${{ secrets.SSH_PORT }} -i ~/.ssh/id_ed25519 \
             ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} \
@@ -53,7 +56,8 @@ jobs:
 
           ssh -p ${{ secrets.SSH_PORT }} -i ~/.ssh/id_ed25519 \
             ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} \
-            "cd ~/focus-trail && \
+            "echo '$GHCR_TOKEN' | docker login ghcr.io -u '$GHCR_USER' --password-stdin && \
+             cd ~/focus-trail && \
              IMAGE=${{ env.IMAGE }}:latest docker compose -f docker-compose.prod.yml pull api && \
              IMAGE=${{ env.IMAGE }}:latest docker compose -f docker-compose.prod.yml up -d"
 
