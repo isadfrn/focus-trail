@@ -10,6 +10,10 @@ post {
   auth: none
 }
 
+headers {
+  Origin: {{corsOrigin}}
+}
+
 body:json {
   {
     "email": "{{email}}",
@@ -19,6 +23,7 @@ body:json {
 
 vars:pre-request {
   baseUrl: http://localhost:3001
-  email: isabella.nunes@gmail.com
-  password: Senha12345
+  email: isa@gmail.com
+  password: Senha@1234567890
+  corsOrigin: http://localhost:5173
 }

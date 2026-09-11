@@ -10,6 +10,11 @@ post {
   auth: none
 }
 
+headers {
+  ~Origin: {{corsOrigin}}
+}
+
 vars:pre-request {
   baseUrl: http://localhost:3001
+  corsOrigin: http://localhost:5173
 }
