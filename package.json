@@ -1,12 +1,22 @@
 {
   "name": "focus-trail",
+  "version": "0.1.0",
   "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/isadfrn/focus-trail.git"
+  },
   "scripts": {
-    "prepare": "husky"
+    "prepare": "husky",
+    "changelog": "changelogen --output CHANGELOG.md",
+    "release": "changelogen --release",
+    "release:minor": "changelogen --release --minor",
+    "release:major": "changelogen --release --major"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.8.0",
     "@commitlint/config-conventional": "^19.8.0",
+    "changelogen": "^0.6.2",
     "husky": "^9.1.7"
   }
 }
