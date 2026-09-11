@@ -6,8 +6,8 @@ RUN apt-get update -y \
 COPY package.json package-lock.json ./
 RUN npm ci
 COPY prisma ./prisma
-RUN npx prisma generate \
-  && npm prune --omit=dev
+RUN npm prune --omit=dev \
+  && npx prisma generate
 
 FROM node:24-slim AS runtime
 WORKDIR /app
