@@ -35,11 +35,13 @@ export function ProfilePage() {
   const [sceneId, setSceneId] = useState(
     () => user?.character ?? characters[0]?.id ?? "",
   );
-  const [focusMinutes, setFocusMinutes] = useState(
-    () => user?.focusMinutes ?? DEFAULT_FOCUS_MINUTES,
+  // Guardados como string para o campo poder ficar vazio ao editar (sem forçar
+  // um "0"); são convertidos e validados só no submit.
+  const [focusInput, setFocusInput] = useState(
+    () => String(user?.focusMinutes ?? DEFAULT_FOCUS_MINUTES),
   );
-  const [breakMinutes, setBreakMinutes] = useState(
-    () => user?.breakMinutes ?? DEFAULT_BREAK_MINUTES,
+  const [breakInput, setBreakInput] = useState(
+    () => String(user?.breakMinutes ?? DEFAULT_BREAK_MINUTES),
   );
   const [savingPrefs, setSavingPrefs] = useState(false);
 
@@ -54,12 +56,24 @@ export function ProfilePage() {
   const savePreferences = async (e: FormEvent) => {
     e.preventDefault();
     if (savingPrefs) return;
+
+    const focus = Number(focusInput);
+    const brk = Number(breakInput);
+    if (!Number.isInteger(focus) || focus < 1 || focus > 180) {
+      toast("Foco deve ser um número inteiro entre 1 e 180 minutos.");
+      return;
+    }
+    if (!Number.isInteger(brk) || brk < 1 || brk > 60) {
+      toast("Pausa deve ser um número inteiro entre 1 e 60 minutos.");
+      return;
+    }
+
     setSavingPrefs(true);
     try {
       const { user: updated } = await authApi.updatePreferences({
         character: sceneId,
-        focusMinutes,
-        breakMinutes,
+        focusMinutes: focus,
+        breakMinutes: brk,
       });
       updateUser(updated);
       setCharacterId(updated.character);
@@ -131,11 +145,12 @@ export function ProfilePage() {
             <input
               id="focus"
               type="number"
+              inputMode="numeric"
               min={1}
               max={180}
               required
-              value={focusMinutes}
-              onChange={(e) => setFocusMinutes(e.target.valueAsNumber || 0)}
+              value={focusInput}
+              onChange={(e) => setFocusInput(e.target.value)}
               className={field}
             />
           </div>
@@ -144,11 +159,12 @@ export function ProfilePage() {
             <input
               id="break"
               type="number"
+              inputMode="numeric"
               min={1}
               max={60}
               required
-              value={breakMinutes}
-              onChange={(e) => setBreakMinutes(e.target.valueAsNumber || 0)}
+              value={breakInput}
+              onChange={(e) => setBreakInput(e.target.value)}
               className={field}
             />
           </div>
