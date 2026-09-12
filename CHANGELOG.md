@@ -1,6 +1,18 @@
 # Changelog
 
 
+## v0.1.6
+
+[compare changes](https://github.com/isadfrn/focus-trail/compare/v0.1.5...v0.1.6)
+
+### ✅ Tests
+
+- Provê env aos testes unitários no CI e refina o escopo de coverage ([41ed1b3](https://github.com/isadfrn/focus-trail/commit/41ed1b3))
+
+### ❤️ Contributors
+
+- Isadfrn ([@isadfrn](https://github.com/isadfrn))
+
 ## v0.1.5
 
 [compare changes](https://github.com/isadfrn/focus-trail/compare/v0.1.4...v0.1.5)
