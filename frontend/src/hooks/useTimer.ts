@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { sessionApi } from "../api/session.api";
 import { ApiError } from "../errors/api-error";
 import { notify } from "../lib/platform";
+import { useAuth } from "../providers/AuthProvider";
 import { useTimerActivity } from "../providers/TimerActivityProvider";
 import { useToast } from "../providers/ToastProvider";
 import type { SessionType } from "../types/session";
@@ -15,10 +16,9 @@ export interface Preset {
   minutes: number;
 }
 
-export const PRESETS: Preset[] = [
-  { type: "focus", label: "Foco", minutes: 25 },
-  { type: "break", label: "Pausa", minutes: 5 },
-];
+/** Fallbacks used before the user loads or when they haven't set a preference. */
+export const DEFAULT_FOCUS_MINUTES = 25;
+export const DEFAULT_BREAK_MINUTES = 5;
 
 /**
  * Timer state machine + session persistence — the business logic behind the
@@ -27,9 +27,18 @@ export const PRESETS: Preset[] = [
  * only renders what this returns.
  */
 export function useTimer() {
+  const { user } = useAuth();
+  const focusMinutes = user?.focusMinutes ?? DEFAULT_FOCUS_MINUTES;
+  const breakMinutes = user?.breakMinutes ?? DEFAULT_BREAK_MINUTES;
+
+  const presets: Preset[] = [
+    { type: "focus", label: "Foco", minutes: focusMinutes },
+    { type: "break", label: "Pausa", minutes: breakMinutes },
+  ];
+
   const [type, setType] = useState<SessionType>("focus");
-  const [durationSec, setDurationSec] = useState(25 * 60);
-  const [remaining, setRemaining] = useState(25 * 60);
+  const [durationSec, setDurationSec] = useState(focusMinutes * 60);
+  const [remaining, setRemaining] = useState(focusMinutes * 60);
   const [status, setStatus] = useState<TimerStatus>("idle");
 
   const intervalRef = useRef<number | null>(null);
@@ -39,6 +48,15 @@ export function useTimer() {
 
   const toast = useToast();
   const { setRunning } = useTimerActivity();
+
+  // Keep the countdown in sync with the user's preferred durations — but only
+  // while idle, so we never disturb a running or just-finished session.
+  useEffect(() => {
+    if (status !== "idle") return;
+    const minutes = type === "focus" ? focusMinutes : breakMinutes;
+    setDurationSec(minutes * 60);
+    setRemaining(minutes * 60);
+  }, [focusMinutes, breakMinutes, type, status]);
 
   const clearTimer = () => {
     if (intervalRef.current !== null) {
@@ -129,6 +147,7 @@ export function useTimer() {
     remaining,
     status,
     running: status === "running",
+    presets,
     selectPreset,
     start,
     stop,

@@ -1,7 +1,14 @@
-import { createContext, useContext, useState, type ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  type ReactNode,
+} from "react";
 
 import { characters, defaultCharacter } from "../characters/characters";
 import { storage } from "../lib/platform";
+import { useAuth } from "./AuthProvider";
 import type { CharacterTheme } from "../types/character";
 
 const STORAGE_KEY = "ft_character";
@@ -19,6 +26,7 @@ function readStoredId(): string {
 }
 
 export function CharacterProvider({ children }: { children: ReactNode }) {
+  const { user } = useAuth();
   const [id, setId] = useState<string>(readStoredId);
   const character = characters.find((c) => c.id === id) ?? defaultCharacter;
 
@@ -26,6 +34,15 @@ export function CharacterProvider({ children }: { children: ReactNode }) {
     setId(newId);
     storage.set(STORAGE_KEY, newId);
   };
+
+  // The user's saved default scene wins on load (and when it changes, e.g. after
+  // saving preferences). The menu picker stays a temporary per-session switch.
+  useEffect(() => {
+    if (user?.character) {
+      setId(user.character);
+      storage.set(STORAGE_KEY, user.character);
+    }
+  }, [user?.character]);
 
   return (
     <CharacterContext.Provider

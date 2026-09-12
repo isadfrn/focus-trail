@@ -87,6 +87,9 @@ export function Header() {
               <Link className={navLink("/history")} to="/history" onClick={close}>
                 Historico
               </Link>
+              <Link className={navLink("/profile")} to="/profile" onClick={close}>
+                Perfil
+              </Link>
 
               <div className={separator} />
               <p className="px-3 py-1 text-[11px] uppercase tracking-wide text-muted">

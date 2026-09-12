@@ -2,7 +2,7 @@ import * as ToggleGroup from "@radix-ui/react-toggle-group";
 
 import { Button } from "../../components/Button/Button";
 import { Scene } from "../../components/Scene/Scene";
-import { PRESETS, useTimer } from "../../hooks/useTimer";
+import { useTimer } from "../../hooks/useTimer";
 import { cn } from "../../lib/cn";
 import { formatClock } from "../../lib/format";
 import { resolveScenePalette, sceneVars } from "../../lib/scene-palette";
@@ -13,7 +13,7 @@ const presetItem =
 
 export function TimerPage() {
   const { character } = useCharacter();
-  const { type, remaining, status, running, selectPreset, start, stop } =
+  const { type, remaining, status, running, presets, selectPreset, start, stop } =
     useTimer();
 
   // Paleta derivada do background atual (com override opcional do personagem).
@@ -28,12 +28,12 @@ export function TimerPage() {
           value={type}
           disabled={running}
           onValueChange={(v) => {
-            const p = PRESETS.find((x) => x.type === v);
+            const p = presets.find((x) => x.type === v);
             if (p) selectPreset(p.type, p.minutes);
           }}
           className="flex flex-wrap justify-center gap-2.5"
         >
-          {PRESETS.map((p) => (
+          {presets.map((p) => (
             <ToggleGroup.Item
               key={p.type}
               value={p.type}
