@@ -1,6 +1,36 @@
 # Changelog
 
 
+## v0.1.5
+
+[compare changes](https://github.com/isadfrn/focus-trail/compare/v0.1.4...v0.1.5)
+
+### 🚀 Enhancements
+
+- Enhance routing and page transition animations ([265c070](https://github.com/isadfrn/focus-trail/commit/265c070))
+- Aumenta a logo na tela de login ([9554540](https://github.com/isadfrn/focus-trail/commit/9554540))
+- Aumenta a logo no menu ([c28890c](https://github.com/isadfrn/focus-trail/commit/c28890c))
+- Paginação por cursor e filtros na listagem de sessões ([21a21ec](https://github.com/isadfrn/focus-trail/commit/21a21ec))
+- Histórico com scroll infinito, filtros e layout responsivo no mobile ([cb88bbc](https://github.com/isadfrn/focus-trail/commit/cb88bbc))
+- Confirmação de cadastro e recuperação de senha por e-mail (backend) ([89da1af](https://github.com/isadfrn/focus-trail/commit/89da1af))
+- Fluxos de e-mail no frontend — verificação de cadastro e recuperação de senha ([49f1e5d](https://github.com/isadfrn/focus-trail/commit/49f1e5d))
+
+### 🩹 Fixes
+
+- Remove o "0" que surgia ao editar os timers no perfil ([190e767](https://github.com/isadfrn/focus-trail/commit/190e767))
+
+### ✅ Tests
+
+- Adiciona testes de integração da API contra banco real ([3ae4005](https://github.com/isadfrn/focus-trail/commit/3ae4005))
+
+### 🤖 CI
+
+- Pipeline de testes com coverage exibido no README ([486cc8c](https://github.com/isadfrn/focus-trail/commit/486cc8c))
+
+### ❤️ Contributors
+
+- Isadfrn ([@isadfrn](https://github.com/isadfrn))
+
 ## v0.1.4
 
 [compare changes](https://github.com/isadfrn/focus-trail/compare/v0.1.3...v0.1.4)
