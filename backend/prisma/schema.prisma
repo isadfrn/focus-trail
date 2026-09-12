@@ -8,18 +8,34 @@ datasource db {
 }
 
 model User {
-  id           String   @id @default(uuid()) @db.Uuid
-  email        String   @unique
-  passwordHash String   @map("password_hash")
-  character    String   @default("mario")
-  focusMinutes Int      @default(25) @map("focus_minutes")
-  breakMinutes Int      @default(5) @map("break_minutes")
-  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  id              String    @id @default(uuid()) @db.Uuid
+  email           String    @unique
+  passwordHash    String    @map("password_hash")
+  character       String    @default("mario")
+  focusMinutes    Int       @default(25) @map("focus_minutes")
+  breakMinutes    Int       @default(5) @map("break_minutes")
+  emailVerifiedAt DateTime? @map("email_verified_at") @db.Timestamptz(6)
+  createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
 
-  sessions     PomodoroSession[]
-  authSessions AuthSession[]
+  sessions          PomodoroSession[]
+  authSessions      AuthSession[]
+  verificationCodes VerificationCode[]
 
   @@map("users")
+}
+
+model VerificationCode {
+  id         String    @id @default(uuid()) @db.Uuid
+  userId     String    @map("user_id") @db.Uuid
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  purpose    String
+  codeHash   String    @map("code_hash")
+  expiresAt  DateTime  @map("expires_at") @db.Timestamptz(6)
+  consumedAt DateTime? @map("consumed_at") @db.Timestamptz(6)
+  createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@index([userId, purpose])
+  @@map("verification_codes")
 }
 
 model AuthSession {

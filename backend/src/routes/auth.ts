@@ -30,4 +30,25 @@ export async function authRoutes(app: FastifyInstance) {
   app.post("/logout", { schema: logoutSchema }, (request, reply) =>
     authController.logout(request, reply),
   );
+
+  app.post(
+    "/verify-email",
+    { config: { rateLimit: authRateLimit } },
+    (request, reply) => authController.verifyEmail(request, reply),
+  );
+  app.post(
+    "/resend-verification",
+    { config: { rateLimit: authRateLimit } },
+    (request, reply) => authController.resendVerification(request, reply),
+  );
+  app.post(
+    "/forgot-password",
+    { config: { rateLimit: authRateLimit } },
+    (request, reply) => authController.forgotPassword(request, reply),
+  );
+  app.post(
+    "/reset-password",
+    { config: { rateLimit: authRateLimit } },
+    (request, reply) => authController.resetPassword(request, reply),
+  );
 }

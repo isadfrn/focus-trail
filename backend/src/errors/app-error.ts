@@ -44,3 +44,17 @@ export class NotFoundError extends AppError {
     this.name = "NotFoundError";
   }
 }
+
+export class EmailNotVerifiedError extends AppError {
+  constructor(message = "Email Not Verified") {
+    super(message, 403, "EMAIL_NOT_VERIFIED");
+    this.name = "EmailNotVerifiedError";
+  }
+}
+
+export class InvalidCodeError extends AppError {
+  constructor(message = "Invalid or expired code") {
+    super(message, 400, "INVALID_CODE");
+    this.name = "InvalidCodeError";
+  }
+}

@@ -11,7 +11,7 @@ vi.mock("@node-rs/argon2", () => ({
 
 import { hash, verify } from "@node-rs/argon2";
 
-describe("AuthService", () => {
+describe("AuthService (email disabled)", () => {
   const users = {
     findByEmail: vi.fn(),
     findById: vi.fn(),
@@ -20,6 +20,7 @@ describe("AuthService", () => {
     create: vi.fn(),
     updatePreferences: vi.fn(),
     updatePassword: vi.fn(),
+    markEmailVerified: vi.fn(),
   } satisfies UserRepository;
 
   const service = new AuthService(users);
@@ -29,7 +30,7 @@ describe("AuthService", () => {
     vi.mocked(verify).mockResolvedValue(true);
   });
 
-  it("registers a normalized email", async () => {
+  it("registers a normalized, already-verified email", async () => {
     users.findByEmail.mockResolvedValue(null);
     users.create.mockResolvedValue({
       id: "1",
@@ -37,26 +38,27 @@ describe("AuthService", () => {
       character: "mario",
     });
 
-    const user = await service.register({
+    const result = await service.register({
       email: "  User@Example.com ",
       password: "password123",
     });
 
     expect(hash).toHaveBeenCalledWith("password123");
-    expect(users.create).toHaveBeenCalledWith({
-      email: "user@example.com",
-      passwordHash: "hashed",
-    });
-    expect(user.email).toBe("user@example.com");
+    expect(users.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        email: "user@example.com",
+        passwordHash: "hashed",
+        emailVerifiedAt: expect.any(Date),
+      }),
+    );
+    expect(result.verificationRequired).toBe(false);
+    expect(result.user.email).toBe("user@example.com");
   });
 
   it("rejects duplicate email after dummy hash work", async () => {
     users.findByEmail.mockResolvedValue({ id: "1" });
     await expect(
-      service.register({
-        email: "user@example.com",
-        password: "password123",
-      }),
+      service.register({ email: "user@example.com", password: "password123" }),
     ).rejects.toBeInstanceOf(ConflictError);
     expect(hash).toHaveBeenCalledWith("password123");
   });
@@ -66,28 +68,27 @@ describe("AuthService", () => {
       id: "1",
       email: "user@example.com",
       character: "mario",
+      focusMinutes: 25,
+      breakMinutes: 5,
       passwordHash: "hashed",
+      emailVerifiedAt: new Date(),
     });
 
     await expect(
-      service.login({
-        email: "user@example.com",
-        password: "password123",
-      }),
+      service.login({ email: "user@example.com", password: "password123" }),
     ).resolves.toEqual({
       id: "1",
       email: "user@example.com",
       character: "mario",
+      focusMinutes: 25,
+      breakMinutes: 5,
     });
   });
 
   it("rejects unknown user after dummy verify", async () => {
     users.findByEmail.mockResolvedValue(null);
     await expect(
-      service.login({
-        email: "missing@example.com",
-        password: "password123",
-      }),
+      service.login({ email: "missing@example.com", password: "password123" }),
     ).rejects.toBeInstanceOf(InvalidCredentialsError);
     expect(verify).toHaveBeenCalledWith(DUMMY_PASSWORD_HASH, "password123");
   });
@@ -102,10 +103,7 @@ describe("AuthService", () => {
     vi.mocked(verify).mockResolvedValue(false);
 
     await expect(
-      service.login({
-        email: "user@example.com",
-        password: "wrong-password",
-      }),
+      service.login({ email: "user@example.com", password: "wrong-password" }),
     ).rejects.toBeInstanceOf(InvalidCredentialsError);
   });
 });

@@ -43,9 +43,21 @@ export class UserRepository {
     });
   }
 
-  create(data: { email: string; passwordHash: string }) {
+  create(data: {
+    email: string;
+    passwordHash: string;
+    emailVerifiedAt?: Date | null;
+  }) {
     return prisma.user.create({
       data,
+      select: meSelect,
+    });
+  }
+
+  markEmailVerified(id: string) {
+    return prisma.user.update({
+      where: { id },
+      data: { emailVerifiedAt: new Date() },
       select: meSelect,
     });
   }

@@ -8,7 +8,12 @@ import {
   revokeSession,
   sessionCookieOptions,
 } from "../lib/session.js";
-import { credentialsSchema } from "../schemas/auth.schema.js";
+import {
+  credentialsSchema,
+  emailRequestSchema,
+  resetPasswordSchema,
+  verifyEmailSchema,
+} from "../schemas/auth.schema.js";
 import { authService, type AuthService } from "../services/auth.service.js";
 
 export class AuthController {
@@ -19,9 +24,67 @@ export class AuthController {
     if (!body) return;
 
     try {
-      const user = await this.auth.register(body);
+      const { user, verificationRequired } = await this.auth.register(body);
+
+      if (verificationRequired) {
+        // Best-effort send: if it fails, the user can request a resend.
+        await this.auth.sendEmailVerification(user).catch((error: unknown) => {
+          request.log.error(error, "failed to send verification email");
+        });
+        return reply
+          .code(202)
+          .send({ verificationRequired: true, email: user.email });
+      }
+
       await issueSession(reply, { sub: user.id, email: user.email });
       return reply.code(201).send({ user });
+    } catch (error) {
+      return sendAppError(reply, error);
+    }
+  }
+
+  async verifyEmail(request: FastifyRequest, reply: FastifyReply) {
+    const body = parseBody(verifyEmailSchema, request.body, reply);
+    if (!body) return;
+
+    try {
+      const user = await this.auth.verifyEmail(body.email, body.code);
+      await issueSession(reply, { sub: user.id, email: user.email });
+      return reply.send({ user });
+    } catch (error) {
+      return sendAppError(reply, error);
+    }
+  }
+
+  async resendVerification(request: FastifyRequest, reply: FastifyReply) {
+    const body = parseBody(emailRequestSchema, request.body, reply);
+    if (!body) return;
+
+    // Always 200 (no account enumeration).
+    await this.auth.resendEmailVerification(body.email).catch((error: unknown) => {
+      request.log.error(error, "failed to resend verification email");
+    });
+    return reply.send({ ok: true });
+  }
+
+  async forgotPassword(request: FastifyRequest, reply: FastifyReply) {
+    const body = parseBody(emailRequestSchema, request.body, reply);
+    if (!body) return;
+
+    // Always 200 (no account enumeration).
+    await this.auth.requestPasswordReset(body.email).catch((error: unknown) => {
+      request.log.error(error, "failed to send password reset email");
+    });
+    return reply.send({ ok: true });
+  }
+
+  async resetPassword(request: FastifyRequest, reply: FastifyReply) {
+    const body = parseBody(resetPasswordSchema, request.body, reply);
+    if (!body) return;
+
+    try {
+      await this.auth.resetPassword(body.email, body.code, body.newPassword);
+      return reply.send({ ok: true });
     } catch (error) {
       return sendAppError(reply, error);
     }

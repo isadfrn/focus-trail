@@ -85,6 +85,16 @@ describe("UserRepository", () => {
     });
   });
 
+  it("marks the email as verified", async () => {
+    prismaMock.user.update.mockResolvedValue({ id: "1" });
+    await repository.markEmailVerified("1");
+    expect(prismaMock.user.update).toHaveBeenCalledWith({
+      where: { id: "1" },
+      data: { emailVerifiedAt: expect.any(Date) },
+      select: meSelect,
+    });
+  });
+
   it("updates preferences", async () => {
     prismaMock.user.update.mockResolvedValue({ id: "1" });
     await repository.updatePreferences("1", { character: "luigi", focusMinutes: 50 });

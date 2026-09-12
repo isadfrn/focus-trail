@@ -1,7 +1,7 @@
 import type { FastifyRequest } from "fastify";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { ConflictError } from "../errors/app-error.js";
+import { ConflictError, InvalidCodeError } from "../errors/app-error.js";
 import type { AuthService } from "../services/auth.service.js";
 import { AuthController } from "./auth.controller.js";
 
@@ -33,6 +33,11 @@ describe("AuthController", () => {
   const auth = {
     register: vi.fn(),
     login: vi.fn(),
+    sendEmailVerification: vi.fn(),
+    verifyEmail: vi.fn(),
+    resendEmailVerification: vi.fn(),
+    requestPasswordReset: vi.fn(),
+    resetPassword: vi.fn(),
   } as unknown as AuthService;
 
   const controller = new AuthController(auth);
@@ -58,7 +63,10 @@ describe("AuthController", () => {
       breakMinutes: 5,
       createdAt: new Date(),
     };
-    vi.mocked(auth.register).mockResolvedValue(user);
+    vi.mocked(auth.register).mockResolvedValue({
+      user,
+      verificationRequired: false,
+    });
 
     await controller.register(
       {
@@ -73,6 +81,128 @@ describe("AuthController", () => {
     });
     expect(reply.code).toHaveBeenCalledWith(201);
     expect(reply.send).toHaveBeenCalledWith({ user });
+  });
+
+  it("returns 202 and sends a code when verification is required", async () => {
+    const reply = createReply();
+    const user = {
+      id: "1",
+      email: "a@b.com",
+      character: "mario",
+      focusMinutes: 25,
+      breakMinutes: 5,
+      createdAt: new Date(),
+    };
+    vi.mocked(auth.register).mockResolvedValue({
+      user,
+      verificationRequired: true,
+    });
+    vi.mocked(auth.sendEmailVerification).mockResolvedValue(undefined);
+
+    await controller.register(
+      {
+        body: { email: "a@b.com", password: "password123" },
+        log: { error: vi.fn() },
+      } as unknown as FastifyRequest,
+      reply as never,
+    );
+
+    expect(auth.sendEmailVerification).toHaveBeenCalledWith(user);
+    expect(issueSession).not.toHaveBeenCalled();
+    expect(reply.code).toHaveBeenCalledWith(202);
+    expect(reply.send).toHaveBeenCalledWith({
+      verificationRequired: true,
+      email: "a@b.com",
+    });
+  });
+
+  it("verifies email and issues a session", async () => {
+    const reply = createReply();
+    const user = {
+      id: "1",
+      email: "a@b.com",
+      character: "mario",
+      focusMinutes: 25,
+      breakMinutes: 5,
+      createdAt: new Date(),
+    };
+    vi.mocked(auth.verifyEmail).mockResolvedValue(user);
+
+    await controller.verifyEmail(
+      { body: { email: "a@b.com", code: "123456" } } as FastifyRequest,
+      reply as never,
+    );
+
+    expect(auth.verifyEmail).toHaveBeenCalledWith("a@b.com", "123456");
+    expect(issueSession).toHaveBeenCalled();
+    expect(reply.send).toHaveBeenCalledWith({ user });
+  });
+
+  it("rejects an invalid verify-email body", async () => {
+    const reply = createReply();
+    await controller.verifyEmail(
+      { body: { email: "a@b.com", code: "12" } } as FastifyRequest,
+      reply as never,
+    );
+    expect(reply.code).toHaveBeenCalledWith(400);
+    expect(auth.verifyEmail).not.toHaveBeenCalled();
+  });
+
+  it("always returns ok for forgot-password (no enumeration)", async () => {
+    const reply = createReply();
+    vi.mocked(auth.requestPasswordReset).mockResolvedValue(undefined);
+
+    await controller.forgotPassword(
+      {
+        body: { email: "a@b.com" },
+        log: { error: vi.fn() },
+      } as unknown as FastifyRequest,
+      reply as never,
+    );
+
+    expect(auth.requestPasswordReset).toHaveBeenCalledWith("a@b.com");
+    expect(reply.send).toHaveBeenCalledWith({ ok: true });
+  });
+
+  it("resets the password with a valid body", async () => {
+    const reply = createReply();
+    vi.mocked(auth.resetPassword).mockResolvedValue(undefined);
+
+    await controller.resetPassword(
+      {
+        body: {
+          email: "a@b.com",
+          code: "123456",
+          newPassword: "newpassword1",
+        },
+      } as FastifyRequest,
+      reply as never,
+    );
+
+    expect(auth.resetPassword).toHaveBeenCalledWith(
+      "a@b.com",
+      "123456",
+      "newpassword1",
+    );
+    expect(reply.send).toHaveBeenCalledWith({ ok: true });
+  });
+
+  it("maps a bad reset code to 400", async () => {
+    const reply = createReply();
+    vi.mocked(auth.resetPassword).mockRejectedValue(new InvalidCodeError());
+
+    await controller.resetPassword(
+      {
+        body: {
+          email: "a@b.com",
+          code: "123456",
+          newPassword: "newpassword1",
+        },
+      } as FastifyRequest,
+      reply as never,
+    );
+
+    expect(reply.code).toHaveBeenCalledWith(400);
   });
 
   it("maps register domain errors", async () => {

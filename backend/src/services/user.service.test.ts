@@ -23,6 +23,7 @@ describe("UserService", () => {
     create: vi.fn(),
     updatePreferences: vi.fn(),
     updatePassword: vi.fn(),
+    markEmailVerified: vi.fn(),
   } satisfies UserRepository;
 
   const service = new UserService(users);

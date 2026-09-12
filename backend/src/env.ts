@@ -36,6 +36,10 @@ const envSchema = z
       .enum(["true", "false"])
       .optional()
       .transform((value) => value === "true"),
+    // Email (Resend). When both are set, email flows (verification / password
+    // reset) are enabled; otherwise the app falls back to direct registration.
+    RESEND_API_KEY: z.string().min(1).optional(),
+    EMAIL_FROM: z.string().min(1).optional(),
   })
   .superRefine((data, ctx) => {
     if (WEAK_JWT_SECRETS.has(data.JWT_SECRET)) {
@@ -52,6 +56,7 @@ const envSchema = z
       data.HOST ??
       (data.NODE_ENV === "production" ? "0.0.0.0" : "127.0.0.1"),
     ENABLE_SWAGGER: data.ENABLE_SWAGGER ?? false,
+    EMAIL_ENABLED: Boolean(data.RESEND_API_KEY && data.EMAIL_FROM),
   }));
 
 const parsed = envSchema.safeParse(process.env);
