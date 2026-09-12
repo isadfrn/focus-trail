@@ -2,6 +2,7 @@ import * as Dialog from "@radix-ui/react-dialog";
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 
+import logo from "../../assets/logo.png";
 import { cn } from "../../lib/cn";
 import { useAuth } from "../../providers/AuthProvider";
 import { ScenarioRadioGroup } from "../ScenarioPicker/ScenarioPicker";
@@ -61,8 +62,8 @@ export function Header() {
               )}
             >
               <div className="flex items-center justify-between pb-1.5">
-                <Dialog.Title className="px-2 text-base font-bold tracking-tight text-foreground">
-                  Focus Trail
+                <Dialog.Title className="px-2">
+                  <img src={logo} alt="Focus Trail" className="h-6 w-auto" />
                 </Dialog.Title>
                 <Dialog.Close
                   aria-label="Fechar"
