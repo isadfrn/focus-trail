@@ -67,7 +67,7 @@ export function LoginPage() {
         <img
           src={logo}
           alt="Focus Trail"
-          className="mx-auto h-12 w-auto max-sm:h-10"
+          className="mx-auto h-20 w-auto max-sm:h-16"
         />
         <h1 className="sr-only">Focus Trail</h1>
 
