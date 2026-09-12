@@ -20,6 +20,22 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Build frontend
+        working-directory: frontend
+        env:
+          # App roda sob https://isabellanunes.dev/focus/ (ver nginx + vite base)
+          VITE_API_BASE: /focus/api
+        run: |
+          npm ci
+          npm run build
+
       - name: Login on GitHub Container Registry
         uses: docker/login-action@v3
         with:
@@ -60,6 +76,16 @@ jobs:
              cd ~/focus-trail && \
              IMAGE=${{ env.IMAGE }}:latest docker compose -f docker-compose.prod.yml pull api && \
              IMAGE=${{ env.IMAGE }}:latest docker compose -f docker-compose.prod.yml up -d"
+
+      - name: Ship frontend to VPS
+        run: |
+          ssh -p ${{ secrets.SSH_PORT }} -i ~/.ssh/id_ed25519 \
+            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} \
+            "mkdir -p /var/www/focus && rm -rf /var/www/focus/*"
+
+          scp -P ${{ secrets.SSH_PORT }} -i ~/.ssh/id_ed25519 -r \
+            frontend/dist/. \
+            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/var/www/focus/
 
       - name: Cleanup SSH key
         if: always()
