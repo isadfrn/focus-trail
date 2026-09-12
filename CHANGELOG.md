@@ -1,6 +1,25 @@
 # Changelog
 
 
+## v0.1.3
+
+[compare changes](https://github.com/isadfrn/focus-trail/compare/v0.1.2...v0.1.3)
+
+### 🚀 Enhancements
+
+- Enhance deployment workflow and frontend configuration ([210e47e](https://github.com/isadfrn/focus-trail/commit/210e47e))
+- Add favicon and web app manifest for improved branding and PWA support ([31994b9](https://github.com/isadfrn/focus-trail/commit/31994b9))
+- Add user preferences and password management features ([42b69f3](https://github.com/isadfrn/focus-trail/commit/42b69f3))
+- Add ProfilePage for user preferences and password management ([8313c4e](https://github.com/isadfrn/focus-trail/commit/8313c4e))
+
+### 🏡 Chore
+
+- **release:** V0.1.1 - Update version in package-lock.json and enhance deployment workflow with GitHub Actions ([405eaea](https://github.com/isadfrn/focus-trail/commit/405eaea))
+
+### ❤️ Contributors
+
+- Isadfrn ([@isadfrn](https://github.com/isadfrn))
+
 ## v0.1.2
 
 [compare changes](https://github.com/isadfrn/focus-trail/compare/v0.1.1...v0.1.2)
