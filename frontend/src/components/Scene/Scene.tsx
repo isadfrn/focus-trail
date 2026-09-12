@@ -99,6 +99,9 @@ export function Scene({ character, walking }: SceneProps) {
       aria-hidden="true"
       style={
         {
+          // Cor do ceu como fundo solido: evita um frame em branco enquanto a
+          // imagem da cena carrega (transicao suave ao entrar no timer).
+          backgroundColor: character.skyColor,
           backgroundImage: `url(${character.background})`,
           animationDuration: `${bgSeconds}s`,
           "--bg-tile-w": bgTileWidth ? `${bgTileWidth}px` : "1024px",
