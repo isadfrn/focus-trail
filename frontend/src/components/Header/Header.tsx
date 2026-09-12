@@ -63,7 +63,7 @@ export function Header() {
             >
               <div className="flex items-center justify-between pb-1.5">
                 <Dialog.Title className="px-2">
-                  <img src={logo} alt="Focus Trail" className="h-6 w-auto" />
+                  <img src={logo} alt="Focus Trail" className="h-10 w-auto" />
                 </Dialog.Title>
                 <Dialog.Close
                   aria-label="Fechar"
