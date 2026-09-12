@@ -38,8 +38,16 @@ const envSchema = z
       .transform((value) => value === "true"),
     // Email (Resend). When both are set, email flows (verification / password
     // reset) are enabled; otherwise the app falls back to direct registration.
-    RESEND_API_KEY: z.string().min(1).optional(),
-    EMAIL_FROM: z.string().min(1).optional(),
+    // Empty strings (e.g. an unset `${RESEND_API_KEY:-}` in compose) count as
+    // absent instead of failing validation.
+    RESEND_API_KEY: z.preprocess(
+      (v) => (v === "" ? undefined : v),
+      z.string().min(1).optional(),
+    ),
+    EMAIL_FROM: z.preprocess(
+      (v) => (v === "" ? undefined : v),
+      z.string().min(1).optional(),
+    ),
   })
   .superRefine((data, ctx) => {
     if (WEAK_JWT_SECRETS.has(data.JWT_SECRET)) {
