@@ -19,3 +19,20 @@ export interface NewSession {
   type: SessionType;
   completed: boolean;
 }
+
+export type DurationOp = "eq" | "gt" | "lt";
+
+export interface SessionFilters {
+  /** Intervalo ISO (o front converte a data escolhida no fuso local). */
+  from?: string;
+  to?: string;
+  type?: SessionType;
+  completed?: boolean;
+  durationOp?: DurationOp;
+  durationSeconds?: number;
+}
+
+export interface SessionsPage {
+  sessions: PomodoroSession[];
+  nextCursor: string | null;
+}

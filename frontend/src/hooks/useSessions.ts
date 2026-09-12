@@ -1,47 +1,110 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { sessionApi } from "../api/session.api";
-import type { PomodoroSession } from "../types/session";
+import type { PomodoroSession, SessionFilters } from "../types/session";
+
+const PAGE_SIZE = 20;
 
 interface UseSessions {
-  sessions: PomodoroSession[] | null;
+  sessions: PomodoroSession[];
+  loading: boolean;
+  loadingMore: boolean;
   error: string | null;
+  hasMore: boolean;
+  setFilters: (filters: SessionFilters) => void;
+  loadMore: () => void;
   removeOne: (id: string) => Promise<void>;
   removeMany: (ids: string[]) => Promise<void>;
   removeAll: () => Promise<void>;
 }
 
 /**
- * Loads and mutates the current user's pomodoro sessions. `sessions === null`
- * means still loading. Data fetching lives here so the History page stays
- * presentational; delete actions update local state after the API confirms.
+ * Loads the current user's sessions with cursor pagination (infinite scroll)
+ * and server-side filters. Data fetching lives here so the History page stays
+ * presentational. A request id guards against out-of-order responses when the
+ * filters change while a page is still in flight.
  */
 export function useSessions(): UseSessions {
-  const [sessions, setSessions] = useState<PomodoroSession[] | null>(null);
+  const [sessions, setSessions] = useState<PomodoroSession[]>([]);
+  const [nextCursor, setNextCursor] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [filters, setFiltersState] = useState<SessionFilters>({});
+
+  const reqId = useRef(0);
 
   useEffect(() => {
+    const id = ++reqId.current;
+    setLoading(true);
+    setLoadingMore(false);
+    setError(null);
     sessionApi
-      .list()
-      .then((r) => setSessions(r.sessions))
-      .catch(() => setError("Nao consegui carregar o historico."));
+      .list({ limit: PAGE_SIZE, filters })
+      .then((page) => {
+        if (id !== reqId.current) return;
+        setSessions(page.sessions);
+        setNextCursor(page.nextCursor);
+      })
+      .catch(() => {
+        if (id !== reqId.current) return;
+        setError("Nao consegui carregar o historico.");
+      })
+      .finally(() => {
+        if (id === reqId.current) setLoading(false);
+      });
+  }, [filters]);
+
+  const setFilters = useCallback((next: SessionFilters) => {
+    setFiltersState(next);
   }, []);
+
+  const loadMore = useCallback(() => {
+    if (loading || loadingMore || !nextCursor) return;
+    const id = reqId.current;
+    setLoadingMore(true);
+    sessionApi
+      .list({ limit: PAGE_SIZE, cursor: nextCursor, filters })
+      .then((page) => {
+        if (id !== reqId.current) return;
+        setSessions((cur) => [...cur, ...page.sessions]);
+        setNextCursor(page.nextCursor);
+      })
+      .catch(() => {
+        /* keep what we have; scrolling again retries */
+      })
+      .finally(() => {
+        if (id === reqId.current) setLoadingMore(false);
+      });
+  }, [loading, loadingMore, nextCursor, filters]);
 
   const removeOne = async (id: string) => {
     await sessionApi.remove(id);
-    setSessions((cur) => cur && cur.filter((s) => s.id !== id));
+    setSessions((cur) => cur.filter((s) => s.id !== id));
   };
 
   const removeMany = async (ids: string[]) => {
     await sessionApi.removeMany(ids);
     const set = new Set(ids);
-    setSessions((cur) => cur && cur.filter((s) => !set.has(s.id)));
+    setSessions((cur) => cur.filter((s) => !set.has(s.id)));
   };
 
   const removeAll = async () => {
     await sessionApi.removeAll();
     setSessions([]);
+    setNextCursor(null);
   };
 
-  return { sessions, error, removeOne, removeMany, removeAll };
+  return {
+    sessions,
+    loading,
+    loadingMore,
+    error,
+    hasMore: nextCursor !== null,
+    setFilters,
+    loadMore,
+    removeOne,
+    removeMany,
+    removeAll,
+  };
 }
