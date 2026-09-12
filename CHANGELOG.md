@@ -1,6 +1,18 @@
 # Changelog
 
 
+## v0.1.4
+
+[compare changes](https://github.com/isadfrn/focus-trail/compare/v0.1.3...v0.1.4)
+
+### 🚀 Enhancements
+
+- Integrate testing framework and enhance user registration flow ([86b6821](https://github.com/isadfrn/focus-trail/commit/86b6821))
+
+### ❤️ Contributors
+
+- Isadfrn ([@isadfrn](https://github.com/isadfrn))
+
 ## v0.1.3
 
 [compare changes](https://github.com/isadfrn/focus-trail/compare/v0.1.2...v0.1.3)
