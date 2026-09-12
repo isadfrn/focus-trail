@@ -1,11 +1,13 @@
 import type { FastifyReply } from "fastify";
-import type { output, ZodTypeAny } from "zod";
+import type { ZodType, ZodTypeDef } from "zod";
 
-export function parseBody<S extends ZodTypeAny>(
-  schema: S,
+// Input is `unknown` so schemas that transform (coerce/default, e.g. query
+// params) — whose input type differs from their output — are still accepted.
+export function parseBody<T>(
+  schema: ZodType<T, ZodTypeDef, unknown>,
   body: unknown,
   reply: FastifyReply,
-): output<S> | null {
+): T | null {
   const parsed = schema.safeParse(body);
   if (!parsed.success) {
     void reply.code(400).send({ error: "Invalid Body" });

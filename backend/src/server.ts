@@ -14,7 +14,7 @@ try {
   await assertDatabaseReady(prisma, app.log);
 } catch (err) {
   if (err instanceof DatabaseNotReadyError) {
-    await prisma.$disconnect().catch(() => {});
+    await prisma.$disconnect().catch(() => undefined);
     process.exit(1);
   }
   throw err;

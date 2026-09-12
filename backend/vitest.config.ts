@@ -11,10 +11,11 @@ export default defineConfig({
     },
     coverage: {
       provider: "v8",
-      reporter: ["text", "html"],
+      reporter: ["text", "json-summary", "html"],
       include: ["src/**/*.ts"],
       exclude: [
         "src/**/*.test.ts",
+        "src/integration/**",
         "src/server.ts",
         "src/env.ts",
         "src/prisma.ts",

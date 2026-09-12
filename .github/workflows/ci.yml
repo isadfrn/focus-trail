@@ -1,0 +1,86 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: write
+
+jobs:
+  backend:
+    name: Backend (lint, types, tests, coverage)
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: focus
+          POSTGRES_PASSWORD: focus
+          POSTGRES_DB: focustrail_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U focus -d focustrail_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+
+      - run: npm ci
+      - run: npx prisma generate
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm run test:coverage
+
+      - name: Integration tests
+        env:
+          INTEGRATION_DATABASE_URL: postgresql://focus:focus@localhost:5432/focustrail_test?schema=public
+        run: npm run test:integration
+
+      - name: Update coverage badge in the README (main only)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        continue-on-error: true
+        working-directory: ${{ github.workspace }}
+        run: |
+          node scripts/update-coverage-badge.mjs
+          if git diff --quiet README.md; then
+            echo "Coverage badge unchanged."
+          else
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add README.md
+            git commit -m "chore(ci): atualiza badge de coverage [skip ci]"
+            git push
+          fi
+
+  frontend:
+    name: Frontend (types, build, tests)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run build
+      - run: npm test

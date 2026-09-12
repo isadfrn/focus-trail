@@ -4,6 +4,7 @@
 ![Repository size](https://img.shields.io/github/repo-size/isadfrn/focus-trail?style=flat-square)
 ![Last commit](https://img.shields.io/github/last-commit/isadfrn/focus-trail?style=flat-square)
 ![License](https://img.shields.io/github/license/isadfrn/focus-trail?style=flat-square)
+<!-- coverage-start -->![Coverage](https://img.shields.io/badge/coverage-96.42%25-brightgreen?style=flat-square)<!-- coverage-end -->
 
 ## About
 
