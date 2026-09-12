@@ -282,21 +282,38 @@ export const createSessionSchemaDoc = {
 
 export const listSessionsSchema = {
   tags: ["Sessions"],
-  summary: "List pomodoro sessions",
-  description: "Returns up to 100 sessions for the authenticated user.",
+  summary: "List pomodoro sessions (paginated, filterable)",
+  description:
+    "Keyset pagination via `cursor` (pass `nextCursor` from the previous page). Filters combine with AND.",
   security: cookieAuthSecurity,
+  querystring: {
+    type: "object",
+    additionalProperties: false,
+    properties: {
+      limit: { type: "integer", minimum: 1, maximum: 100 },
+      cursor: { type: "string", format: "uuid" },
+      from: { type: "string", format: "date-time" },
+      to: { type: "string", format: "date-time" },
+      type: { type: "string", enum: ["focus", "break"] },
+      completed: { type: "string", enum: ["true", "false"] },
+      durationOp: { type: "string", enum: ["eq", "gt", "lt"] },
+      durationSeconds: { type: "integer", minimum: 0, maximum: 60 * 60 * 24 },
+    },
+  },
   response: {
     200: {
       type: "object",
-      required: ["sessions"],
+      required: ["sessions", "nextCursor"],
       additionalProperties: false,
       properties: {
         sessions: {
           type: "array",
           items: pomodoroSessionSchema,
         },
+        nextCursor: { type: ["string", "null"] },
       },
     },
+    400: errorResponseSchema,
     401: errorResponseSchema,
   },
 } satisfies FastifySchema;

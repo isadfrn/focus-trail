@@ -14,8 +14,8 @@ export async function sessionRoutes(app: FastifyInstance) {
   app.post("/", { schema: createSessionSchemaDoc }, (request, reply) =>
     sessionController.create(request, reply),
   );
-  app.get("/", { schema: listSessionsSchema }, (request) =>
-    sessionController.list(request),
+  app.get("/", { schema: listSessionsSchema }, (request, reply) =>
+    sessionController.list(request, reply),
   );
   app.delete("/", { schema: deleteSessionsSchemaDoc }, (request, reply) =>
     sessionController.removeMany(request, reply),

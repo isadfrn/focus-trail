@@ -217,7 +217,7 @@ describe("buildApp", () => {
       headers: { cookie },
     });
     expect(list.statusCode).toBe(200);
-    expect(list.json()).toEqual({ sessions: [] });
+    expect(list.json()).toEqual({ sessions: [], nextCursor: null });
 
     await app.close();
   });

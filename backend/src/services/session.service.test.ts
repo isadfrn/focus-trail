@@ -62,9 +62,65 @@ describe("SessionService", () => {
     );
   });
 
-  it("lists sessions", async () => {
+  it("lists sessions with no next page when under the limit", async () => {
     sessions.listByUserId.mockResolvedValue([{ id: "s1" }]);
-    await expect(service.list("u1")).resolves.toEqual([{ id: "s1" }]);
+    await expect(service.list("u1", { limit: 20 })).resolves.toEqual({
+      sessions: [{ id: "s1" }],
+      nextCursor: null,
+    });
+    expect(sessions.listByUserId).toHaveBeenCalledWith("u1", {
+      limit: 20,
+      cursor: undefined,
+      filters: {
+        from: undefined,
+        to: undefined,
+        type: undefined,
+        completed: undefined,
+        durationOp: undefined,
+        durationSeconds: undefined,
+      },
+    });
+  });
+
+  it("returns a nextCursor when another page exists", async () => {
+    // limit 2 -> repo returns limit + 1 rows
+    sessions.listByUserId.mockResolvedValue([
+      { id: "a" },
+      { id: "b" },
+      { id: "c" },
+    ]);
+    await expect(service.list("u1", { limit: 2 })).resolves.toEqual({
+      sessions: [{ id: "a" }, { id: "b" }],
+      nextCursor: "b",
+    });
+  });
+
+  it("passes cursor and filters through, parsing the dates", async () => {
+    sessions.listByUserId.mockResolvedValue([]);
+    const from = "2026-09-10T00:00:00.000Z";
+    const to = "2026-09-11T00:00:00.000Z";
+    await service.list("u1", {
+      limit: 20,
+      cursor: "cur",
+      from,
+      to,
+      type: "focus",
+      completed: true,
+      durationOp: "gt",
+      durationSeconds: 600,
+    });
+    expect(sessions.listByUserId).toHaveBeenCalledWith("u1", {
+      limit: 20,
+      cursor: "cur",
+      filters: {
+        from: new Date(from),
+        to: new Date(to),
+        type: "focus",
+        completed: true,
+        durationOp: "gt",
+        durationSeconds: 600,
+      },
+    });
   });
 
   it("deletes one and returns the count", async () => {

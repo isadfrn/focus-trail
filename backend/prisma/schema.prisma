@@ -46,6 +46,6 @@ model PomodoroSession {
   character       String   @default("mario")
   createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
 
-  @@index([userId, startedAt])
+  @@index([userId, startedAt, id])
   @@map("pomodoro_sessions")
 }

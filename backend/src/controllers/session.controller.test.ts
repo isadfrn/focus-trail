@@ -79,13 +79,38 @@ describe("SessionController", () => {
     expect(reply.code).toHaveBeenCalledWith(401);
   });
 
-  it("lists sessions", async () => {
-    vi.mocked(sessions.list).mockResolvedValue([{ id: "s1" }] as never);
+  it("lists sessions with a parsed query", async () => {
+    const reply = createReply();
+    const result = { sessions: [{ id: "s1" }], nextCursor: null };
+    vi.mocked(sessions.list).mockResolvedValue(result as never);
+
     await expect(
-      controller.list({
+      controller.list(
+        {
+          query: { limit: "20", type: "focus" },
+          user: { sub: "u1", email: "a@b.com" },
+        } as unknown as FastifyRequest,
+        reply as never,
+      ),
+    ).resolves.toEqual(result);
+    expect(sessions.list).toHaveBeenCalledWith(
+      "u1",
+      expect.objectContaining({ limit: 20, type: "focus" }),
+    );
+  });
+
+  it("rejects an invalid list query", async () => {
+    const reply = createReply();
+    // durationOp without durationSeconds fails the schema refine.
+    await controller.list(
+      {
+        query: { durationOp: "gt" },
         user: { sub: "u1", email: "a@b.com" },
-      } as FastifyRequest),
-    ).resolves.toEqual({ sessions: [{ id: "s1" }] });
+      } as unknown as FastifyRequest,
+      reply as never,
+    );
+    expect(reply.code).toHaveBeenCalledWith(400);
+    expect(sessions.list).not.toHaveBeenCalled();
   });
 
   it("rejects a delete with an invalid id", async () => {

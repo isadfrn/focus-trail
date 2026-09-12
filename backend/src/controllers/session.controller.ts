@@ -6,6 +6,7 @@ import { parseBody } from "../lib/parse-body.js";
 import {
   createSessionSchema,
   deleteSessionsSchema,
+  listSessionsQuerySchema,
   sessionIdParamSchema,
 } from "../schemas/session.schema.js";
 import {
@@ -28,9 +29,11 @@ export class SessionController {
     }
   }
 
-  async list(request: FastifyRequest) {
-    const sessions = await this.sessions.list(request.user.sub);
-    return { sessions };
+  async list(request: FastifyRequest, reply: FastifyReply) {
+    const query = parseBody(listSessionsQuerySchema, request.query, reply);
+    if (!query) return;
+
+    return this.sessions.list(request.user.sub, query);
   }
 
   async remove(request: FastifyRequest, reply: FastifyReply) {

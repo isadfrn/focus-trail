@@ -14,7 +14,7 @@ vi.mock("../prisma.js", () => ({
   prisma: prismaMock,
 }));
 
-import { SessionRepository } from "./session.repository.js";
+import { buildSessionWhere, SessionRepository } from "./session.repository.js";
 
 describe("SessionRepository", () => {
   const repository = new SessionRepository();
@@ -38,13 +38,44 @@ describe("SessionRepository", () => {
     expect(prismaMock.pomodoroSession.create).toHaveBeenCalledWith({ data });
   });
 
-  it("lists sessions by user", async () => {
+  it("lists sessions with keyset pagination and no cursor", async () => {
     prismaMock.pomodoroSession.findMany.mockResolvedValue([]);
-    await repository.listByUserId("u1");
+    await repository.listByUserId("u1", { limit: 20 });
     expect(prismaMock.pomodoroSession.findMany).toHaveBeenCalledWith({
       where: { userId: "u1" },
-      orderBy: { startedAt: "desc" },
-      take: 100,
+      orderBy: [{ startedAt: "desc" }, { id: "desc" }],
+      take: 21,
+    });
+  });
+
+  it("applies cursor and filters", async () => {
+    prismaMock.pomodoroSession.findMany.mockResolvedValue([]);
+    const from = new Date("2026-09-10T00:00:00.000Z");
+    const to = new Date("2026-09-11T00:00:00.000Z");
+    await repository.listByUserId("u1", {
+      limit: 10,
+      cursor: "cur",
+      filters: {
+        from,
+        to,
+        type: "focus",
+        completed: true,
+        durationOp: "gt",
+        durationSeconds: 600,
+      },
+    });
+    expect(prismaMock.pomodoroSession.findMany).toHaveBeenCalledWith({
+      where: {
+        userId: "u1",
+        startedAt: { gte: from, lt: to },
+        type: "focus",
+        completed: true,
+        durationSeconds: { gt: 600 },
+      },
+      orderBy: [{ startedAt: "desc" }, { id: "desc" }],
+      take: 11,
+      cursor: { id: "cur" },
+      skip: 1,
     });
   });
 
@@ -70,5 +101,28 @@ describe("SessionRepository", () => {
     expect(prismaMock.pomodoroSession.deleteMany).toHaveBeenCalledWith({
       where: { userId: "u1" },
     });
+  });
+});
+
+describe("buildSessionWhere", () => {
+  it("scopes to the user with no filters", () => {
+    expect(buildSessionWhere("u1")).toEqual({ userId: "u1" });
+  });
+
+  it("supports an exact duration and a single date bound", () => {
+    const from = new Date("2026-09-10T00:00:00.000Z");
+    expect(
+      buildSessionWhere("u1", { durationOp: "eq", durationSeconds: 1500, from }),
+    ).toEqual({ userId: "u1", startedAt: { gte: from }, durationSeconds: 1500 });
+  });
+
+  it("supports less-than duration and status", () => {
+    expect(
+      buildSessionWhere("u1", {
+        durationOp: "lt",
+        durationSeconds: 300,
+        completed: false,
+      }),
+    ).toEqual({ userId: "u1", durationSeconds: { lt: 300 }, completed: false });
   });
 });

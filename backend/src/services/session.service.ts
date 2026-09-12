@@ -7,7 +7,10 @@ import {
   userRepository,
   type UserRepository,
 } from "../repositories/user.repository.js";
-import type { CreateSessionInput } from "../schemas/session.schema.js";
+import type {
+  CreateSessionInput,
+  ListSessionsQuery,
+} from "../schemas/session.schema.js";
 
 export class SessionService {
   constructor(
@@ -30,8 +33,27 @@ export class SessionService {
     });
   }
 
-  list(userId: string) {
-    return this.sessions.listByUserId(userId);
+  async list(userId: string, query: ListSessionsQuery) {
+    const rows = await this.sessions.listByUserId(userId, {
+      limit: query.limit,
+      cursor: query.cursor,
+      filters: {
+        from: query.from ? new Date(query.from) : undefined,
+        to: query.to ? new Date(query.to) : undefined,
+        type: query.type,
+        completed: query.completed,
+        durationOp: query.durationOp,
+        durationSeconds: query.durationSeconds,
+      },
+    });
+
+    // Fetched limit + 1 to detect a next page without a second query.
+    const hasMore = rows.length > query.limit;
+    const sessions = hasMore ? rows.slice(0, query.limit) : rows;
+    const nextCursor = hasMore
+      ? (sessions[sessions.length - 1]?.id ?? null)
+      : null;
+    return { sessions, nextCursor };
   }
 
   async deleteOne(userId: string, id: string) {

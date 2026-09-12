@@ -1,11 +1,11 @@
 import type { FastifyReply } from "fastify";
-import type { ZodType } from "zod";
+import type { output, ZodTypeAny } from "zod";
 
-export function parseBody<T>(
-  schema: ZodType<T>,
+export function parseBody<S extends ZodTypeAny>(
+  schema: S,
   body: unknown,
   reply: FastifyReply,
-): T | null {
+): output<S> | null {
   const parsed = schema.safeParse(body);
   if (!parsed.success) {
     void reply.code(400).send({ error: "Invalid Body" });
