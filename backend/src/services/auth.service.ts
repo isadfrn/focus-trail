@@ -42,6 +42,8 @@ export class AuthService {
       id: user.id,
       email: user.email,
       character: user.character,
+      focusMinutes: user.focusMinutes,
+      breakMinutes: user.breakMinutes,
     };
   }
 }

@@ -22,13 +22,48 @@ export const publicUserSchema = {
 
 export const meUserSchema = {
   type: "object",
-  required: ["id", "email", "character", "createdAt"],
+  required: [
+    "id",
+    "email",
+    "character",
+    "focusMinutes",
+    "breakMinutes",
+    "createdAt",
+  ],
   additionalProperties: false,
   properties: {
     id: { type: "string", format: "uuid" },
     email: { type: "string", format: "email" },
     character: { type: "string" },
+    focusMinutes: { type: "integer", minimum: 1, maximum: 180 },
+    breakMinutes: { type: "integer", minimum: 1, maximum: 60 },
     createdAt: { type: "string", format: "date-time" },
+  },
+} as const;
+
+export const updatePreferencesBodySchema = {
+  type: "object",
+  additionalProperties: false,
+  minProperties: 1,
+  properties: {
+    character: { type: "string", minLength: 1, maxLength: 50 },
+    focusMinutes: { type: "integer", minimum: 1, maximum: 180 },
+    breakMinutes: { type: "integer", minimum: 1, maximum: 60 },
+  },
+} as const;
+
+export const changePasswordBodySchema = {
+  type: "object",
+  required: ["currentPassword", "newPassword"],
+  additionalProperties: false,
+  properties: {
+    currentPassword: { type: "string", minLength: 1, maxLength: 200 },
+    newPassword: {
+      type: "string",
+      minLength: 10,
+      maxLength: 200,
+      description: "At least 10 characters with one letter and one digit",
+    },
   },
 } as const;
 
@@ -181,6 +216,47 @@ export const meSchema = {
         user: meUserSchema,
       },
     },
+    401: errorResponseSchema,
+  },
+} satisfies FastifySchema;
+
+export const updatePreferencesSchemaDoc = {
+  tags: ["User"],
+  summary: "Update current user preferences",
+  description:
+    "Updates the default scene and/or the focus and break timer durations.",
+  security: cookieAuthSecurity,
+  body: updatePreferencesBodySchema,
+  response: {
+    200: {
+      type: "object",
+      required: ["user"],
+      additionalProperties: false,
+      properties: {
+        user: meUserSchema,
+      },
+    },
+    400: errorResponseSchema,
+    401: errorResponseSchema,
+  },
+} satisfies FastifySchema;
+
+export const changePasswordSchemaDoc = {
+  tags: ["User"],
+  summary: "Change password",
+  description: "Verifies the current password before setting a new one.",
+  security: cookieAuthSecurity,
+  body: changePasswordBodySchema,
+  response: {
+    200: {
+      type: "object",
+      required: ["ok"],
+      additionalProperties: false,
+      properties: {
+        ok: { type: "boolean", enum: [true] },
+      },
+    },
+    400: errorResponseSchema,
     401: errorResponseSchema,
   },
 } satisfies FastifySchema;

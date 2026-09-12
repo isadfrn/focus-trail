@@ -50,7 +50,14 @@ describe("AuthController", () => {
 
   it("registers and issues session", async () => {
     const reply = createReply();
-    const user = { id: "1", email: "a@b.com", character: "mario" };
+    const user = {
+      id: "1",
+      email: "a@b.com",
+      character: "mario",
+      focusMinutes: 25,
+      breakMinutes: 5,
+      createdAt: new Date(),
+    };
     vi.mocked(auth.register).mockResolvedValue(user);
 
     await controller.register(
@@ -90,7 +97,14 @@ describe("AuthController", () => {
 
   it("logs in and issues session", async () => {
     const reply = createReply();
-    const user = { id: "1", email: "a@b.com", character: "mario" };
+    const user = {
+      id: "1",
+      email: "a@b.com",
+      character: "mario",
+      focusMinutes: 25,
+      breakMinutes: 5,
+      createdAt: new Date(),
+    };
     vi.mocked(auth.login).mockResolvedValue(user);
 
     await controller.login(

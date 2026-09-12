@@ -16,7 +16,10 @@ describe("AuthService", () => {
     findByEmail: vi.fn(),
     findById: vi.fn(),
     findCharacterById: vi.fn(),
+    findAuthById: vi.fn(),
     create: vi.fn(),
+    updatePreferences: vi.fn(),
+    updatePassword: vi.fn(),
   } satisfies UserRepository;
 
   const service = new AuthService(users);

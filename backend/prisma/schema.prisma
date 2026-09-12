@@ -12,6 +12,8 @@ model User {
   email        String   @unique
   passwordHash String   @map("password_hash")
   character    String   @default("mario")
+  focusMinutes Int      @default(25) @map("focus_minutes")
+  breakMinutes Int      @default(5) @map("break_minutes")
   createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
 
   sessions     PomodoroSession[]
