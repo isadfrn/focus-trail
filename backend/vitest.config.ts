@@ -4,6 +4,8 @@ export default defineConfig({
   test: {
     environment: "node",
     include: ["src/**/*.test.ts"],
+    // Integration tests hit a real database and run under their own config.
+    exclude: ["**/node_modules/**", "**/*.integration.test.ts"],
     env: {
       NODE_ENV: "test",
     },
