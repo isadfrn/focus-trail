@@ -6,7 +6,7 @@ import {
   type ReactNode,
 } from "react";
 
-import { authApi } from "../api/auth.api";
+import { authApi, type RegisterResult } from "../api/auth.api";
 import { ApiError } from "../errors/api-error";
 import type { User } from "../types/user";
 
@@ -14,7 +14,8 @@ interface AuthState {
   user: User | null;
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
-  register: (email: string, password: string) => Promise<void>;
+  register: (email: string, password: string) => Promise<RegisterResult>;
+  verifyEmail: (email: string, code: string) => Promise<void>;
   logout: () => Promise<void>;
   /** Replaces the cached user (e.g. after updating preferences). */
   updateUser: (user: User) => void;
@@ -44,7 +45,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(r.user);
   };
   const register = async (email: string, password: string) => {
-    const r = await authApi.register(email, password);
+    const result = await authApi.register(email, password);
+    if ("user" in result) setUser(result.user);
+    return result;
+  };
+  const verifyEmail = async (email: string, code: string) => {
+    const r = await authApi.verifyEmail(email, code);
     setUser(r.user);
   };
   const logout = async () => {
@@ -55,7 +61,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   return (
     <AuthContext.Provider
-      value={{ user, loading, login, register, logout, updateUser }}
+      value={{
+        user,
+        loading,
+        login,
+        register,
+        verifyEmail,
+        logout,
+        updateUser,
+      }}
     >
       {children}
     </AuthContext.Provider>

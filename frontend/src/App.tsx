@@ -2,6 +2,7 @@ import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 
 import { Header } from "./components/Header/Header";
 import { RequireAuth } from "./routes/RequireAuth";
+import { ForgotPasswordPage } from "./pages/ForgotPasswordPage/ForgotPasswordPage";
 import { HistoryPage } from "./pages/HistoryPage/HistoryPage";
 import { LoginPage } from "./pages/LoginPage/LoginPage";
 import { ProfilePage } from "./pages/ProfilePage/ProfilePage";
@@ -18,6 +19,7 @@ export default function App() {
         <div key={location.pathname} className="animate-page-in">
           <Routes location={location}>
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
             <Route
               path="/"
               element={
