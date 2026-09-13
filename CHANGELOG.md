@@ -1,6 +1,10 @@
 # Changelog
 
 
+## v0.2.0
+
+[compare changes](https://github.com/isadfrn/focus-trail/compare/v0.1.11...v0.2.0)
+
 ## v0.1.11
 
 [compare changes](https://github.com/isadfrn/focus-trail/compare/v0.1.10...v0.1.11)
