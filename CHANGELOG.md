@@ -1,6 +1,31 @@
 # Changelog
 
 
+## v0.1.9
+
+[compare changes](https://github.com/isadfrn/focus-trail/compare/v0.1.8...v0.1.9)
+
+### 🚀 Enhancements
+
+- Add new audio effects and music tracks ([333cc62](https://github.com/isadfrn/focus-trail/commit/333cc62))
+- Add new HTTP endpoints for user authentication and session management ([60ba013](https://github.com/isadfrn/focus-trail/commit/60ba013))
+- Add OpenAPI schemas and update authentication routes ([047a03f](https://github.com/isadfrn/focus-trail/commit/047a03f))
+- Integrate audio controls and provider for enhanced audio experience ([44bf6dd](https://github.com/isadfrn/focus-trail/commit/44bf6dd))
+
+### 💅 Refactors
+
+- Enhance environment variable handling and update email schemas ([a8ab445](https://github.com/isadfrn/focus-trail/commit/a8ab445))
+- Remove outdated comments for clarity in repository files ([f34da49](https://github.com/isadfrn/focus-trail/commit/f34da49))
+- Remove outdated comments and enhance code clarity ([be9db99](https://github.com/isadfrn/focus-trail/commit/be9db99))
+
+### 🏡 Chore
+
+- Update .gitignore and add coding conventions document ([833e532](https://github.com/isadfrn/focus-trail/commit/833e532))
+
+### ❤️ Contributors
+
+- Isadfrn ([@isadfrn](https://github.com/isadfrn))
+
 ## v0.1.8
 
 [compare changes](https://github.com/isadfrn/focus-trail/compare/v0.1.7...v0.1.8)
