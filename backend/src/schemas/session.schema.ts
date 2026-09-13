@@ -23,7 +23,6 @@ export const listSessionsQuerySchema = z
   .object({
     limit: z.coerce.number().int().min(1).max(100).default(20),
     cursor: z.string().uuid().optional(),
-    // Intervalo (ISO) — o front converte a data escolhida no fuso local.
     from: z.string().datetime().optional(),
     to: z.string().datetime().optional(),
     type: z.enum(["focus", "break"]).optional(),

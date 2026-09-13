@@ -101,7 +101,6 @@ export class AuthService {
 
   async resendEmailVerification(rawEmail: string) {
     const user = await this.users.findByEmail(normalizeEmail(rawEmail));
-    // No account enumeration: act only on an existing, still-unverified account.
     if (user && !user.emailVerifiedAt) {
       await this.verification.issue(
         { id: user.id, email: user.email },
@@ -112,8 +111,6 @@ export class AuthService {
 
   async requestPasswordReset(rawEmail: string) {
     const user = await this.users.findByEmail(normalizeEmail(rawEmail));
-    // Always returns void — the caller responds the same whether or not the
-    // account exists, to avoid revealing which emails are registered.
     if (user) {
       await this.verification.issue(
         { id: user.id, email: user.email },
@@ -135,7 +132,6 @@ export class AuthService {
 
     const passwordHash = await hash(newPassword);
     await this.users.updatePassword(user.id, passwordHash);
-    // Force re-login everywhere after a password reset.
     await this.authSessions.revokeAllForUser(user.id);
   }
 }

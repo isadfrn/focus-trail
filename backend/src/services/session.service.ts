@@ -47,7 +47,6 @@ export class SessionService {
       },
     });
 
-    // Fetched limit + 1 to detect a next page without a second query.
     const hasMore = rows.length > query.limit;
     const sessions = hasMore ? rows.slice(0, query.limit) : rows;
     const nextCursor = hasMore

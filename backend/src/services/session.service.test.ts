@@ -84,7 +84,6 @@ describe("SessionService", () => {
   });
 
   it("returns a nextCursor when another page exists", async () => {
-    // limit 2 -> repo returns limit + 1 rows
     sessions.listByUserId.mockResolvedValue([
       { id: "a" },
       { id: "b" },
