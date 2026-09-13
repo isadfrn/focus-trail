@@ -1,6 +1,18 @@
 # Changelog
 
 
+## v0.3.1
+
+[compare changes](https://github.com/isadfrn/focus-trail/compare/v0.3.0...v0.3.1)
+
+### 🏡 Chore
+
+- Update environment variable examples and improve deployment scripts ([5baddcf](https://github.com/isadfrn/focus-trail/commit/5baddcf))
+
+### ❤️ Contributors
+
+- Isadfrn ([@isadfrn](https://github.com/isadfrn))
+
 ## v0.3.0
 
 [compare changes](https://github.com/isadfrn/focus-trail/compare/v0.2.0...v0.3.0)
