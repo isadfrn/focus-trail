@@ -2,7 +2,7 @@ import { existsSync } from "node:fs";
 
 import { z } from "zod";
 
-if (existsSync(".env")) {
+if (process.env.NODE_ENV !== "test" && existsSync(".env")) {
   process.loadEnvFile(".env");
 }
 
@@ -36,10 +36,6 @@ const envSchema = z
       .enum(["true", "false"])
       .optional()
       .transform((value) => value === "true"),
-    // Email (Resend). When both are set, email flows (verification / password
-    // reset) are enabled; otherwise the app falls back to direct registration.
-    // Empty strings (e.g. an unset `${RESEND_API_KEY:-}` in compose) count as
-    // absent instead of failing validation.
     RESEND_API_KEY: z.preprocess(
       (v) => (v === "" ? undefined : v),
       z.string().min(1).optional(),

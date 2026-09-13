@@ -6,13 +6,13 @@ interface StartupLogger {
   error: (obj: unknown, msg?: string) => void;
 }
 
-export type DatabaseNotReadyReason = "nao-migrado" | "inacessivel" | "desconhecido";
+export type DatabaseNotReadyReason = "not-migrated" | "unreachable" | "unknown";
 
 export class DatabaseNotReadyError extends Error {
   readonly reason: DatabaseNotReadyReason;
 
   constructor(reason: DatabaseNotReadyReason, options?: { cause?: unknown }) {
-    super(`Banco de dados nao esta pronto (${reason}).`);
+    super(`Database is not ready (${reason}).`);
     this.name = "DatabaseNotReadyError";
     this.reason = reason;
     if (options?.cause !== undefined) this.cause = options.cause;
@@ -34,7 +34,7 @@ export async function assertDatabaseReady(
 ): Promise<void> {
   try {
     await prisma.user.count();
-    log.info("Banco de dados: conectado e migrado.");
+    log.info("Database: connected and migrated.");
   } catch (err) {
     const code =
       err instanceof Prisma.PrismaClientKnownRequestError ? err.code : undefined;
@@ -42,11 +42,11 @@ export async function assertDatabaseReady(
     if (code === "P2021" || code === "P2022") {
       log.error(
         err,
-        'Banco conectado, mas o schema nao esta aplicado (tabelas/colunas ausentes). ' +
-          'Rode as migrations: "npm run prisma:migrate" (dev) ou ' +
+        "Database connected, but the schema is not applied (missing tables/columns). " +
+          'Run the migrations: "npm run prisma:migrate" (dev) or ' +
           '"npx prisma migrate deploy" (prod).',
       );
-      throw new DatabaseNotReadyError("nao-migrado", { cause: err });
+      throw new DatabaseNotReadyError("not-migrated", { cause: err });
     }
 
     if (
@@ -55,13 +55,13 @@ export async function assertDatabaseReady(
     ) {
       log.error(
         err,
-        "Nao foi possivel conectar ao banco. Confira se o Postgres esta no ar " +
-          "e a DATABASE_URL no .env.",
+        "Could not connect to the database. Check that Postgres is running " +
+          "and DATABASE_URL in .env.",
       );
-      throw new DatabaseNotReadyError("inacessivel", { cause: err });
+      throw new DatabaseNotReadyError("unreachable", { cause: err });
     }
 
-    log.error(err, "Falha ao verificar o banco de dados no startup.");
-    throw new DatabaseNotReadyError("desconhecido", { cause: err });
+    log.error(err, "Failed to check the database on startup.");
+    throw new DatabaseNotReadyError("unknown", { cause: err });
   }
 }

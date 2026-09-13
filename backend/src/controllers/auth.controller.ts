@@ -27,7 +27,6 @@ export class AuthController {
       const { user, verificationRequired } = await this.auth.register(body);
 
       if (verificationRequired) {
-        // Best-effort send: if it fails, the user can request a resend.
         await this.auth.sendEmailVerification(user).catch((error: unknown) => {
           request.log.error(error, "failed to send verification email");
         });
@@ -60,7 +59,6 @@ export class AuthController {
     const body = parseBody(emailRequestSchema, request.body, reply);
     if (!body) return;
 
-    // Always 200 (no account enumeration).
     await this.auth.resendEmailVerification(body.email).catch((error: unknown) => {
       request.log.error(error, "failed to resend verification email");
     });
@@ -71,7 +69,6 @@ export class AuthController {
     const body = parseBody(emailRequestSchema, request.body, reply);
     if (!body) return;
 
-    // Always 200 (no account enumeration).
     await this.auth.requestPasswordReset(body.email).catch((error: unknown) => {
       request.log.error(error, "failed to send password reset email");
     });

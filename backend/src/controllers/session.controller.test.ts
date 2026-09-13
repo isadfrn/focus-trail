@@ -101,7 +101,6 @@ describe("SessionController", () => {
 
   it("rejects an invalid list query", async () => {
     const reply = createReply();
-    // durationOp without durationSeconds fails the schema refine.
     await controller.list(
       {
         query: { durationOp: "gt" },

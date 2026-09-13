@@ -374,3 +374,99 @@ export const deleteSessionsSchemaDoc = {
     401: errorResponseSchema,
   },
 } satisfies FastifySchema;
+
+export const okResponseSchema = {
+  type: "object",
+  required: ["ok"],
+  additionalProperties: false,
+  properties: {
+    ok: { type: "boolean", enum: [true] },
+  },
+} as const;
+
+export const emailRequestBodySchema = {
+  type: "object",
+  required: ["email"],
+  additionalProperties: false,
+  properties: {
+    email: { type: "string", format: "email", maxLength: 254 },
+  },
+} as const;
+
+export const verifyEmailBodySchema = {
+  type: "object",
+  required: ["email", "code"],
+  additionalProperties: false,
+  properties: {
+    email: { type: "string", format: "email", maxLength: 254 },
+    code: { type: "string", pattern: "^\\d{6}$" },
+  },
+} as const;
+
+export const resetPasswordBodySchema = {
+  type: "object",
+  required: ["email", "code", "newPassword"],
+  additionalProperties: false,
+  properties: {
+    email: { type: "string", format: "email", maxLength: 254 },
+    code: { type: "string", pattern: "^\\d{6}$" },
+    newPassword: {
+      type: "string",
+      minLength: 10,
+      maxLength: 200,
+      description: "At least 10 characters with one letter and one digit",
+    },
+  },
+} as const;
+
+export const verifyEmailSchemaDoc = {
+  tags: ["Auth"],
+  summary: "Verify email with a 6-digit code",
+  description:
+    "Confirms the account email and sets the `ft_token` session cookie.",
+  body: verifyEmailBodySchema,
+  response: {
+    200: {
+      type: "object",
+      required: ["user"],
+      additionalProperties: false,
+      properties: {
+        user: publicUserSchema,
+      },
+    },
+    400: errorResponseSchema,
+    401: errorResponseSchema,
+  },
+} satisfies FastifySchema;
+
+export const resendVerificationSchemaDoc = {
+  tags: ["Auth"],
+  summary: "Resend the email verification code",
+  description: "Always returns `ok` to avoid account enumeration.",
+  body: emailRequestBodySchema,
+  response: {
+    200: okResponseSchema,
+    400: errorResponseSchema,
+  },
+} satisfies FastifySchema;
+
+export const forgotPasswordSchemaDoc = {
+  tags: ["Auth"],
+  summary: "Request a password reset code",
+  description: "Always returns `ok` to avoid account enumeration.",
+  body: emailRequestBodySchema,
+  response: {
+    200: okResponseSchema,
+    400: errorResponseSchema,
+  },
+} satisfies FastifySchema;
+
+export const resetPasswordSchemaDoc = {
+  tags: ["Auth"],
+  summary: "Reset the password with a code",
+  body: resetPasswordBodySchema,
+  response: {
+    200: okResponseSchema,
+    400: errorResponseSchema,
+  },
+} satisfies FastifySchema;

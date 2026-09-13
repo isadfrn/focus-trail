@@ -14,7 +14,7 @@ function prismaWith(count: () => Promise<number>) {
 const CLIENT_VERSION = "6.12.0";
 
 describe("assertDatabaseReady", () => {
-  it("passa e loga sucesso quando a tabela existe", async () => {
+  it("passes and logs success when the table exists", async () => {
     const log = makeLog();
     await expect(
       assertDatabaseReady(
@@ -27,7 +27,7 @@ describe("assertDatabaseReady", () => {
     expect(log.error).not.toHaveBeenCalled();
   });
 
-  it("aponta as migrations quando a tabela nao existe (P2021)", async () => {
+  it("points to migrations when the table is missing (P2021)", async () => {
     const err = new Prisma.PrismaClientKnownRequestError("no table", {
       code: "P2021",
       clientVersion: CLIENT_VERSION,
@@ -39,13 +39,13 @@ describe("assertDatabaseReady", () => {
         prismaWith(() => Promise.reject(err)),
         log,
       ),
-    ).rejects.toMatchObject({ reason: "nao-migrado" });
+    ).rejects.toMatchObject({ reason: "not-migrated" });
 
     expect(log.error).toHaveBeenCalledOnce();
     expect(String(log.error.mock.calls[0]?.[1])).toContain("prisma:migrate");
   });
 
-  it("aponta conexao quando o banco esta inacessivel (P1001)", async () => {
+  it("points to the connection when the database is unreachable (P1001)", async () => {
     const err = new Prisma.PrismaClientKnownRequestError("unreachable", {
       code: "P1001",
       clientVersion: CLIENT_VERSION,
@@ -57,10 +57,10 @@ describe("assertDatabaseReady", () => {
         prismaWith(() => Promise.reject(err)),
         log,
       ),
-    ).rejects.toMatchObject({ reason: "inacessivel" });
+    ).rejects.toMatchObject({ reason: "unreachable" });
   });
 
-  it("trata erro de inicializacao do Prisma como inacessivel", async () => {
+  it("treats a Prisma initialization error as unreachable", async () => {
     const err = new Prisma.PrismaClientInitializationError(
       "cant init",
       CLIENT_VERSION,
@@ -72,10 +72,10 @@ describe("assertDatabaseReady", () => {
         prismaWith(() => Promise.reject(err)),
         log,
       ),
-    ).rejects.toMatchObject({ reason: "inacessivel" });
+    ).rejects.toMatchObject({ reason: "unreachable" });
   });
 
-  it("marca desconhecido para erros nao classificados", async () => {
+  it("marks unknown for unclassified errors", async () => {
     const log = makeLog();
 
     await expect(
@@ -83,7 +83,7 @@ describe("assertDatabaseReady", () => {
         prismaWith(() => Promise.reject(new Error("boom"))),
         log,
       ),
-    ).rejects.toMatchObject({ reason: "desconhecido" });
+    ).rejects.toMatchObject({ reason: "unknown" });
 
     expect(log.error).toHaveBeenCalledOnce();
   });

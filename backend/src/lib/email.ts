@@ -13,12 +13,6 @@ export function isEmailEnabled(): boolean {
   return env.EMAIL_ENABLED;
 }
 
-/**
- * Sends an email through Resend. When email isn't configured (no API key), it
- * no-ops — logging the body in non-production so the flows stay testable
- * locally without Resend. Callers should treat a thrown error as "couldn't
- * send" and let the user retry (e.g. resend the code).
- */
 export async function sendEmail(message: EmailMessage): Promise<void> {
   if (!env.EMAIL_ENABLED) {
     if (env.NODE_ENV !== "production" && env.NODE_ENV !== "test") {

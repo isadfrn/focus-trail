@@ -229,6 +229,40 @@ describe("sessions (integration)", () => {
     expect(del.json().deleted).toBe(1);
   });
 
+  it("deletes a single session and a selected set", async () => {
+    const { cookie } = await registerUser("del-int@example.com");
+    const created: string[] = [];
+    for (let i = 0; i < 3; i++) {
+      const res = await createSession(cookie, {
+        startedAt: `2026-09-1${i}T20:00:00.000Z`,
+        endedAt: `2026-09-1${i}T20:25:00.000Z`,
+      });
+      created.push(res.json().session.id);
+    }
+
+    const one = await app.inject({
+      method: "DELETE",
+      url: `/api/sessions/${created[0]}`,
+      headers: { cookie },
+    });
+    expect(one.json().deleted).toBe(1);
+
+    const many = await app.inject({
+      method: "DELETE",
+      url: "/api/sessions",
+      headers: { cookie },
+      payload: { ids: [created[1], created[2]] },
+    });
+    expect(many.json().deleted).toBe(2);
+
+    const list = await app.inject({
+      method: "GET",
+      url: "/api/sessions",
+      headers: { cookie },
+    });
+    expect(list.json().sessions).toHaveLength(0);
+  });
+
   it("requires authentication", async () => {
     const res = await app.inject({ method: "GET", url: "/api/sessions" });
     expect(res.statusCode).toBe(401);
