@@ -1,16 +1,5 @@
 name: Build desktop (Tauri)
 
-# Gera os instaladores desktop (macOS, Windows e Linux) a cada tag de release
-# (v*) e anexa os arquivos ao GitHub Release correspondente. Também pode ser
-# disparado manualmente (workflow_dispatch) — nesse caso os bundles ficam como
-# artifacts do run (não cria Release).
-#
-# Pré-requisitos (precisam estar COMMITADOS no repo):
-#   - frontend/src-tauri/ (config + Cargo.lock; target/ e gen/schemas são ignorados)
-#   - frontend/package.json + frontend/package-lock.json com @tauri-apps/cli e @tauri-apps/api
-#
-# Cada plataforma é compilada no seu próprio SO (o Tauri não faz cross-compile).
-
 on:
   push:
     tags:
@@ -28,15 +17,12 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # Binário universal (Apple Silicon + Intel) num único .dmg.
           - platform: macos-latest
             args: "--target universal-apple-darwin"
             rust-targets: "aarch64-apple-darwin,x86_64-apple-darwin"
-          # 22.04 dá compatibilidade de glibc mais ampla para o .AppImage/.deb.
           - platform: ubuntu-22.04
             args: ""
             rust-targets: ""
-          # WebView2 já vem instalado no runner do Windows.
           - platform: windows-latest
             args: ""
             rust-targets: ""
@@ -57,12 +43,12 @@ jobs:
         with:
           targets: ${{ matrix.rust-targets }}
 
-      - name: Cache do Rust
+      - name: Cache Rust
         uses: Swatinem/rust-cache@v2
         with:
           workspaces: frontend/src-tauri -> target
 
-      - name: Dependências do sistema (Linux)
+      - name: System dependencies (Linux)
         if: matrix.platform == 'ubuntu-22.04'
         run: |
           sudo apt-get update
@@ -78,19 +64,19 @@ jobs:
             libxdo-dev \
             libssl-dev
 
-      - name: Instala dependências do frontend
+      - name: Install frontend dependencies
         working-directory: frontend
         run: npm ci
 
-      - name: Sincroniza a versão do bundle com a tag
+      - name: Sync bundle version with tag
         if: startsWith(github.ref, 'refs/tags/v')
         shell: bash
         working-directory: frontend
         run: |
           VERSION="${GITHUB_REF_NAME#v}"
-          node -e "const fs=require('fs');const f='src-tauri/tauri.conf.json';const j=JSON.parse(fs.readFileSync(f,'utf8'));j.version='${VERSION}';fs.writeFileSync(f,JSON.stringify(j,null,2)+'\n');console.log('versão do bundle =',j.version)"
+          node -e "const fs=require('fs');const f='src-tauri/tauri.conf.json';const j=JSON.parse(fs.readFileSync(f,'utf8'));j.version='${VERSION}';fs.writeFileSync(f,JSON.stringify(j,null,2)+'\n');console.log('bundle version =',j.version)"
 
-      - name: Build Tauri (anexa ao Release quando for tag)
+      - name: Build Tauri (attach to Release on tags)
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -101,11 +87,11 @@ jobs:
           args: ${{ matrix.args }}
           tagName: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || '' }}
           releaseName: "Focus Trail ${{ github.ref_name }}"
-          releaseBody: "Baixe o instalador do seu sistema: macOS (.dmg), Windows (.msi/.exe) ou Linux (.AppImage/.deb)."
+          releaseBody: "Download the installer for your system: macOS (.dmg), Windows (.msi/.exe), or Linux (.AppImage/.deb)."
           releaseDraft: false
           prerelease: false
 
-      - name: Sobe os bundles como artifacts do run
+      - name: Upload bundles as run artifacts
         uses: actions/upload-artifact@v4
         with:
           name: focus-trail-${{ matrix.platform }}

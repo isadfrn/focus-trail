@@ -113,7 +113,7 @@ function ChannelSection({
                   <DotIcon />
                 </RadioGroup.Indicator>
               </span>
-              <span className="truncate">{t.name}</span>
+              <span className="min-w-0 flex-1 truncate">{t.name}</span>
             </RadioGroup.Item>
           ))}
         </RadioGroup.Root>

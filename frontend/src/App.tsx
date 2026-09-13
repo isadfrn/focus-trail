@@ -14,7 +14,7 @@ export default function App() {
   return (
     <div className="app-shell relative flex flex-col overflow-hidden">
       <Header />
-      <main className="relative z-[1] mx-auto w-full max-w-[720px] flex-1 overflow-y-auto overscroll-y-contain px-4 pt-6 pb-12 max-sm:px-3 max-sm:pt-4 max-sm:pb-9">
+      <main className="relative z-[1] mx-auto w-full max-w-[720px] flex-1 overflow-y-auto overscroll-y-contain scrollbar-thin px-4 pt-6 pb-12 max-sm:px-3 max-sm:pt-4 max-sm:pb-9">
         <div key={location.pathname} className="animate-page-in">
           <Routes location={location}>
             <Route path="/login" element={<LoginPage />} />

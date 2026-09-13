@@ -5,7 +5,7 @@ import path from "node:path";
 const version = JSON.parse(readFileSync("package.json", "utf8")).version;
 
 if (!/^\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)*$/.test(version)) {
-  throw new Error(`Versão inválida em package.json: ${version}`);
+  throw new Error(`Invalid version in package.json: ${version}`);
 }
 
 function syncNpmPackage(dir) {
@@ -26,7 +26,7 @@ syncNpmPackage("frontend");
 syncNpmPackage("backend");
 syncJsonVersion(path.join("frontend", "src-tauri", "tauri.conf.json"));
 
-console.log(`Versões sincronizadas para ${version}.`);
+console.log(`Versions synced to ${version}.`);
 
 if (process.argv.includes("--amend")) {
   execSync(

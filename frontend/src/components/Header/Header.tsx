@@ -53,7 +53,7 @@ export function Header() {
             <Dialog.Content
               aria-describedby={undefined}
               className={cn(
-                "fixed z-50 flex flex-col gap-0.5 overflow-y-auto border border-border bg-surface shadow-app outline-none",
+                "fixed z-50 flex flex-col gap-0.5 overflow-y-auto overflow-x-hidden scrollbar-thin border border-border bg-surface shadow-app outline-none",
                 "left-3 top-16 max-h-[calc(100dvh-5rem)] w-[240px] rounded-xl p-2",
                 "lg:left-0 lg:top-0 lg:h-dvh lg:max-h-none lg:w-[320px] lg:rounded-none lg:rounded-r-2xl lg:border-y-0 lg:border-l-0 lg:p-4",
                 "data-[state=open]:animate-menu-in data-[state=closed]:animate-menu-out",

@@ -30,7 +30,6 @@ jobs:
       - name: Build frontend
         working-directory: frontend
         env:
-          # App roda sob https://isabellanunes.dev/focus/ (ver nginx + vite base)
           VITE_API_BASE: /focus/api
         run: |
           npm ci
