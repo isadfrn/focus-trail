@@ -22,7 +22,7 @@ export function TimerPage() {
   return (
     <div style={sceneVars(palette)}>
       <Scene character={character} walking={running} />
-      <div className="relative z-[1] flex flex-col items-center gap-[18px] pt-[5vh] text-center max-sm:gap-3.5 max-sm:pt-[3vh]">
+      <div className="relative z-[1] flex flex-col items-center gap-[18px] pt-[5dvh] text-center max-sm:gap-3.5 max-sm:pt-[3dvh]">
         <ToggleGroup.Root
           type="single"
           value={type}

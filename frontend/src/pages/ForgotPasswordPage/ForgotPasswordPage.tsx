@@ -71,7 +71,7 @@ export function ForgotPasswordPage() {
   };
 
   return (
-    <div className="flex min-h-[60vh] items-center justify-center">
+    <div className="flex min-h-full items-center justify-center py-4">
       {step === "done" ? (
         <div className={card}>
           <img

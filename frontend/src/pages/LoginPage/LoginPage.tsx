@@ -114,7 +114,7 @@ export function LoginPage() {
 
   if (screen === "verify") {
     return (
-      <div className="flex min-h-[60vh] items-center justify-center">
+      <div className="flex min-h-full items-center justify-center py-4">
         <form onSubmit={submitCode} className={card}>
           <img
             src={logo}
@@ -175,7 +175,7 @@ export function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-[60vh] items-center justify-center">
+    <div className="flex min-h-full items-center justify-center py-4">
       <form onSubmit={submit} className={card}>
         <img
           src={logo}

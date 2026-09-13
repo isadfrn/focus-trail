@@ -123,6 +123,22 @@ body {
   color: var(--color-foreground);
 }
 
+/* App shell: exatamente a altura da viewport VISIVEL, para que paginas curtas
+   nunca rolem. Em navegadores mobile (iOS Chrome/Safari) `100vh` e a viewport
+   "grande" (barra de endereco escondida), ~100px mais alta que a area visivel,
+   o que criava scroll em todas as telas. `100dvh` acompanha a area visivel. O
+   scroll real acontece so dentro do <main> (overflow-y-auto), quando o conteudo
+   transborda. O @supports garante o fallback `100vh` em navegadores sem `dvh`
+   (a declaracao dupla nao sobrevive a minificacao do Lightning CSS). */
+.app-shell {
+  height: 100dvh;
+}
+@supports not (height: 100dvh) {
+  .app-shell {
+    height: 100vh;
+  }
+}
+
 /* Pixel-art scene: the scrolling sky and ground can't be expressed as utilities. */
 @keyframes bgScroll {
   from {
