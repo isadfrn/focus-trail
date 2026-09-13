@@ -8,6 +8,9 @@
   },
   "scripts": {
     "prepare": "husky",
+    "dev:db": "node scripts/dev-up.mjs",
+    "dev": "concurrently -k -n api,web -c blue,green \"npm --prefix backend run dev\" \"npm --prefix frontend run dev\"",
+    "dev:up": "npm run dev:db && npm run dev",
     "changelog": "changelogen --output CHANGELOG.md",
     "release": "changelogen --release && node scripts/sync-versions.mjs --amend && git push --follow-tags",
     "release:minor": "changelogen --release --minor && node scripts/sync-versions.mjs --amend && git push --follow-tags",
@@ -17,6 +20,7 @@
     "@commitlint/cli": "^19.8.0",
     "@commitlint/config-conventional": "^19.8.0",
     "changelogen": "^0.6.2",
+    "concurrently": "^10.0.5",
     "husky": "^9.1.7"
   }
 }
