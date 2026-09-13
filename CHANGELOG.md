@@ -1,6 +1,18 @@
 # Changelog
 
 
+## v0.3.2
+
+[compare changes](https://github.com/isadfrn/focus-trail/compare/v0.3.1...v0.3.2)
+
+### 🚀 Enhancements
+
+- Add performance tracking page and related hooks ([d5f5e82](https://github.com/isadfrn/focus-trail/commit/d5f5e82))
+
+### ❤️ Contributors
+
+- Isadfrn ([@isadfrn](https://github.com/isadfrn))
+
 ## v0.3.1
 
 [compare changes](https://github.com/isadfrn/focus-trail/compare/v0.3.0...v0.3.1)
