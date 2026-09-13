@@ -5,7 +5,7 @@ import type { Track } from "../../lib/tracks";
 import { useAudio } from "../../providers/AudioProvider";
 
 const listClass =
-  "flex max-h-40 flex-col gap-0.5 overflow-y-auto overscroll-y-contain";
+  "flex max-h-40 flex-col gap-0.5 overflow-y-auto overscroll-y-contain pr-1 scrollbar-thin";
 
 const itemClass =
   "flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-sm text-foreground cursor-pointer select-none outline-none hover:bg-background";

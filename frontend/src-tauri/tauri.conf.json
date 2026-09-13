@@ -1,7 +1,7 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "Focus Trail",
-  "version": "0.1.0",
+  "version": "0.1.10",
   "identifier": "dev.isabellanunes.focustrail",
   "build": {
     "frontendDist": "https://isabellanunes.dev/focus/",
@@ -24,9 +24,18 @@
       "csp": null
     }
   },
+  "plugins": {
+    "updater": {
+      "endpoints": [
+        "https://github.com/isadfrn/focus-trail/releases/latest/download/latest.json"
+      ],
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDJGQjcxMkRGNDY2NTczRDcKUldUWGMyVkczeEszTDNLelhvcnA5bmc4MnNXUkF6YzZ1a0d2NlhCMUV0V1VBK002My9IWkVTcE4K"
+    }
+  },
   "bundle": {
     "active": true,
     "targets": "all",
+    "createUpdaterArtifacts": true,
     "icon": [
       "icons/32x32.png",
       "icons/128x128.png",
