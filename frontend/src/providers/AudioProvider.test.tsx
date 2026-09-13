@@ -114,4 +114,41 @@ describe("AudioProvider", () => {
     const { result } = renderHook(() => useAudio(), { wrapper });
     expect(result.current.music.current?.id).toBe(musicTracks[0].id);
   });
+
+  it("starts music position and duration at zero", () => {
+    const { result } = renderHook(() => useAudio(), { wrapper });
+    expect(result.current.music.position).toBe(0);
+    expect(result.current.music.duration).toBe(0);
+  });
+
+  it("seekMusic updates the position", () => {
+    const { result } = renderHook(() => useAudio(), { wrapper });
+    act(() => result.current.seekMusic(42));
+    expect(result.current.music.position).toBe(42);
+  });
+
+  it("tracks position and duration from the media element", () => {
+    const { result } = renderHook(() => useAudio(), { wrapper });
+    const musicElement = document.querySelectorAll("audio")[0] as HTMLAudioElement;
+
+    act(() => {
+      fireEvent.durationChange(musicElement);
+    });
+    expect(result.current.music.duration).toBe(0);
+
+    Object.defineProperty(musicElement, "currentTime", {
+      configurable: true,
+      value: 12,
+    });
+    Object.defineProperty(musicElement, "duration", {
+      configurable: true,
+      value: 200,
+    });
+    act(() => {
+      fireEvent.timeUpdate(musicElement);
+      fireEvent.durationChange(musicElement);
+    });
+    expect(result.current.music.position).toBe(12);
+    expect(result.current.music.duration).toBe(200);
+  });
 });

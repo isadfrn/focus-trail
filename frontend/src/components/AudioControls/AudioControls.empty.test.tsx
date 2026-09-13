@@ -3,10 +3,13 @@ import { describe, expect, it, vi } from "vitest";
 
 vi.mock("../../providers/AudioProvider", () => ({
   useAudio: () => ({
-    music: { tracks: [], current: null, playing: false },
+    music: { tracks: [], current: null, playing: false, position: 0, duration: 0 },
     effect: { tracks: [], current: null, playing: false },
     toggleMusic: () => {},
     selectMusic: () => {},
+    nextMusic: () => {},
+    prevMusic: () => {},
+    seekMusic: () => {},
     toggleEffect: () => {},
     selectEffect: () => {},
   }),

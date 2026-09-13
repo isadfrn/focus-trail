@@ -1,7 +1,11 @@
 import * as RadioGroup from "@radix-ui/react-radio-group";
 
-import { useAudio } from "../../providers/AudioProvider";
+import { formatClock } from "../../lib/format";
 import type { Track } from "../../lib/tracks";
+import { useAudio } from "../../providers/AudioProvider";
+
+const listClass =
+  "flex max-h-40 flex-col gap-0.5 overflow-y-auto overscroll-y-contain";
 
 const itemClass =
   "flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-sm text-foreground cursor-pointer select-none outline-none hover:bg-background";
@@ -30,6 +34,12 @@ function DotIcon() {
   );
 }
 
+interface Progress {
+  position: number;
+  duration: number;
+  onSeek: (seconds: number) => void;
+}
+
 interface ChannelProps {
   label: string;
   tracks: Track[];
@@ -37,6 +47,7 @@ interface ChannelProps {
   playing: boolean;
   onToggle: () => void;
   onSelect: (id: string) => void;
+  progress?: Progress;
 }
 
 function ChannelSection({
@@ -46,6 +57,7 @@ function ChannelSection({
   playing,
   onToggle,
   onSelect,
+  progress,
 }: ChannelProps) {
   return (
     <div className="flex flex-col gap-0.5">
@@ -65,21 +77,43 @@ function ChannelSection({
         </button>
       </div>
 
+      {progress && tracks.length > 0 && (
+        <div className="flex items-center gap-2 px-3 pb-1">
+          <span className="w-9 shrink-0 text-right text-[10px] tabular-nums text-muted">
+            {formatClock(progress.position)}
+          </span>
+          <input
+            type="range"
+            min={0}
+            max={progress.duration || 0}
+            step="any"
+            value={Math.min(progress.position, progress.duration || 0)}
+            onChange={(e) => progress.onSeek(Number(e.target.value))}
+            disabled={!progress.duration}
+            aria-label={`Progresso de ${label}`}
+            className="h-1 flex-1 cursor-pointer accent-primary disabled:cursor-not-allowed"
+          />
+          <span className="w-9 shrink-0 text-[10px] tabular-nums text-muted">
+            {formatClock(progress.duration)}
+          </span>
+        </div>
+      )}
+
       {tracks.length > 0 ? (
         <RadioGroup.Root
           value={currentId ?? undefined}
           onValueChange={onSelect}
           aria-label={label}
-          className="flex flex-col gap-0.5"
+          className={listClass}
         >
           {tracks.map((t) => (
             <RadioGroup.Item key={t.id} value={t.id} className={itemClass}>
-              <span className="inline-flex w-3.5 justify-center text-primary">
+              <span className="inline-flex w-3.5 shrink-0 justify-center text-primary">
                 <RadioGroup.Indicator>
                   <DotIcon />
                 </RadioGroup.Indicator>
               </span>
-              {t.name}
+              <span className="truncate">{t.name}</span>
             </RadioGroup.Item>
           ))}
         </RadioGroup.Root>
@@ -91,8 +125,15 @@ function ChannelSection({
 }
 
 export function AudioControls() {
-  const { music, effect, toggleMusic, selectMusic, toggleEffect, selectEffect } =
-    useAudio();
+  const {
+    music,
+    effect,
+    toggleMusic,
+    selectMusic,
+    seekMusic,
+    toggleEffect,
+    selectEffect,
+  } = useAudio();
 
   return (
     <div className="flex flex-col gap-2">
@@ -103,6 +144,11 @@ export function AudioControls() {
         playing={music.playing}
         onToggle={toggleMusic}
         onSelect={selectMusic}
+        progress={{
+          position: music.position,
+          duration: music.duration,
+          onSeek: seekMusic,
+        }}
       />
       <ChannelSection
         label="Ruído"

@@ -4,19 +4,16 @@ export interface Track {
   url: string;
 }
 
-function prettify(fileName: string): string {
-  return fileName
-    .replace(/\.[^.]+$/, "")
-    .replace(/[-_]+/g, " ")
-    .trim()
-    .replace(/\b\w/g, (c) => c.toUpperCase());
+function baseName(fileName: string): string {
+  return fileName.replace(/\.[^.]+$/, "");
 }
 
 function toTracks(modules: Record<string, string>): Track[] {
   return Object.entries(modules)
     .map(([path, url]) => {
       const fileName = path.split("/").pop() ?? path;
-      return { id: fileName.replace(/\.[^.]+$/, ""), name: prettify(fileName), url };
+      const name = baseName(fileName);
+      return { id: name, name, url };
     })
     .sort((a, b) => a.name.localeCompare(b.name, "pt-BR"));
 }

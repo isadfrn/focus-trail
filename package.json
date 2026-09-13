@@ -9,9 +9,9 @@
   "scripts": {
     "prepare": "husky",
     "changelog": "changelogen --output CHANGELOG.md",
-    "release": "changelogen --release",
-    "release:minor": "changelogen --release --minor",
-    "release:major": "changelogen --release --major"
+    "release": "changelogen --release && git push --follow-tags",
+    "release:minor": "changelogen --release --minor && git push --follow-tags",
+    "release:major": "changelogen --release --major && git push --follow-tags"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.8.0",

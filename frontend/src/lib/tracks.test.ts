@@ -2,19 +2,27 @@ import { describe, expect, it } from "vitest";
 
 import { effectTracks, musicTracks, nextIndex, prevIndex } from "./tracks";
 
+const AUDIO_EXTENSION = /\.(mp3|ogg|wav|m4a)$/i;
+
 describe("tracks", () => {
-  it("loads the music and effect files dropped into the asset folders", () => {
+  it("loads music and effect tracks from the asset folders", () => {
     expect(musicTracks.length).toBeGreaterThan(0);
     expect(effectTracks.length).toBeGreaterThan(0);
-    expect(musicTracks.some((t) => t.id === "lofi1")).toBe(true);
-    expect(effectTracks.some((t) => t.id === "rain")).toBe(true);
   });
 
-  it("gives every track a url and a human-readable name", () => {
-    for (const t of [...musicTracks, ...effectTracks]) {
-      expect(t.url).toBeTruthy();
-      expect(t.name).toMatch(/\S/);
+  it("names each track after its file, without the extension", () => {
+    for (const track of [...musicTracks, ...effectTracks]) {
+      expect(track.url).toBeTruthy();
+      expect(track.name).toMatch(/\S/);
+      expect(track.name).not.toMatch(AUDIO_EXTENSION);
+      expect(track.id).toBe(track.name);
     }
+  });
+
+  it("sorts tracks by name", () => {
+    const names = musicTracks.map((t) => t.name);
+    const sorted = [...names].sort((a, b) => a.localeCompare(b, "pt-BR"));
+    expect(names).toEqual(sorted);
   });
 
   it("advances and wraps from the last track to the first", () => {

@@ -27,13 +27,19 @@ interface Channel {
   playing: boolean;
 }
 
+interface MusicChannel extends Channel {
+  position: number;
+  duration: number;
+}
+
 interface AudioValue {
-  music: Channel;
+  music: MusicChannel;
   effect: Channel;
   toggleMusic: () => void;
   selectMusic: (id: string) => void;
   nextMusic: () => void;
   prevMusic: () => void;
+  seekMusic: (seconds: number) => void;
   toggleEffect: () => void;
   selectEffect: (id: string) => void;
 }
@@ -71,6 +77,8 @@ export function AudioProvider({ children }: { children: ReactNode }) {
   );
   const [musicPlaying, setMusicPlaying] = useState(false);
   const [effectPlaying, setEffectPlaying] = useState(false);
+  const [position, setPosition] = useState(0);
+  const [duration, setDuration] = useState(0);
 
   const musicCurrent = musicTracks[musicIndex] ?? null;
   const effectCurrent = effectTracks[effectIndex] ?? null;
@@ -82,6 +90,11 @@ export function AudioProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (effectCurrent) storage.set(EFFECT_KEY, effectCurrent.id);
   }, [effectCurrent]);
+
+  useEffect(() => {
+    setPosition(0);
+    setDuration(0);
+  }, [musicCurrent]);
 
   useEffect(() => {
     const el = musicRef.current;
@@ -122,6 +135,13 @@ export function AudioProvider({ children }: { children: ReactNode }) {
     setMusicIndex((i) => prevIndex(i, musicTracks.length));
   }, []);
 
+  const seekMusic = useCallback((seconds: number) => {
+    const el = musicRef.current;
+    if (!el) return;
+    el.currentTime = seconds;
+    setPosition(seconds);
+  }, []);
+
   const handleMusicEnded = useCallback(() => {
     if (musicTracks.length <= 1) {
       const el = musicRef.current;
@@ -153,7 +173,13 @@ export function AudioProvider({ children }: { children: ReactNode }) {
 
   const value = useMemo<AudioValue>(
     () => ({
-      music: { tracks: musicTracks, current: musicCurrent, playing: musicPlaying },
+      music: {
+        tracks: musicTracks,
+        current: musicCurrent,
+        playing: musicPlaying,
+        position,
+        duration,
+      },
       effect: {
         tracks: effectTracks,
         current: effectCurrent,
@@ -163,18 +189,22 @@ export function AudioProvider({ children }: { children: ReactNode }) {
       selectMusic,
       nextMusic,
       prevMusic,
+      seekMusic,
       toggleEffect,
       selectEffect,
     }),
     [
       musicCurrent,
       musicPlaying,
+      position,
+      duration,
       effectCurrent,
       effectPlaying,
       toggleMusic,
       selectMusic,
       nextMusic,
       prevMusic,
+      seekMusic,
       toggleEffect,
       selectEffect,
     ],
@@ -183,7 +213,16 @@ export function AudioProvider({ children }: { children: ReactNode }) {
   return (
     <Context.Provider value={value}>
       {children}
-      <audio ref={musicRef} src={musicCurrent?.url} onEnded={handleMusicEnded} />
+      <audio
+        ref={musicRef}
+        src={musicCurrent?.url}
+        onEnded={handleMusicEnded}
+        onTimeUpdate={(e) => setPosition(e.currentTarget.currentTime)}
+        onDurationChange={(e) => {
+          const d = e.currentTarget.duration;
+          setDuration(Number.isFinite(d) ? d : 0);
+        }}
+      />
       <audio ref={effectRef} src={effectCurrent?.url} loop />
     </Context.Provider>
   );
