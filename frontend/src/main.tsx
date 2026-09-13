@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 
 import App from "./App";
+import { AudioProvider } from "./providers/AudioProvider";
 import { AuthProvider } from "./providers/AuthProvider";
 import { CharacterProvider } from "./providers/CharacterProvider";
 import { TimerActivityProvider } from "./providers/TimerActivityProvider";
@@ -15,9 +16,11 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
       <AuthProvider>
         <CharacterProvider>
           <TimerActivityProvider>
-            <ToastProvider>
-              <App />
-            </ToastProvider>
+            <AudioProvider>
+              <ToastProvider>
+                <App />
+              </ToastProvider>
+            </AudioProvider>
           </TimerActivityProvider>
         </CharacterProvider>
       </AuthProvider>

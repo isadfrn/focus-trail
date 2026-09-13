@@ -5,6 +5,7 @@ import { Link, useLocation } from "react-router-dom";
 import logo from "../../assets/logo.png";
 import { cn } from "../../lib/cn";
 import { useAuth } from "../../providers/AuthProvider";
+import { AudioControls } from "../AudioControls/AudioControls";
 import { ScenarioRadioGroup } from "../ScenarioPicker/ScenarioPicker";
 
 const separator = "mx-1 my-1.5 h-px bg-border";
@@ -53,9 +54,7 @@ export function Header() {
               aria-describedby={undefined}
               className={cn(
                 "fixed z-50 flex flex-col gap-0.5 overflow-y-auto border border-border bg-surface shadow-app outline-none",
-                // Telas menores: painel compacto perto do gatilho (canto sup. esq.).
                 "left-3 top-16 max-h-[calc(100dvh-5rem)] w-[240px] rounded-xl p-2",
-                // Telas grandes: drawer colado a esquerda, altura total.
                 "lg:left-0 lg:top-0 lg:h-dvh lg:max-h-none lg:w-[320px] lg:rounded-none lg:rounded-r-2xl lg:border-y-0 lg:border-l-0 lg:p-4",
                 "data-[state=open]:animate-menu-in data-[state=closed]:animate-menu-out",
                 "lg:data-[state=open]:animate-drawer-in lg:data-[state=closed]:animate-drawer-out",
@@ -97,6 +96,12 @@ export function Header() {
                 Cenario
               </p>
               <ScenarioRadioGroup />
+
+              <div className={separator} />
+              <p className="px-3 py-1 text-[11px] uppercase tracking-wide text-muted">
+                Som
+              </p>
+              <AudioControls />
 
               <div className={separator} />
               <p className="max-w-full overflow-hidden text-ellipsis whitespace-nowrap px-3 py-1 text-[13px] text-muted">

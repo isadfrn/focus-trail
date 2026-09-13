@@ -16,16 +16,9 @@ export interface Preset {
   minutes: number;
 }
 
-/** Fallbacks used before the user loads or when they haven't set a preference. */
 export const DEFAULT_FOCUS_MINUTES = 25;
 export const DEFAULT_BREAK_MINUTES = 5;
 
-/**
- * Timer state machine + session persistence — the business logic behind the
- * Timer page (the frontend's "service"). Keeps the countdown, saves the session
- * on stop/completion, and reports the outcome via toast/notification. The page
- * only renders what this returns.
- */
 export function useTimer() {
   const { user } = useAuth();
   const focusMinutes = user?.focusMinutes ?? DEFAULT_FOCUS_MINUTES;
@@ -49,8 +42,6 @@ export function useTimer() {
   const toast = useToast();
   const { setRunning } = useTimerActivity();
 
-  // Keep the countdown in sync with the user's preferred durations — but only
-  // while idle, so we never disturb a running or just-finished session.
   useEffect(() => {
     if (status !== "idle") return;
     const minutes = type === "focus" ? focusMinutes : breakMinutes;
@@ -66,7 +57,6 @@ export function useTimer() {
   };
   useEffect(() => clearTimer, []);
 
-  // Publish the running state app-wide (used to lock the character picker).
   useEffect(() => {
     setRunning(status === "running");
     return () => setRunning(false);
