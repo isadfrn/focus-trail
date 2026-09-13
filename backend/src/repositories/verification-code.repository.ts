@@ -1,10 +1,6 @@
 import { prisma } from "../prisma.js";
 
 export class VerificationCodeRepository {
-  /**
-   * Keeps a single active code per (user, purpose): removes any previous codes
-   * before storing the new one.
-   */
   async replaceForUserPurpose(data: {
     userId: string;
     purpose: string;

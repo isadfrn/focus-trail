@@ -10,20 +10,14 @@ export const VERIFICATION_PURPOSES = {
 export type VerificationPurpose =
   (typeof VERIFICATION_PURPOSES)[keyof typeof VERIFICATION_PURPOSES];
 
-/** Codes expire quickly — short window keeps the 6-digit space safe. */
 export const CODE_TTL_MS = 15 * 60 * 1000;
 
-/** Cryptographically-random 6-digit code, zero-padded. */
 export function generateCode(): string {
   return randomInt(0, 1_000_000)
     .toString()
     .padStart(6, "0");
 }
 
-/**
- * Keyed hash (HMAC with the app secret) so a database leak alone can't be
- * brute-forced back into the code.
- */
 export function hashCode(code: string): string {
   return createHmac("sha256", env.JWT_SECRET).update(code).digest("hex");
 }

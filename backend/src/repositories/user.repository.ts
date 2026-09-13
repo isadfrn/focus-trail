@@ -1,6 +1,5 @@
 import { prisma } from "../prisma.js";
 
-/** Fields safe to expose for the authenticated user (never the password hash). */
 const meSelect = {
   id: true,
   email: true,
@@ -35,7 +34,6 @@ export class UserRepository {
     });
   }
 
-  /** Reads the password hash for verification (e.g. change-password flow). */
   findAuthById(id: string) {
     return prisma.user.findUnique({
       where: { id },

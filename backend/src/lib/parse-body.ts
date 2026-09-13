@@ -1,8 +1,6 @@
 import type { FastifyReply } from "fastify";
 import type { ZodType, ZodTypeDef } from "zod";
 
-// Input is `unknown` so schemas that transform (coerce/default, e.g. query
-// params) — whose input type differs from their output — are still accepted.
 export function parseBody<T>(
   schema: ZodType<T, ZodTypeDef, unknown>,
   body: unknown,

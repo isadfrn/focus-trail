@@ -27,7 +27,6 @@ export interface ListSessionsOptions {
   filters?: SessionFilters;
 }
 
-/** Builds the Prisma `where` from the user id and optional filters. */
 export function buildSessionWhere(
   userId: string,
   filters: SessionFilters = {},
@@ -59,12 +58,6 @@ export class SessionRepository {
     return prisma.pomodoroSession.create({ data });
   }
 
-  /**
-   * Keyset pagination: fetches `limit + 1` rows so the caller can tell whether
-   * a next page exists. Ordered by (startedAt desc, id desc) — the extra `id`
-   * tiebreaker makes the cursor stable, and matches the (user_id, started_at,
-   * id) index for performance under concurrent load.
-   */
   listByUserId(userId: string, options: ListSessionsOptions) {
     const { limit, cursor, filters } = options;
     return prisma.pomodoroSession.findMany({
