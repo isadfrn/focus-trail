@@ -9,7 +9,6 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: Variant;
   size?: "md" | "lg";
   selected?: boolean;
-  /** Render as the child element (Radix Slot) instead of a <button>. */
   asChild?: boolean;
 }
 
@@ -29,7 +28,6 @@ const variants: Record<Variant | "default", string> = {
   ghost: "bg-transparent border-transparent hover:bg-background",
   link: "bg-transparent border-transparent text-primary p-1 hover:underline",
   preset: "bg-surface text-foreground",
-  // Deriva do skyColor da cena (accent + texto contrastante).
   scene:
     "bg-scene-accent text-scene-on-accent border-transparent hover:brightness-110",
 };

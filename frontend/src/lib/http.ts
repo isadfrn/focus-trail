@@ -1,18 +1,7 @@
 import { ApiError } from "../errors/api-error";
 
-/**
- * Base da API. Em dev, o default "/api" é atendido pelo proxy do Vite.
- * Em produção o app roda sob /focus/, então o build injeta
- * VITE_API_BASE="/focus/api" (ver deploy.yml).
- */
 const API_BASE = import.meta.env.VITE_API_BASE ?? "/api";
 
-/**
- * Thin fetch wrapper for the API backend — the transport layer (analogous to
- * the backend's Prisma client). Sends cookies, JSON-encodes bodies, and turns
- * non-2xx responses into an {@link ApiError}. Data-access modules in `api/`
- * build on this; nothing else should call `fetch` directly.
- */
 export async function request<T>(
   path: string,
   options: RequestInit = {},
@@ -31,7 +20,7 @@ export async function request<T>(
     });
   } catch (err) {
     console.error(
-      `[api] ${method} ${API_BASE}${path} falhou na rede (backend no ar?):`,
+      `[api] ${method} ${API_BASE}${path} network error (is the backend up?):`,
       err,
     );
     throw err;

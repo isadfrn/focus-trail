@@ -17,7 +17,6 @@ interface AuthState {
   register: (email: string, password: string) => Promise<RegisterResult>;
   verifyEmail: (email: string, code: string) => Promise<void>;
   logout: () => Promise<void>;
-  /** Replaces the cached user (e.g. after updating preferences). */
   updateUser: (user: User) => void;
 }
 
@@ -33,7 +32,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       .then((r) => setUser(r.user))
       .catch((err) => {
         if (!(err instanceof ApiError && err.status === 401)) {
-          console.error("Falha ao carregar sessao:", err);
+          console.error("Failed to load session:", err);
         }
         setUser(null);
       })
@@ -78,6 +77,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
 export function useAuth(): AuthState {
   const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error("useAuth precisa estar dentro de <AuthProvider>");
+  if (!ctx) throw new Error("useAuth must be used within <AuthProvider>");
   return ctx;
 }

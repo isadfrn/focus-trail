@@ -71,8 +71,6 @@ export function HistoryPage() {
   const [pending, setPending] = useState<Pending | null>(null);
   const [busy, setBusy] = useState(false);
 
-  // Debounce filter changes (coalesces keystrokes in the duration field) and
-  // clear the selection since filtered-out rows may no longer be visible.
   useEffect(() => {
     const t = setTimeout(() => {
       setFilters(buildSessionFilters(form));
@@ -81,7 +79,6 @@ export function HistoryPage() {
     return () => clearTimeout(t);
   }, [form, setFilters]);
 
-  // Infinite scroll: fetch the next page when the sentinel nears the viewport.
   const sentinelRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const el = sentinelRef.current;

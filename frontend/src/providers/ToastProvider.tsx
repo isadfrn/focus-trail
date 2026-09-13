@@ -14,7 +14,6 @@ interface ToastItem {
 
 const ToastContext = createContext<(message: string) => void>(() => {});
 
-/** Push a transient message into the Radix toast viewport. */
 export function useToast(): (message: string) => void {
   return useContext(ToastContext);
 }

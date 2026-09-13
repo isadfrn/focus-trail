@@ -59,41 +59,41 @@ function resolveAsset(
 ): string {
   const url = pool[filename];
   if (!url) {
-    const available = Object.keys(pool).sort().join(", ") || "(vazio)";
+    const available = Object.keys(pool).sort().join(", ") || "(empty)";
     throw new Error(
-      `[scenarios] Cenario "${scenarioId}": arquivo "${filename}" nao existe em ` +
-        `assets/${poolName}/. Disponiveis: ${available}`,
+      `[scenarios] Scenario "${scenarioId}": file "${filename}" does not exist in ` +
+        `assets/${poolName}/. Available: ${available}`,
     );
   }
   return url;
 }
 
 function toCharacterTheme(raw: RawScenario): CharacterTheme {
-  const where = `Cenario "${raw.id ?? "(sem id)"}"`;
+  const where = `Scenario "${raw.id ?? "(no id)"}"`;
 
-  if (!raw.id) throw new Error(`[scenarios] ${where}: campo "id" obrigatorio.`);
+  if (!raw.id) throw new Error(`[scenarios] ${where}: "id" field is required.`);
   if (!raw.name)
-    throw new Error(`[scenarios] ${where}: campo "name" obrigatorio.`);
+    throw new Error(`[scenarios] ${where}: "name" field is required.`);
   if (!raw.background)
-    throw new Error(`[scenarios] ${where}: campo "background" obrigatorio.`);
+    throw new Error(`[scenarios] ${where}: "background" field is required.`);
   if (!raw.terrain)
-    throw new Error(`[scenarios] ${where}: campo "terrain" obrigatorio.`);
+    throw new Error(`[scenarios] ${where}: "terrain" field is required.`);
   if (!raw.sheet)
     throw new Error(
-      `[scenarios] ${where}: campo "sheet" obrigatorio (o sprite sheet do personagem).`,
+      `[scenarios] ${where}: "sheet" field is required (the character sprite sheet).`,
     );
   if (raw.frames !== undefined && (!Number.isInteger(raw.frames) || raw.frames < 1))
-    throw new Error(`[scenarios] ${where}: "frames" precisa ser um inteiro >= 1.`);
+    throw new Error(`[scenarios] ${where}: "frames" must be an integer >= 1.`);
   for (const field of ["height", "terrainHeight", "baseline"] as const) {
     const value = raw[field];
     if (value !== undefined && value <= 0)
-      throw new Error(`[scenarios] ${where}: "${field}" precisa ser positivo.`);
+      throw new Error(`[scenarios] ${where}: "${field}" must be positive.`);
   }
   for (const field of ["cameraSpeed", "terrainSpeed", "spriteSpeed"] as const) {
     const value = raw[field];
     if (value !== undefined && value <= 0)
       throw new Error(
-        `[scenarios] ${where}: "${field}" precisa ser positivo (multiplicador).`,
+        `[scenarios] ${where}: "${field}" must be positive (multiplier).`,
       );
   }
 
@@ -121,8 +121,7 @@ export const characters: CharacterTheme[] = rawScenarios.map(toCharacterTheme);
 
 const seen = new Set<string>();
 for (const c of characters) {
-  if (seen.has(c.id))
-    throw new Error(`[scenarios] id duplicado: "${c.id}".`);
+  if (seen.has(c.id)) throw new Error(`[scenarios] duplicate id: "${c.id}".`);
   seen.add(c.id);
 }
 
@@ -130,4 +129,4 @@ export const defaultCharacter: CharacterTheme =
   characters.find((c) => c.id === defaultId) ?? characters[0];
 
 if (!defaultCharacter)
-  throw new Error("[scenarios] scenarios.json nao tem nenhum cenario.");
+  throw new Error("[scenarios] scenarios.json has no scenarios.");

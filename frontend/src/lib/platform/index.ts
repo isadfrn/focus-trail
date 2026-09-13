@@ -15,11 +15,6 @@ declare global {
   }
 }
 
-/**
- * Which shell the app is running inside. Returns `"web"` today; already detects
- * Capacitor (Android/iOS) and Tauri (desktop) so it starts reporting the real
- * platform the moment those shells are added — no change needed here.
- */
 export function getPlatform(): Platform {
   if (typeof window === "undefined") return "web";
   if ("__TAURI__" in window) return "desktop";

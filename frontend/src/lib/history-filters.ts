@@ -1,6 +1,5 @@
 import type { DurationOp, SessionFilters, SessionType } from "../types/session";
 
-/** ISO range covering the whole local day of `dateStr` (YYYY-MM-DD). */
 export function dayRange(dateStr: string): { from: string; to: string } {
   const start = new Date(`${dateStr}T00:00:00`);
   const end = new Date(start);

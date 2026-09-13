@@ -1,4 +1,3 @@
-/** `mm:ss` from a total number of seconds (timer clock). */
 export function formatClock(totalSec: number): string {
   const m = Math.floor(totalSec / 60)
     .toString()

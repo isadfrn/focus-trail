@@ -16,7 +16,6 @@ export function TimerPage() {
   const { type, remaining, status, running, presets, selectPreset, start, stop } =
     useTimer();
 
-  // Paleta derivada do background atual (com override opcional do personagem).
   const palette = resolveScenePalette(character);
 
   return (

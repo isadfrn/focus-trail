@@ -1,9 +1,3 @@
-/**
- * Client-side registration validation. Mirrors the backend rules (min 10 chars,
- * at least one letter and one digit) and adds the password confirmation check,
- * so the user gets immediate feedback before the request is sent. Returns a
- * pt-BR message when something is wrong, or `null` when the input is valid.
- */
 export function registerPasswordError(
   password: string,
   confirmPassword: string,

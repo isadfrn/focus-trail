@@ -23,7 +23,6 @@ export interface NewSession {
 export type DurationOp = "eq" | "gt" | "lt";
 
 export interface SessionFilters {
-  /** Intervalo ISO (o front converte a data escolhida no fuso local). */
   from?: string;
   to?: string;
   type?: SessionType;

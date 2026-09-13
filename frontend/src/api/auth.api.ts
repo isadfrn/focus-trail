@@ -1,12 +1,10 @@
 import { request } from "../lib/http";
 import type { Preferences, User } from "../types/user";
 
-/** Register either logs in (email disabled) or asks for email verification. */
 export type RegisterResult =
   | { user: User }
   | { verificationRequired: true; email: string };
 
-/** Auth + current-user data access (the frontend's "repository" for auth/me). */
 export const authApi = {
   me: () => request<{ user: User }>("/me"),
   register: (email: string, password: string) =>

@@ -35,8 +35,6 @@ export function ProfilePage() {
   const [sceneId, setSceneId] = useState(
     () => user?.character ?? characters[0]?.id ?? "",
   );
-  // Guardados como string para o campo poder ficar vazio ao editar (sem forçar
-  // um "0"); são convertidos e validados só no submit.
   const [focusInput, setFocusInput] = useState(
     () => String(user?.focusMinutes ?? DEFAULT_FOCUS_MINUTES),
   );

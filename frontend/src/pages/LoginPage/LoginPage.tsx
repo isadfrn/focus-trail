@@ -76,7 +76,6 @@ export function LoginPage() {
         navigate("/", { replace: true });
       }
     } catch (err) {
-      // 403 = account exists but email not verified yet.
       if (err instanceof ApiError && err.status === 403) {
         goVerify(email);
         return;
@@ -107,7 +106,6 @@ export function LoginPage() {
     try {
       await authApi.resendVerification(pendingEmail);
     } catch {
-      /* stay generic — no account enumeration */
     }
     setInfo("Se a conta existir, um novo código foi enviado.");
   };

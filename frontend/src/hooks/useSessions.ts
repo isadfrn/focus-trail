@@ -18,12 +18,6 @@ interface UseSessions {
   removeAll: () => Promise<void>;
 }
 
-/**
- * Loads the current user's sessions with cursor pagination (infinite scroll)
- * and server-side filters. Data fetching lives here so the History page stays
- * presentational. A request id guards against out-of-order responses when the
- * filters change while a page is still in flight.
- */
 export function useSessions(): UseSessions {
   const [sessions, setSessions] = useState<PomodoroSession[]>([]);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
@@ -71,7 +65,6 @@ export function useSessions(): UseSessions {
         setNextCursor(page.nextCursor);
       })
       .catch(() => {
-        /* keep what we have; scrolling again retries */
       })
       .finally(() => {
         if (id === reqId.current) setLoadingMore(false);

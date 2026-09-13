@@ -35,11 +35,9 @@ export function ForgotPasswordPage() {
   const requestCode = async (e: FormEvent) => {
     e.preventDefault();
     setBusy(true);
-    // Always advances — the API never reveals whether the account exists.
     try {
       await authApi.forgotPassword(email);
     } catch {
-      /* ignore */
     }
     setBusy(false);
     setStep("reset");

@@ -35,8 +35,6 @@ export function CharacterProvider({ children }: { children: ReactNode }) {
     storage.set(STORAGE_KEY, newId);
   };
 
-  // The user's saved default scene wins on load (and when it changes, e.g. after
-  // saving preferences). The menu picker stays a temporary per-session switch.
   useEffect(() => {
     if (user?.character) {
       setId(user.character);
@@ -56,6 +54,6 @@ export function CharacterProvider({ children }: { children: ReactNode }) {
 export function useCharacter(): CharacterContextValue {
   const ctx = useContext(CharacterContext);
   if (!ctx)
-    throw new Error("useCharacter precisa estar dentro de <CharacterProvider>");
+    throw new Error("useCharacter must be used within <CharacterProvider>");
   return ctx;
 }

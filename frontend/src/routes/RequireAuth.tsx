@@ -3,7 +3,6 @@ import { Navigate, useLocation } from "react-router-dom";
 
 import { useAuth } from "../providers/AuthProvider";
 
-/** Route guard: gates children behind an authenticated session. */
 export function RequireAuth({ children }: { children: ReactNode }) {
   const { user, loading } = useAuth();
   const location = useLocation();

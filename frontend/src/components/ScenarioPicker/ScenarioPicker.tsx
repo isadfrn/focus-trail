@@ -21,10 +21,6 @@ function CheckIcon() {
   );
 }
 
-/**
- * Scenario chooser rendered inside the app menu. Locked while a timer session
- * is running — the character can't change mid-session.
- */
 export function ScenarioRadioGroup() {
   const { character, characters, setCharacterId } = useCharacter();
   const { running } = useTimerActivity();
