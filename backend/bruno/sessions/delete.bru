@@ -1,0 +1,16 @@
+meta {
+  name: Delete Session
+  type: http
+  seq: 3
+}
+
+delete {
+  url: {{baseUrl}}/api/sessions/00000000-0000-0000-0000-000000000000
+  body: none
+  auth: none
+}
+
+vars:pre-request {
+  baseUrl: http://localhost:3001
+  corsOrigin: http://localhost:5173
+}
