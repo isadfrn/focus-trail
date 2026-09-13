@@ -1,7 +1,7 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "Focus Trail",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "identifier": "dev.isabellanunes.focustrail",
   "build": {
     "frontendDist": "https://isabellanunes.dev/focus/",

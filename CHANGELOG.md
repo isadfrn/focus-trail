@@ -1,6 +1,18 @@
 # Changelog
 
 
+## v0.3.0
+
+[compare changes](https://github.com/isadfrn/focus-trail/compare/v0.2.0...v0.3.0)
+
+### 🏡 Chore
+
+- Remove outdated coding conventions and add new local development scripts ([8719c72](https://github.com/isadfrn/focus-trail/commit/8719c72))
+
+### ❤️ Contributors
+
+- Isadfrn ([@isadfrn](https://github.com/isadfrn))
+
 ## v0.2.0
 
 [compare changes](https://github.com/isadfrn/focus-trail/compare/v0.1.11...v0.2.0)
