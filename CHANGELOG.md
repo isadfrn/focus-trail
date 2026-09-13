@@ -1,6 +1,18 @@
 # Changelog
 
 
+## v0.1.10
+
+[compare changes](https://github.com/isadfrn/focus-trail/compare/v0.1.9...v0.1.10)
+
+### 🚀 Enhancements
+
+- Enhance audio controls and add new music tracks ([942b15c](https://github.com/isadfrn/focus-trail/commit/942b15c))
+
+### ❤️ Contributors
+
+- Isadfrn ([@isadfrn](https://github.com/isadfrn))
+
 ## v0.1.9
 
 [compare changes](https://github.com/isadfrn/focus-trail/compare/v0.1.8...v0.1.9)
