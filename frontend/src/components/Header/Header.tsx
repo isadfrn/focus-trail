@@ -87,6 +87,13 @@ export function Header() {
               <Link className={navLink("/history")} to="/history" onClick={close}>
                 Historico
               </Link>
+              <Link
+                className={navLink("/performance")}
+                to="/performance"
+                onClick={close}
+              >
+                Performance
+              </Link>
               <Link className={navLink("/profile")} to="/profile" onClick={close}>
                 Perfil
               </Link>

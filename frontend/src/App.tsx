@@ -5,6 +5,7 @@ import { RequireAuth } from "./routes/RequireAuth";
 import { ForgotPasswordPage } from "./pages/ForgotPasswordPage/ForgotPasswordPage";
 import { HistoryPage } from "./pages/HistoryPage/HistoryPage";
 import { LoginPage } from "./pages/LoginPage/LoginPage";
+import { PerformancePage } from "./pages/PerformancePage/PerformancePage";
 import { ProfilePage } from "./pages/ProfilePage/ProfilePage";
 import { TimerPage } from "./pages/TimerPage/TimerPage";
 
@@ -32,6 +33,14 @@ export default function App() {
               element={
                 <RequireAuth>
                   <HistoryPage />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/performance"
+              element={
+                <RequireAuth>
+                  <PerformancePage />
                 </RequireAuth>
               }
             />
