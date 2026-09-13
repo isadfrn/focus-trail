@@ -4,13 +4,11 @@
 ![Repository size](https://img.shields.io/github/repo-size/isadfrn/focus-trail?style=flat-square)
 ![Last commit](https://img.shields.io/github/last-commit/isadfrn/focus-trail?style=flat-square)
 ![License](https://img.shields.io/github/license/isadfrn/focus-trail?style=flat-square)
-<!-- coverage-start -->![Coverage](https://img.shields.io/badge/coverage-95.03%25-brightgreen?style=flat-square)<!-- coverage-end -->
+![Coverage](https://img.shields.io/badge/coverage-95.03%25-brightgreen?style=flat-square)
 
 ## About
 
 **Focus Trail** is a Pomodoro focus timer with an animated, retro pixel-art scene: while the timer runs, a character walks across a scrolling background and terrain. When you pause, the scene pauses with it.
-
-Scenes are **data-driven** — a background, a terrain, and a character are composed in a single JSON manifest, so adding a new scenario is "drop the assets in a folder and edit one file", with no code changes. Users pick a scenario, run focus sessions, and review their history. Accounts are protected with cookie-based sessions.
 
 ## Features
 
@@ -86,10 +84,10 @@ The root `npm install` sets up the shared tooling (Husky hooks, commitlint, chan
 ```bash
 cd backend
 npm install
-cp .env.example .env          # then set JWT_SECRET, POSTGRES_PASSWORD, etc.
-docker compose up -d          # starts PostgreSQL on 127.0.0.1:5432
-npm run prisma:migrate        # applies database migrations
-npm run dev                   # API on http://localhost:3001
+cp .env.example .env
+docker compose up -d
+npm run prisma:migrate
+npm run dev
 ```
 
 > `JWT_SECRET` must be at least 32 characters and not a known placeholder. Generate one with `openssl rand -base64 48`.
@@ -101,7 +99,7 @@ npm run dev                   # API on http://localhost:3001
 ```bash
 cd frontend
 npm install
-npm run dev                   # app on http://localhost:5173
+npm run dev
 ```
 
 The dev server proxies `/api` to `http://localhost:3001`, so start the backend first.

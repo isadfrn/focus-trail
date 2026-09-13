@@ -1,6 +1,3 @@
-// Reads the backend coverage summary and rewrites the coverage badge in the
-// README between the <!-- coverage-start --> / <!-- coverage-end --> markers.
-// Run in CI after `npm run test:coverage` (see .github/workflows/ci.yml).
 import { readFileSync, writeFileSync } from "node:fs";
 
 const SUMMARY = "backend/coverage/coverage-summary.json";
