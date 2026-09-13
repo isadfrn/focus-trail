@@ -1,6 +1,18 @@
 # Changelog
 
 
+## v0.1.11
+
+[compare changes](https://github.com/isadfrn/focus-trail/compare/v0.1.10...v0.1.11)
+
+### 🏡 Chore
+
+- Update package versions to 0.1.10 and enhance release scripts ([186474e](https://github.com/isadfrn/focus-trail/commit/186474e))
+
+### ❤️ Contributors
+
+- Isadfrn ([@isadfrn](https://github.com/isadfrn))
+
 ## v0.1.10
 
 [compare changes](https://github.com/isadfrn/focus-trail/compare/v0.1.9...v0.1.10)
