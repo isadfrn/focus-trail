@@ -1,6 +1,23 @@
 # Changelog
 
 
+## v0.1.7
+
+[compare changes](https://github.com/isadfrn/focus-trail/compare/v0.1.6...v0.1.7)
+
+### 🩹 Fixes
+
+- Repassa RESEND_API_KEY/EMAIL_FROM ao container em produção ([7726cb7](https://github.com/isadfrn/focus-trail/commit/7726cb7))
+
+### 🏡 Chore
+
+- **release:** V0.1.6 ([608ef39](https://github.com/isadfrn/focus-trail/commit/608ef39))
+- Update version to 0.1.6 and enhance layout for better mobile experience ([861237a](https://github.com/isadfrn/focus-trail/commit/861237a))
+
+### ❤️ Contributors
+
+- Isadfrn ([@isadfrn](https://github.com/isadfrn))
+
 ## v0.1.6
 
 [compare changes](https://github.com/isadfrn/focus-trail/compare/v0.1.5...v0.1.6)
