@@ -27,6 +27,14 @@
       "background": "grass-yellow-sky.png",
       "terrain": "land-with-grass.png",
       "sheet": "mario-kart.png"
+    },
+    {
+      "id": "mega-man",
+      "name": "Mega Man",
+      "skyColor": "##8ec7ff",
+      "background": "grass-blocks-sky.png",
+      "terrain": "land-with-grass.png",
+      "sheet": "mega-man.png"
     }
   ]
 }
