@@ -4,7 +4,16 @@ import type {
   PomodoroSession,
   SessionFilters,
   SessionsPage,
+  SessionStats,
 } from "../types/session";
+
+export function statsQuery(params: { from?: string; to?: string }): string {
+  const q = new URLSearchParams();
+  if (params.from) q.set("from", params.from);
+  if (params.to) q.set("to", params.to);
+  const qs = q.toString();
+  return qs ? `?${qs}` : "";
+}
 
 export function sessionsQuery(params: {
   cursor?: string;
@@ -18,6 +27,7 @@ export function sessionsQuery(params: {
   if (f.from) q.set("from", f.from);
   if (f.to) q.set("to", f.to);
   if (f.type) q.set("type", f.type);
+  if (f.task) q.set("task", f.task);
   if (f.completed !== undefined) q.set("completed", String(f.completed));
   if (f.durationOp && f.durationSeconds !== undefined) {
     q.set("durationOp", f.durationOp);
@@ -27,7 +37,6 @@ export function sessionsQuery(params: {
   return qs ? `?${qs}` : "";
 }
 
-/** Pomodoro-session data access (the "repository" for the sessions resource). */
 export const sessionApi = {
   create: (data: NewSession) =>
     request<{ session: PomodoroSession }>("/sessions", {
@@ -39,6 +48,8 @@ export const sessionApi = {
     limit?: number;
     filters?: SessionFilters;
   } = {}) => request<SessionsPage>(`/sessions${sessionsQuery(params)}`),
+  stats: (params: { from?: string; to?: string } = {}) =>
+    request<SessionStats>(`/sessions/stats${statsQuery(params)}`),
   remove: (id: string) =>
     request<{ deleted: number }>(`/sessions/${id}`, { method: "DELETE" }),
   removeMany: (ids: string[]) =>

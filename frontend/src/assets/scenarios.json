@@ -34,7 +34,8 @@
       "skyColor": "##8ec7ff",
       "background": "grass-blocks-sky.png",
       "terrain": "land-with-grass.png",
-      "sheet": "mega-man.png"
+      "sheet": "mega-man.png",
+      "spriteSpeed": 3
     }
   ]
 }

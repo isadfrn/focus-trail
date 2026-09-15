@@ -1,9 +1,16 @@
 import { request } from "../lib/http";
+import type { PomodoroSession } from "../types/session";
 import type { Preferences, User } from "../types/user";
 
 export type RegisterResult =
   | { user: User }
   | { verificationRequired: true; email: string };
+
+export interface AccountExport {
+  exportedAt: string;
+  user: User;
+  sessions: PomodoroSession[];
+}
 
 export const authApi = {
   me: () => request<{ user: User }>("/me"),
@@ -47,5 +54,11 @@ export const authApi = {
     request<{ ok: true }>("/me/password", {
       method: "PATCH",
       body: JSON.stringify({ currentPassword, newPassword }),
+    }),
+  exportData: () => request<AccountExport>("/me/export"),
+  deleteAccount: (password: string) =>
+    request<{ ok: true }>("/me", {
+      method: "DELETE",
+      body: JSON.stringify({ password }),
     }),
 };

@@ -25,6 +25,8 @@ describe("authApi", () => {
       breakMinutes: 5,
     });
     await authApi.changePassword("old-password", "new-password10");
+    await authApi.exportData();
+    await authApi.deleteAccount("password10");
 
     const paths = request.mock.calls.map((call) => call[0]);
     expect(paths).toEqual(
@@ -38,7 +40,13 @@ describe("authApi", () => {
         "/auth/reset-password",
         "/auth/logout",
         "/me/password",
+        "/me/export",
       ]),
     );
+
+    const deleteCall = request.mock.calls.find(
+      (call) => call[0] === "/me" && call[1]?.method === "DELETE",
+    );
+    expect(deleteCall).toBeTruthy();
   });
 });
