@@ -1,0 +1,3 @@
+ALTER TABLE "users" ADD COLUMN "auto_cycle" BOOLEAN NOT NULL DEFAULT false;
+ALTER TABLE "users" ADD COLUMN "long_break_minutes" INTEGER NOT NULL DEFAULT 15;
+ALTER TABLE "users" ADD COLUMN "pomodoros_until_long_break" INTEGER NOT NULL DEFAULT 4;

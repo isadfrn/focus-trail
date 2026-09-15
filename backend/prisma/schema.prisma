@@ -14,6 +14,10 @@ model User {
   character       String    @default("mario")
   focusMinutes    Int       @default(25) @map("focus_minutes")
   breakMinutes    Int       @default(5) @map("break_minutes")
+  autoCycle       Boolean   @default(false) @map("auto_cycle")
+  longBreakMinutes Int      @default(15) @map("long_break_minutes")
+  pomodorosUntilLongBreak Int @default(4) @map("pomodoros_until_long_break")
+  dailyFocusGoalMinutes Int @default(0) @map("daily_focus_goal_minutes")
   emailVerifiedAt DateTime? @map("email_verified_at") @db.Timestamptz(6)
   createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
 
@@ -60,6 +64,7 @@ model PomodoroSession {
   type            String
   completed       Boolean
   character       String   @default("mario")
+  taskLabel       String?  @map("task_label")
   createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
 
   @@index([userId, startedAt, id])
