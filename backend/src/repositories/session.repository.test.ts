@@ -7,6 +7,7 @@ const { prismaMock } = vi.hoisted(() => ({
       findMany: vi.fn(),
       deleteMany: vi.fn(),
     },
+    $queryRaw: vi.fn(),
   },
 }));
 
@@ -79,6 +80,33 @@ describe("SessionRepository", () => {
     });
   });
 
+  it("lists every session of the user ordered chronologically", async () => {
+    prismaMock.pomodoroSession.findMany.mockResolvedValue([]);
+    await repository.listAllForUser("u1");
+    expect(prismaMock.pomodoroSession.findMany).toHaveBeenCalledWith({
+      where: { userId: "u1" },
+      orderBy: [{ startedAt: "asc" }, { id: "asc" }],
+    });
+  });
+
+  it("aggregates daily stats through a raw grouped query", async () => {
+    const rows = [
+      {
+        date: "2026-09-10",
+        focusSeconds: 1500,
+        breakSeconds: 300,
+        completedFocus: 1,
+        interruptedFocus: 0,
+        sessions: 2,
+      },
+    ];
+    prismaMock.$queryRaw.mockResolvedValue(rows);
+
+    const from = new Date("2026-09-01T00:00:00.000Z");
+    await expect(repository.listDailyStats("u1", from)).resolves.toEqual(rows);
+    expect(prismaMock.$queryRaw).toHaveBeenCalledTimes(1);
+  });
+
   it("deletes one session scoped to the user", async () => {
     prismaMock.pomodoroSession.deleteMany.mockResolvedValue({ count: 1 });
     await repository.deleteByIdForUser("u1", "s1");
@@ -124,5 +152,12 @@ describe("buildSessionWhere", () => {
         completed: false,
       }),
     ).toEqual({ userId: "u1", durationSeconds: { lt: 300 }, completed: false });
+  });
+
+  it("filters by task label with a case-insensitive contains", () => {
+    expect(buildSessionWhere("u1", { task: "relatorio" })).toEqual({
+      userId: "u1",
+      taskLabel: { contains: "relatorio", mode: "insensitive" },
+    });
   });
 });

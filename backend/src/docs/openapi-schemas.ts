@@ -28,6 +28,10 @@ export const meUserSchema = {
     "character",
     "focusMinutes",
     "breakMinutes",
+    "autoCycle",
+    "longBreakMinutes",
+    "pomodorosUntilLongBreak",
+    "dailyFocusGoalMinutes",
     "createdAt",
   ],
   additionalProperties: false,
@@ -37,6 +41,10 @@ export const meUserSchema = {
     character: { type: "string" },
     focusMinutes: { type: "integer", minimum: 1, maximum: 180 },
     breakMinutes: { type: "integer", minimum: 1, maximum: 60 },
+    autoCycle: { type: "boolean" },
+    longBreakMinutes: { type: "integer", minimum: 1, maximum: 60 },
+    pomodorosUntilLongBreak: { type: "integer", minimum: 1, maximum: 12 },
+    dailyFocusGoalMinutes: { type: "integer", minimum: 0, maximum: 1440 },
     createdAt: { type: "string", format: "date-time" },
   },
 } as const;
@@ -49,6 +57,10 @@ export const updatePreferencesBodySchema = {
     character: { type: "string", minLength: 1, maxLength: 50 },
     focusMinutes: { type: "integer", minimum: 1, maximum: 180 },
     breakMinutes: { type: "integer", minimum: 1, maximum: 60 },
+    autoCycle: { type: "boolean" },
+    longBreakMinutes: { type: "integer", minimum: 1, maximum: 60 },
+    pomodorosUntilLongBreak: { type: "integer", minimum: 1, maximum: 12 },
+    dailyFocusGoalMinutes: { type: "integer", minimum: 0, maximum: 1440 },
   },
 } as const;
 
@@ -109,6 +121,7 @@ export const pomodoroSessionSchema = {
     type: { type: "string", enum: ["focus", "break"] },
     completed: { type: "boolean" },
     character: { type: "string" },
+    taskLabel: { type: ["string", "null"], maxLength: 120 },
     createdAt: { type: "string", format: "date-time" },
   },
 } as const;
@@ -127,6 +140,7 @@ export const createSessionBodySchema = {
     },
     type: { type: "string", enum: ["focus", "break"] },
     completed: { type: "boolean" },
+    taskLabel: { type: "string", maxLength: 120 },
   },
 } as const;
 
@@ -295,6 +309,7 @@ export const listSessionsSchema = {
       from: { type: "string", format: "date-time" },
       to: { type: "string", format: "date-time" },
       type: { type: "string", enum: ["focus", "break"] },
+      task: { type: "string", minLength: 1, maxLength: 120 },
       completed: { type: "string", enum: ["true", "false"] },
       durationOp: { type: "string", enum: ["eq", "gt", "lt"] },
       durationSeconds: { type: "integer", minimum: 0, maximum: 60 * 60 * 24 },
@@ -311,6 +326,75 @@ export const listSessionsSchema = {
           items: pomodoroSessionSchema,
         },
         nextCursor: { type: ["string", "null"] },
+      },
+    },
+    400: errorResponseSchema,
+    401: errorResponseSchema,
+  },
+} satisfies FastifySchema;
+
+export const dailyStatSchema = {
+  type: "object",
+  required: [
+    "date",
+    "focusSeconds",
+    "breakSeconds",
+    "completedFocus",
+    "interruptedFocus",
+    "sessions",
+  ],
+  additionalProperties: false,
+  properties: {
+    date: { type: "string" },
+    focusSeconds: { type: "integer", minimum: 0 },
+    breakSeconds: { type: "integer", minimum: 0 },
+    completedFocus: { type: "integer", minimum: 0 },
+    interruptedFocus: { type: "integer", minimum: 0 },
+    sessions: { type: "integer", minimum: 0 },
+  },
+} as const;
+
+export const statsTotalsSchema = {
+  type: "object",
+  required: [
+    "focusSeconds",
+    "breakSeconds",
+    "completedFocus",
+    "interruptedFocus",
+    "sessions",
+  ],
+  additionalProperties: false,
+  properties: {
+    focusSeconds: { type: "integer", minimum: 0 },
+    breakSeconds: { type: "integer", minimum: 0 },
+    completedFocus: { type: "integer", minimum: 0 },
+    interruptedFocus: { type: "integer", minimum: 0 },
+    sessions: { type: "integer", minimum: 0 },
+  },
+} as const;
+
+export const statsSchemaDoc = {
+  tags: ["Sessions"],
+  summary: "Daily focus/break statistics aggregated in the database",
+  description:
+    "Groups the authenticated user's sessions by day. Optionally filtered by `from`/`to`. Days are truncated in UTC.",
+  security: cookieAuthSecurity,
+  querystring: {
+    type: "object",
+    additionalProperties: false,
+    properties: {
+      from: { type: "string", format: "date-time" },
+      to: { type: "string", format: "date-time" },
+    },
+  },
+  response: {
+    200: {
+      type: "object",
+      required: ["days", "totals"],
+      additionalProperties: false,
+      properties: {
+        days: { type: "array", items: dailyStatSchema },
+        totals: statsTotalsSchema,
       },
     },
     400: errorResponseSchema,
@@ -468,5 +552,52 @@ export const resetPasswordSchemaDoc = {
   response: {
     200: okResponseSchema,
     400: errorResponseSchema,
+  },
+} satisfies FastifySchema;
+
+export const exportDataSchemaDoc = {
+  tags: ["User"],
+  summary: "Export all account data (LGPD)",
+  description:
+    "Returns the authenticated user and all their pomodoro sessions as JSON.",
+  security: cookieAuthSecurity,
+  response: {
+    200: {
+      type: "object",
+      required: ["exportedAt", "user", "sessions"],
+      additionalProperties: false,
+      properties: {
+        exportedAt: { type: "string", format: "date-time" },
+        user: meUserSchema,
+        sessions: {
+          type: "array",
+          items: pomodoroSessionSchema,
+        },
+      },
+    },
+    401: errorResponseSchema,
+  },
+} satisfies FastifySchema;
+
+export const deleteAccountBodySchema = {
+  type: "object",
+  required: ["password"],
+  additionalProperties: false,
+  properties: {
+    password: { type: "string", minLength: 1, maxLength: 200 },
+  },
+} as const;
+
+export const deleteAccountSchemaDoc = {
+  tags: ["User"],
+  summary: "Delete the account and all data (LGPD)",
+  description:
+    "Requires the current password. Cascades to the user's sessions and clears the session cookie.",
+  security: cookieAuthSecurity,
+  body: deleteAccountBodySchema,
+  response: {
+    200: okResponseSchema,
+    400: errorResponseSchema,
+    401: errorResponseSchema,
   },
 } satisfies FastifySchema;

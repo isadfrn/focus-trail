@@ -201,6 +201,27 @@ describe("sessions (integration)", () => {
     expect(combined.json().sessions).toHaveLength(1);
   });
 
+  it("stores and filters by the task label", async () => {
+    const { cookie } = await registerUser();
+    const created = await createSession(cookie, { taskLabel: "Estudar Prisma" });
+    expect(created.statusCode).toBe(201);
+    expect(created.json().session.taskLabel).toBe("Estudar Prisma");
+
+    await createSession(cookie, {
+      taskLabel: "Revisar PR",
+      startedAt: "2026-09-11T10:00:00.000Z",
+      endedAt: "2026-09-11T10:25:00.000Z",
+    });
+
+    const matched = await app.inject({
+      method: "GET",
+      url: "/api/sessions?task=prisma",
+      headers: { cookie },
+    });
+    expect(matched.json().sessions).toHaveLength(1);
+    expect(matched.json().sessions[0].taskLabel).toBe("Estudar Prisma");
+  });
+
   it("scopes sessions to the owner and deletes all", async () => {
     const a = await registerUser("a-int@example.com");
     const b = await registerUser("b-int@example.com");
@@ -266,5 +287,103 @@ describe("sessions (integration)", () => {
   it("requires authentication", async () => {
     const res = await app.inject({ method: "GET", url: "/api/sessions" });
     expect(res.statusCode).toBe(401);
+  });
+
+  it("aggregates daily stats in the database", async () => {
+    const { cookie } = await registerUser("stats-int@example.com");
+    await createSession(cookie, {
+      type: "focus",
+      completed: true,
+      durationSeconds: 1500,
+      startedAt: "2026-09-10T09:00:00.000Z",
+      endedAt: "2026-09-10T09:25:00.000Z",
+    });
+    await createSession(cookie, {
+      type: "break",
+      completed: true,
+      durationSeconds: 300,
+      startedAt: "2026-09-10T09:30:00.000Z",
+      endedAt: "2026-09-10T09:35:00.000Z",
+    });
+    await createSession(cookie, {
+      type: "focus",
+      completed: false,
+      durationSeconds: 600,
+      startedAt: "2026-09-11T09:00:00.000Z",
+      endedAt: "2026-09-11T09:10:00.000Z",
+    });
+
+    const res = await app.inject({
+      method: "GET",
+      url: "/api/sessions/stats?from=2026-09-01T00:00:00.000Z",
+      headers: { cookie },
+    });
+    expect(res.statusCode).toBe(200);
+    const body = res.json();
+    expect(body.days).toHaveLength(2);
+    expect(body.days[0]).toMatchObject({
+      date: "2026-09-10",
+      focusSeconds: 1500,
+      breakSeconds: 300,
+      completedFocus: 1,
+      interruptedFocus: 0,
+    });
+    expect(body.totals).toMatchObject({
+      focusSeconds: 2100,
+      breakSeconds: 300,
+      completedFocus: 1,
+      interruptedFocus: 1,
+      sessions: 3,
+    });
+  });
+});
+
+describe("LGPD export and account deletion (integration)", () => {
+  it("exports the user with all their sessions", async () => {
+    const { cookie } = await registerUser("export-int@example.com");
+    await createSession(cookie, { taskLabel: "Exportavel" });
+
+    const res = await app.inject({
+      method: "GET",
+      url: "/api/me/export",
+      headers: { cookie },
+    });
+    expect(res.statusCode).toBe(200);
+    expect(res.headers["content-disposition"]).toContain(
+      "focus-trail-export.json",
+    );
+    const body = res.json();
+    expect(body.user.email).toBe("export-int@example.com");
+    expect(body.sessions).toHaveLength(1);
+    expect(body.sessions[0].taskLabel).toBe("Exportavel");
+    expect(typeof body.exportedAt).toBe("string");
+  });
+
+  it("rejects deletion with a wrong password and succeeds with the right one", async () => {
+    const { cookie } = await registerUser("delete-int@example.com");
+    await createSession(cookie);
+
+    const wrong = await app.inject({
+      method: "DELETE",
+      url: "/api/me",
+      headers: { cookie },
+      payload: { password: "not-the-password" },
+    });
+    expect(wrong.statusCode).toBe(401);
+
+    const ok = await app.inject({
+      method: "DELETE",
+      url: "/api/me",
+      headers: { cookie },
+      payload: { password: "password123" },
+    });
+    expect(ok.statusCode).toBe(200);
+
+    const afterMe = await app.inject({
+      method: "GET",
+      url: "/api/me",
+      headers: { cookie },
+    });
+    expect(afterMe.statusCode).toBe(401);
   });
 });
