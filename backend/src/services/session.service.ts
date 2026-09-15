@@ -10,6 +10,7 @@ import {
 import type {
   CreateSessionInput,
   ListSessionsQuery,
+  StatsQuery,
 } from "../schemas/session.schema.js";
 
 export class SessionService {
@@ -30,6 +31,7 @@ export class SessionService {
       type: input.type,
       completed: input.completed,
       character: user.character,
+      taskLabel: input.taskLabel ?? null,
     });
   }
 
@@ -41,6 +43,7 @@ export class SessionService {
         from: query.from ? new Date(query.from) : undefined,
         to: query.to ? new Date(query.to) : undefined,
         type: query.type,
+        task: query.task,
         completed: query.completed,
         durationOp: query.durationOp,
         durationSeconds: query.durationSeconds,
@@ -53,6 +56,31 @@ export class SessionService {
       ? (sessions[sessions.length - 1]?.id ?? null)
       : null;
     return { sessions, nextCursor };
+  }
+
+  async stats(userId: string, query: StatsQuery) {
+    const from = query.from ? new Date(query.from) : undefined;
+    const to = query.to ? new Date(query.to) : undefined;
+    const days = await this.sessions.listDailyStats(userId, from, to);
+
+    const totals = days.reduce(
+      (acc, day) => ({
+        focusSeconds: acc.focusSeconds + day.focusSeconds,
+        breakSeconds: acc.breakSeconds + day.breakSeconds,
+        completedFocus: acc.completedFocus + day.completedFocus,
+        interruptedFocus: acc.interruptedFocus + day.interruptedFocus,
+        sessions: acc.sessions + day.sessions,
+      }),
+      {
+        focusSeconds: 0,
+        breakSeconds: 0,
+        completedFocus: 0,
+        interruptedFocus: 0,
+        sessions: 0,
+      },
+    );
+
+    return { days, totals };
   }
 
   async deleteOne(userId: string, id: string) {

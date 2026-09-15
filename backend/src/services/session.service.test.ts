@@ -9,6 +9,8 @@ describe("SessionService", () => {
   const sessions = {
     create: vi.fn(),
     listByUserId: vi.fn(),
+    listAllForUser: vi.fn(),
+    listDailyStats: vi.fn(),
     deleteByIdForUser: vi.fn(),
     deleteManyForUser: vi.fn(),
     deleteAllForUser: vi.fn(),
@@ -23,6 +25,7 @@ describe("SessionService", () => {
     updatePreferences: vi.fn(),
     updatePassword: vi.fn(),
     markEmailVerified: vi.fn(),
+    deleteById: vi.fn(),
   } satisfies UserRepository;
 
   const service = new SessionService(sessions, users);
@@ -53,7 +56,19 @@ describe("SessionService", () => {
       type: "focus",
       completed: true,
       character: "luigi",
+      taskLabel: null,
     });
+  });
+
+  it("forwards the task label when provided", async () => {
+    users.findCharacterById.mockResolvedValue({ character: "luigi" });
+    sessions.create.mockResolvedValue({ id: "s1" });
+
+    await service.create("u1", { ...input, taskLabel: "Escrever relatorio" });
+
+    expect(sessions.create).toHaveBeenCalledWith(
+      expect.objectContaining({ taskLabel: "Escrever relatorio" }),
+    );
   });
 
   it("throws when user is missing", async () => {
@@ -76,6 +91,7 @@ describe("SessionService", () => {
         from: undefined,
         to: undefined,
         type: undefined,
+        task: undefined,
         completed: undefined,
         durationOp: undefined,
         durationSeconds: undefined,
@@ -105,6 +121,7 @@ describe("SessionService", () => {
       from,
       to,
       type: "focus",
+      task: "relatorio",
       completed: true,
       durationOp: "gt",
       durationSeconds: 600,
@@ -116,10 +133,50 @@ describe("SessionService", () => {
         from: new Date(from),
         to: new Date(to),
         type: "focus",
+        task: "relatorio",
         completed: true,
         durationOp: "gt",
         durationSeconds: 600,
       },
+    });
+  });
+
+  it("aggregates stats and sums per-day rows into totals", async () => {
+    sessions.listDailyStats.mockResolvedValue([
+      {
+        date: "2026-09-09",
+        focusSeconds: 1500,
+        breakSeconds: 300,
+        completedFocus: 1,
+        interruptedFocus: 0,
+        sessions: 2,
+      },
+      {
+        date: "2026-09-10",
+        focusSeconds: 600,
+        breakSeconds: 0,
+        completedFocus: 0,
+        interruptedFocus: 1,
+        sessions: 1,
+      },
+    ]);
+
+    const result = await service.stats("u1", {
+      from: "2026-09-01T00:00:00.000Z",
+    });
+
+    expect(sessions.listDailyStats).toHaveBeenCalledWith(
+      "u1",
+      new Date("2026-09-01T00:00:00.000Z"),
+      undefined,
+    );
+    expect(result.days).toHaveLength(2);
+    expect(result.totals).toEqual({
+      focusSeconds: 2100,
+      breakSeconds: 300,
+      completedFocus: 1,
+      interruptedFocus: 1,
+      sessions: 3,
     });
   });
 
