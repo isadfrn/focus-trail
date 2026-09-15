@@ -64,4 +64,23 @@ describe("AudioControls", () => {
     expect(screen.getByLabelText("Pausar Ruído")).toBeInTheDocument();
     expect(screen.getByLabelText("Tocar Música")).toBeInTheDocument();
   });
+
+  it("shows a volume slider per channel and updates it", () => {
+    renderControls();
+    const musicVolume = screen.getByLabelText("Volume de Música");
+    const noiseVolume = screen.getByLabelText("Volume de Ruído");
+    expect(musicVolume).toBeInTheDocument();
+    expect(noiseVolume).toBeInTheDocument();
+
+    fireEvent.change(musicVolume, { target: { value: "0.4" } });
+    expect(screen.getByText("40%")).toBeInTheDocument();
+  });
+
+  it("toggles the end-of-session chime", () => {
+    renderControls();
+    const toggle = screen.getByLabelText("Alerta sonoro ao fim da sessão");
+    expect(toggle).toBeChecked();
+    fireEvent.click(toggle);
+    expect(toggle).not.toBeChecked();
+  });
 });

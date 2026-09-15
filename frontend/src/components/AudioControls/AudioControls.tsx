@@ -45,8 +45,10 @@ interface ChannelProps {
   tracks: Track[];
   currentId: string | null;
   playing: boolean;
+  volume: number;
   onToggle: () => void;
   onSelect: (id: string) => void;
+  onVolume: (value: number) => void;
   progress?: Progress;
 }
 
@@ -55,8 +57,10 @@ function ChannelSection({
   tracks,
   currentId,
   playing,
+  volume,
   onToggle,
   onSelect,
+  onVolume,
   progress,
 }: ChannelProps) {
   return (
@@ -76,6 +80,27 @@ function ChannelSection({
           {playing ? <PauseIcon /> : <PlayIcon />}
         </button>
       </div>
+
+      {tracks.length > 0 && (
+        <div className="flex items-center gap-2 px-3 pb-1">
+          <span className="w-9 shrink-0 text-right text-[10px] uppercase tracking-wide text-muted">
+            Vol
+          </span>
+          <input
+            type="range"
+            min={0}
+            max={1}
+            step={0.01}
+            value={volume}
+            onChange={(e) => onVolume(Number(e.target.value))}
+            aria-label={`Volume de ${label}`}
+            className="h-1 flex-1 cursor-pointer accent-primary"
+          />
+          <span className="w-9 shrink-0 text-[10px] tabular-nums text-muted">
+            {Math.round(volume * 100)}%
+          </span>
+        </div>
+      )}
 
       {progress && tracks.length > 0 && (
         <div className="flex items-center gap-2 px-3 pb-1">
@@ -131,8 +156,12 @@ export function AudioControls() {
     toggleMusic,
     selectMusic,
     seekMusic,
+    setMusicVolume,
     toggleEffect,
     selectEffect,
+    setEffectVolume,
+    chimeEnabled,
+    setChimeEnabled,
   } = useAudio();
 
   return (
@@ -142,8 +171,10 @@ export function AudioControls() {
         tracks={music.tracks}
         currentId={music.current?.id ?? null}
         playing={music.playing}
+        volume={music.volume}
         onToggle={toggleMusic}
         onSelect={selectMusic}
+        onVolume={setMusicVolume}
         progress={{
           position: music.position,
           duration: music.duration,
@@ -155,9 +186,21 @@ export function AudioControls() {
         tracks={effect.tracks}
         currentId={effect.current?.id ?? null}
         playing={effect.playing}
+        volume={effect.volume}
         onToggle={toggleEffect}
         onSelect={selectEffect}
+        onVolume={setEffectVolume}
       />
+      <label className="flex items-center justify-between gap-2 px-3 py-1 text-sm text-foreground">
+        <span>Alerta ao fim da sessão</span>
+        <input
+          type="checkbox"
+          checked={chimeEnabled}
+          onChange={(e) => setChimeEnabled(e.target.checked)}
+          aria-label="Alerta sonoro ao fim da sessão"
+          className="size-4 cursor-pointer accent-primary"
+        />
+      </label>
     </div>
   );
 }
