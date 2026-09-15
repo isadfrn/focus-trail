@@ -13,8 +13,18 @@ const presetItem =
 
 export function TimerPage() {
   const { character } = useCharacter();
-  const { type, remaining, status, running, presets, selectPreset, start, stop } =
-    useTimer();
+  const {
+    type,
+    remaining,
+    status,
+    running,
+    presets,
+    selectPreset,
+    taskLabel,
+    setTaskLabel,
+    start,
+    stop,
+  } = useTimer();
 
   const palette = resolveScenePalette(character);
 
@@ -43,7 +53,22 @@ export function TimerPage() {
           ))}
         </ToggleGroup.Root>
 
+        {type === "focus" && (
+          <input
+            type="text"
+            value={taskLabel}
+            onChange={(event) => setTaskLabel(event.target.value)}
+            disabled={running}
+            maxLength={120}
+            placeholder="No que vou focar?"
+            aria-label="No que vou focar?"
+            className="w-[min(320px,80vw)] rounded-[10px] border border-scene-panel-border bg-scene-panel px-3.5 py-2 text-center text-sm text-scene-foreground backdrop-blur-sm outline-none placeholder:text-scene-foreground/60 focus:border-scene-accent disabled:opacity-50"
+          />
+        )}
+
         <div
+          role="timer"
+          aria-label={`Tempo restante: ${formatClock(remaining)}`}
           className={cn(
             "rounded-2xl border border-scene-panel-border bg-scene-panel px-6 py-2 font-extrabold leading-none tabular-nums tracking-[2px] backdrop-blur-sm [font-size:clamp(52px,15vw,96px)] [text-shadow:0_2px_14px_rgba(11,21,24,0.35)]",
             running ? "text-scene-accent" : "text-scene-foreground",

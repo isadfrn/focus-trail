@@ -9,6 +9,7 @@ import {
   type ReactNode,
 } from "react";
 
+import { isChimeEnabled, persistChimeEnabled } from "../lib/chime";
 import { storage } from "../lib/platform/storage";
 import {
   effectTracks,
@@ -20,11 +21,14 @@ import {
 
 const MUSIC_KEY = "ft_audio_music";
 const EFFECT_KEY = "ft_audio_effect";
+const MUSIC_VOLUME_KEY = "ft_audio_music_volume";
+const EFFECT_VOLUME_KEY = "ft_audio_effect_volume";
 
 interface Channel {
   tracks: Track[];
   current: Track | null;
   playing: boolean;
+  volume: number;
 }
 
 interface MusicChannel extends Channel {
@@ -40,8 +44,12 @@ interface AudioValue {
   nextMusic: () => void;
   prevMusic: () => void;
   seekMusic: (seconds: number) => void;
+  setMusicVolume: (value: number) => void;
   toggleEffect: () => void;
   selectEffect: (id: string) => void;
+  setEffectVolume: (value: number) => void;
+  chimeEnabled: boolean;
+  setChimeEnabled: (enabled: boolean) => void;
 }
 
 const Context = createContext<AudioValue | null>(null);
@@ -65,6 +73,17 @@ function initialIndex(tracks: Track[], key: string): number {
   return i >= 0 ? i : 0;
 }
 
+function clampVolume(value: number): number {
+  return Math.min(1, Math.max(0, value));
+}
+
+function initialVolume(key: string): number {
+  const raw = storage.get(key);
+  if (raw === null) return 1;
+  const value = Number(raw);
+  return Number.isFinite(value) ? clampVolume(value) : 1;
+}
+
 export function AudioProvider({ children }: { children: ReactNode }) {
   const musicRef = useRef<HTMLAudioElement | null>(null);
   const effectRef = useRef<HTMLAudioElement | null>(null);
@@ -79,6 +98,13 @@ export function AudioProvider({ children }: { children: ReactNode }) {
   const [effectPlaying, setEffectPlaying] = useState(false);
   const [position, setPosition] = useState(0);
   const [duration, setDuration] = useState(0);
+  const [musicVolume, setMusicVolumeState] = useState(() =>
+    initialVolume(MUSIC_VOLUME_KEY),
+  );
+  const [effectVolume, setEffectVolumeState] = useState(() =>
+    initialVolume(EFFECT_VOLUME_KEY),
+  );
+  const [chimeEnabled, setChimeEnabledState] = useState(() => isChimeEnabled());
 
   const musicCurrent = musicTracks[musicIndex] ?? null;
   const effectCurrent = effectTracks[effectIndex] ?? null;
@@ -109,6 +135,14 @@ export function AudioProvider({ children }: { children: ReactNode }) {
     if (effectPlaying) safePlay(el);
     else el.pause();
   }, [effectPlaying, effectCurrent]);
+
+  useEffect(() => {
+    if (musicRef.current) musicRef.current.volume = musicVolume;
+  }, [musicVolume, musicCurrent]);
+
+  useEffect(() => {
+    if (effectRef.current) effectRef.current.volume = effectVolume;
+  }, [effectVolume, effectCurrent]);
 
   const toggleMusic = useCallback(() => {
     if (!musicTracks.length) return;
@@ -171,6 +205,23 @@ export function AudioProvider({ children }: { children: ReactNode }) {
     if (i >= 0) setEffectIndex(i);
   }, []);
 
+  const setMusicVolume = useCallback((value: number) => {
+    const clamped = clampVolume(value);
+    setMusicVolumeState(clamped);
+    storage.set(MUSIC_VOLUME_KEY, String(clamped));
+  }, []);
+
+  const setEffectVolume = useCallback((value: number) => {
+    const clamped = clampVolume(value);
+    setEffectVolumeState(clamped);
+    storage.set(EFFECT_VOLUME_KEY, String(clamped));
+  }, []);
+
+  const setChimeEnabled = useCallback((enabled: boolean) => {
+    setChimeEnabledState(enabled);
+    persistChimeEnabled(enabled);
+  }, []);
+
   const value = useMemo<AudioValue>(
     () => ({
       music: {
@@ -179,34 +230,46 @@ export function AudioProvider({ children }: { children: ReactNode }) {
         playing: musicPlaying,
         position,
         duration,
+        volume: musicVolume,
       },
       effect: {
         tracks: effectTracks,
         current: effectCurrent,
         playing: effectPlaying,
+        volume: effectVolume,
       },
       toggleMusic,
       selectMusic,
       nextMusic,
       prevMusic,
       seekMusic,
+      setMusicVolume,
       toggleEffect,
       selectEffect,
+      setEffectVolume,
+      chimeEnabled,
+      setChimeEnabled,
     }),
     [
       musicCurrent,
       musicPlaying,
       position,
       duration,
+      musicVolume,
       effectCurrent,
       effectPlaying,
+      effectVolume,
+      chimeEnabled,
       toggleMusic,
       selectMusic,
       nextMusic,
       prevMusic,
       seekMusic,
+      setMusicVolume,
       toggleEffect,
       selectEffect,
+      setEffectVolume,
+      setChimeEnabled,
     ],
   );
 

@@ -99,6 +99,7 @@ export function HistoryPage() {
   const filtersActive =
     form.date !== "" ||
     form.type !== "" ||
+    form.task !== "" ||
     form.status !== "" ||
     (form.durationOp !== "" && form.durationMinutes !== "");
 
@@ -218,6 +219,16 @@ export function HistoryPage() {
             />
           </div>
         </label>
+        <label className="col-span-2 flex flex-col gap-1 text-xs text-muted sm:col-span-4">
+          Tarefa
+          <input
+            type="text"
+            value={form.task}
+            onChange={(e) => update({ task: e.target.value })}
+            placeholder="Buscar por tarefa"
+            className={fieldClass}
+          />
+        </label>
       </div>
 
       <div className="mt-3 flex flex-wrap items-center gap-2">
@@ -256,7 +267,6 @@ export function HistoryPage() {
         </div>
       ) : (
         <>
-          {/* Desktop: tabela */}
           <div className="mt-4 hidden sm:block">
             <table className={table}>
               <thead>
@@ -272,6 +282,7 @@ export function HistoryPage() {
                   </th>
                   <th>Quando</th>
                   <th>Tipo</th>
+                  <th>Tarefa</th>
                   <th>Duracao</th>
                   <th>Status</th>
                   <th className="w-10">
@@ -296,6 +307,9 @@ export function HistoryPage() {
                     </td>
                     <td>{formatDateTime(s.startedAt)}</td>
                     <td>{s.type === "focus" ? "Foco" : "Pausa"}</td>
+                    <td className="max-w-[220px] truncate text-muted">
+                      {s.taskLabel ?? "—"}
+                    </td>
                     <td>{formatDuration(s.durationSeconds)}</td>
                     <td>{statusLabel(s)}</td>
                     <td>
@@ -314,18 +328,22 @@ export function HistoryPage() {
             </table>
           </div>
 
-          {/* Mobile: cards (sem scroll horizontal) */}
           <ul className="mt-4 flex flex-col gap-2 sm:hidden">
             {sessions.map((s) => (
               <li
                 key={s.id}
                 className="flex items-start justify-between gap-3 rounded-xl border border-border bg-surface p-3.5"
               >
-                <div className="flex flex-col gap-0.5">
+                <div className="flex min-w-0 flex-col gap-0.5">
                   <span className="font-medium">
                     {s.type === "focus" ? "Foco" : "Pausa"} -{" "}
                     {formatDuration(s.durationSeconds)}
                   </span>
+                  {s.taskLabel && (
+                    <span className="truncate text-xs text-foreground">
+                      {s.taskLabel}
+                    </span>
+                  )}
                   <span className="text-xs text-muted">
                     {formatDateTime(s.startedAt)}
                   </span>

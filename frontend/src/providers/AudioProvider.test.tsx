@@ -151,4 +151,46 @@ describe("AudioProvider", () => {
     expect(result.current.music.position).toBe(12);
     expect(result.current.music.duration).toBe(200);
   });
+
+  it("defaults both channel volumes to full", () => {
+    const { result } = renderHook(() => useAudio(), { wrapper });
+    expect(result.current.music.volume).toBe(1);
+    expect(result.current.effect.volume).toBe(1);
+  });
+
+  it("sets, clamps and persists the channel volumes", () => {
+    const { result } = renderHook(() => useAudio(), { wrapper });
+
+    act(() => result.current.setMusicVolume(0.3));
+    expect(result.current.music.volume).toBe(0.3);
+    expect(localStorage.getItem("ft_audio_music_volume")).toBe("0.3");
+
+    act(() => result.current.setEffectVolume(2));
+    expect(result.current.effect.volume).toBe(1);
+
+    act(() => result.current.setMusicVolume(-1));
+    expect(result.current.music.volume).toBe(0);
+  });
+
+  it("applies the volume to the media element", () => {
+    const { result } = renderHook(() => useAudio(), { wrapper });
+    const musicElement = document.querySelectorAll("audio")[0] as HTMLAudioElement;
+    act(() => result.current.setMusicVolume(0.5));
+    expect(musicElement.volume).toBe(0.5);
+  });
+
+  it("restores a stored volume on mount", () => {
+    localStorage.setItem("ft_audio_music_volume", "0.25");
+    const { result } = renderHook(() => useAudio(), { wrapper });
+    expect(result.current.music.volume).toBe(0.25);
+  });
+
+  it("enables the end-of-session chime by default and persists toggling", () => {
+    const { result } = renderHook(() => useAudio(), { wrapper });
+    expect(result.current.chimeEnabled).toBe(true);
+
+    act(() => result.current.setChimeEnabled(false));
+    expect(result.current.chimeEnabled).toBe(false);
+    expect(localStorage.getItem("ft_audio_chime")).toBe("false");
+  });
 });
