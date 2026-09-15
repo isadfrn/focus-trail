@@ -33,6 +33,7 @@ describe("AuthService (email enabled)", () => {
     updatePreferences: vi.fn(),
     updatePassword: vi.fn(),
     markEmailVerified: vi.fn(),
+    deleteById: vi.fn(),
   } satisfies UserRepository;
   const verification = {
     issue: vi.fn(),

@@ -21,6 +21,7 @@ describe("AuthService (email disabled)", () => {
     updatePreferences: vi.fn(),
     updatePassword: vi.fn(),
     markEmailVerified: vi.fn(),
+    deleteById: vi.fn(),
   } satisfies UserRepository;
 
   const service = new AuthService(users);
