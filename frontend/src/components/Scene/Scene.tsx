@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 
+import { useReducedMotion } from "../../hooks/useReducedMotion";
 import { useSpriteSheet } from "../../hooks/useSpriteSheet";
 import type { CharacterTheme } from "../../types/character";
 
@@ -38,6 +39,7 @@ function useRepeatTileWidth(url: string, heightPx: number): number {
 export function Scene({ character, walking }: SceneProps) {
   const [frame, setFrame] = useState(0);
   const [hasWalked, setHasWalked] = useState(false);
+  const reducedMotion = useReducedMotion();
 
   const sprite = useSpriteSheet(character.sheet, character.frames);
   const frameCount = sprite?.frames.length ?? 0;
@@ -82,14 +84,14 @@ export function Scene({ character, walking }: SceneProps) {
   useEffect(() => {
     if (!walking) return;
     setHasWalked(true);
-    if (frameCount <= 1) return;
+    if (reducedMotion || frameCount <= 1) return;
     setFrame(0);
     const id = window.setInterval(
       () => setFrame((f) => (f + 1) % frameCount),
       frameMs,
     );
     return () => clearInterval(id);
-  }, [walking, frameCount, frameMs]);
+  }, [walking, frameCount, frameMs, reducedMotion]);
 
   return (
     <div
