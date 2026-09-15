@@ -1,65 +1,121 @@
-import type { PomodoroSession } from "../types/session";
+import type { DailyStat, StatsTotals } from "../types/session";
 
-export interface DayTotals {
-  date: string;
+export type DayTotals = Pick<
+  DailyStat,
+  "date" | "focusSeconds" | "breakSeconds"
+>;
+
+export interface TodayProgress {
   focusSeconds: number;
-  breakSeconds: number;
+  goalSeconds: number;
+  ratio: number;
+  reached: boolean;
 }
 
-export interface PerformanceSummary {
-  focusSeconds: number;
-  breakSeconds: number;
-  sessions: number;
+export function utcDayKey(date: Date): string {
+  return date.toISOString().slice(0, 10);
 }
 
-function dayKey(date: Date): string {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
+function utcMidnight(now: Date): Date {
+  return new Date(
+    Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()),
+  );
 }
 
-export function aggregateByDay(sessions: PomodoroSession[]): DayTotals[] {
-  const byDay = new Map<string, DayTotals>();
-  for (const session of sessions) {
-    const key = dayKey(new Date(session.startedAt));
-    const entry = byDay.get(key) ?? {
-      date: key,
-      focusSeconds: 0,
-      breakSeconds: 0,
-    };
-    if (session.type === "focus") entry.focusSeconds += session.durationSeconds;
-    else entry.breakSeconds += session.durationSeconds;
-    byDay.set(key, entry);
-  }
-  return [...byDay.values()].sort((a, b) => a.date.localeCompare(b.date));
-}
-
-export function summarize(sessions: PomodoroSession[]): PerformanceSummary {
-  let focusSeconds = 0;
-  let breakSeconds = 0;
-  for (const session of sessions) {
-    if (session.type === "focus") focusSeconds += session.durationSeconds;
-    else breakSeconds += session.durationSeconds;
-  }
-  return { focusSeconds, breakSeconds, sessions: sessions.length };
-}
-
-export function lastNDays(
-  sessions: PomodoroSession[],
-  days: number,
+export function fillWindow(
+  days: DayTotals[],
+  windowDays: number,
   now: Date = new Date(),
 ): DayTotals[] {
-  const byDay = new Map(aggregateByDay(sessions).map((d) => [d.date, d]));
+  const byDay = new Map(days.map((day) => [day.date, day]));
   const result: DayTotals[] = [];
-  const cursor = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  cursor.setDate(cursor.getDate() - (days - 1));
-  for (let i = 0; i < days; i++) {
-    const key = dayKey(cursor);
+  const cursor = utcMidnight(now);
+  cursor.setUTCDate(cursor.getUTCDate() - (windowDays - 1));
+  for (let index = 0; index < windowDays; index++) {
+    const key = utcDayKey(cursor);
     result.push(
       byDay.get(key) ?? { date: key, focusSeconds: 0, breakSeconds: 0 },
     );
-    cursor.setDate(cursor.getDate() + 1);
+    cursor.setUTCDate(cursor.getUTCDate() + 1);
   }
   return result;
+}
+
+export function todayProgress(
+  days: DayTotals[],
+  goalMinutes: number,
+  now: Date = new Date(),
+): TodayProgress {
+  const goalSeconds = Math.max(0, goalMinutes) * 60;
+  const key = utcDayKey(now);
+  const focusSeconds = days.find((day) => day.date === key)?.focusSeconds ?? 0;
+  const ratio = goalSeconds > 0 ? Math.min(1, focusSeconds / goalSeconds) : 0;
+  return {
+    focusSeconds,
+    goalSeconds,
+    ratio,
+    reached: goalSeconds > 0 && focusSeconds >= goalSeconds,
+  };
+}
+
+export function computeStreak(
+  days: DayTotals[],
+  goalMinutes: number,
+  now: Date = new Date(),
+): number {
+  const goalSeconds = Math.max(0, goalMinutes) * 60;
+  if (goalSeconds <= 0) return 0;
+
+  const focusByDay = new Map(days.map((day) => [day.date, day.focusSeconds]));
+  const meets = (date: Date): boolean =>
+    (focusByDay.get(utcDayKey(date)) ?? 0) >= goalSeconds;
+
+  const cursor = utcMidnight(now);
+  let streak = 0;
+  if (meets(cursor)) streak += 1;
+  cursor.setUTCDate(cursor.getUTCDate() - 1);
+  while (meets(cursor)) {
+    streak += 1;
+    cursor.setUTCDate(cursor.getUTCDate() - 1);
+  }
+  return streak;
+}
+
+export function completionRate(totals: StatsTotals): number {
+  const finished = totals.completedFocus + totals.interruptedFocus;
+  return finished > 0 ? totals.completedFocus / finished : 0;
+}
+
+export function focusBreakRatio(totals: StatsTotals): number | null {
+  return totals.breakSeconds > 0
+    ? totals.focusSeconds / totals.breakSeconds
+    : null;
+}
+
+export function bestDay(days: DayTotals[]): DayTotals | null {
+  let best: DayTotals | null = null;
+  for (const day of days) {
+    if (day.focusSeconds <= 0) continue;
+    if (!best || day.focusSeconds > best.focusSeconds) best = day;
+  }
+  return best;
+}
+
+export function sumWindow(days: DailyStat[]): StatsTotals {
+  return days.reduce<StatsTotals>(
+    (acc, day) => ({
+      focusSeconds: acc.focusSeconds + day.focusSeconds,
+      breakSeconds: acc.breakSeconds + day.breakSeconds,
+      completedFocus: acc.completedFocus + day.completedFocus,
+      interruptedFocus: acc.interruptedFocus + day.interruptedFocus,
+      sessions: acc.sessions + day.sessions,
+    }),
+    {
+      focusSeconds: 0,
+      breakSeconds: 0,
+      completedFocus: 0,
+      interruptedFocus: 0,
+      sessions: 0,
+    },
+  );
 }
