@@ -1,0 +1,21 @@
+meta {
+  name: Delete Account
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{baseUrl}}/api/me
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "password": "{{accountPassword}}"
+  }
+}
+
+vars:pre-request {
+  baseUrl: http://localhost:3001
+}

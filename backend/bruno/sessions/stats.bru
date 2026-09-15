@@ -1,0 +1,19 @@
+meta {
+  name: Session Stats
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/api/sessions/stats?from=2026-09-01T00:00:00.000Z
+  body: none
+  auth: none
+}
+
+params:query {
+  from: 2026-09-01T00:00:00.000Z
+}
+
+vars:pre-request {
+  baseUrl: http://localhost:3001
+}
