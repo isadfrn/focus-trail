@@ -11,6 +11,7 @@ export const createSessionSchema = z
       .max(60 * 60 * 24),
     type: z.enum(["focus", "break"]),
     completed: z.boolean(),
+    taskLabel: z.string().trim().max(120).optional(),
   })
   .refine((v) => new Date(v.endedAt) >= new Date(v.startedAt), {
     message: "Ended At must be greater than or equal to Started At",
@@ -26,6 +27,7 @@ export const listSessionsQuerySchema = z
     from: z.string().datetime().optional(),
     to: z.string().datetime().optional(),
     type: z.enum(["focus", "break"]).optional(),
+    task: z.string().trim().min(1).max(120).optional(),
     completed: z
       .enum(["true", "false"])
       .transform((v) => v === "true")
@@ -44,6 +46,18 @@ export const listSessionsQuerySchema = z
   );
 
 export type ListSessionsQuery = z.infer<typeof listSessionsQuerySchema>;
+
+export const statsQuerySchema = z
+  .object({
+    from: z.string().datetime().optional(),
+    to: z.string().datetime().optional(),
+  })
+  .refine((v) => !v.from || !v.to || new Date(v.to) >= new Date(v.from), {
+    message: "'to' must be greater than or equal to 'from'",
+    path: ["to"],
+  });
+
+export type StatsQuery = z.infer<typeof statsQuerySchema>;
 
 export const sessionIdParamSchema = z.object({
   id: z.string().uuid(),

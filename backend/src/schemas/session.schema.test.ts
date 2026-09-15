@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   createSessionSchema,
   listSessionsQuerySchema,
+  statsQuerySchema,
 } from "./session.schema.js";
 
 describe("createSessionSchema", () => {
@@ -32,6 +33,24 @@ describe("createSessionSchema", () => {
       createSessionSchema.safeParse({
         ...valid,
         type: "nap",
+      }).success,
+    ).toBe(false);
+  });
+
+  it("trims the task label when present", () => {
+    const result = createSessionSchema.safeParse({
+      ...valid,
+      taskLabel: "  Estudar Prisma  ",
+    });
+    expect(result.success).toBe(true);
+    if (result.success) expect(result.data.taskLabel).toBe("Estudar Prisma");
+  });
+
+  it("rejects a task label longer than 120 characters", () => {
+    expect(
+      createSessionSchema.safeParse({
+        ...valid,
+        taskLabel: "a".repeat(121),
       }).success,
     ).toBe(false);
   });
@@ -78,5 +97,35 @@ describe("listSessionsQuerySchema", () => {
     expect(listSessionsQuerySchema.safeParse({ type: "nap" }).success).toBe(
       false,
     );
+  });
+
+  it("accepts and trims a task filter", () => {
+    const result = listSessionsQuerySchema.safeParse({ task: "  relatorio  " });
+    expect(result.success).toBe(true);
+    if (result.success) expect(result.data.task).toBe("relatorio");
+  });
+});
+
+describe("statsQuerySchema", () => {
+  it("accepts an empty query", () => {
+    expect(statsQuerySchema.safeParse({}).success).toBe(true);
+  });
+
+  it("accepts a valid from/to range", () => {
+    expect(
+      statsQuerySchema.safeParse({
+        from: "2026-09-01T00:00:00.000Z",
+        to: "2026-09-10T00:00:00.000Z",
+      }).success,
+    ).toBe(true);
+  });
+
+  it("rejects a range where 'to' precedes 'from'", () => {
+    expect(
+      statsQuerySchema.safeParse({
+        from: "2026-09-10T00:00:00.000Z",
+        to: "2026-09-01T00:00:00.000Z",
+      }).success,
+    ).toBe(false);
   });
 });
