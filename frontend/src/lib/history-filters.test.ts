@@ -23,16 +23,27 @@ describe("buildSessionFilters", () => {
     const filters = buildSessionFilters({
       date: "2026-09-12",
       type: "focus",
+      task: "relatorio",
       status: "completed",
       durationOp: "gt",
       durationMinutes: "25",
     });
     expect(filters.type).toBe("focus");
+    expect(filters.task).toBe("relatorio");
     expect(filters.completed).toBe(true);
     expect(filters.durationOp).toBe("gt");
     expect(filters.durationSeconds).toBe(1500);
     expect(filters.from).toBeDefined();
     expect(filters.to).toBeDefined();
+  });
+
+  it("trims the task and omits it when blank", () => {
+    expect(
+      buildSessionFilters({ ...emptyFilterForm, task: "  Estudar  " }).task,
+    ).toBe("Estudar");
+    expect(
+      buildSessionFilters({ ...emptyFilterForm, task: "   " }).task,
+    ).toBeUndefined();
   });
 
   it("maps 'interrupted' status to completed=false", () => {

@@ -10,6 +10,7 @@ export function dayRange(dateStr: string): { from: string; to: string } {
 export interface FilterForm {
   date: string;
   type: "" | SessionType;
+  task: string;
   status: "" | "completed" | "interrupted";
   durationOp: "" | DurationOp;
   durationMinutes: string;
@@ -18,12 +19,12 @@ export interface FilterForm {
 export const emptyFilterForm: FilterForm = {
   date: "",
   type: "",
+  task: "",
   status: "",
   durationOp: "",
   durationMinutes: "",
 };
 
-/** Turns the UI form into the API filter payload (combinable, all optional). */
 export function buildSessionFilters(form: FilterForm): SessionFilters {
   const filters: SessionFilters = {};
 
@@ -33,6 +34,8 @@ export function buildSessionFilters(form: FilterForm): SessionFilters {
     filters.to = to;
   }
   if (form.type) filters.type = form.type;
+  const trimmedTask = form.task.trim();
+  if (trimmedTask) filters.task = trimmedTask;
   if (form.status) filters.completed = form.status === "completed";
   if (form.durationOp && form.durationMinutes !== "") {
     const minutes = Number(form.durationMinutes);
