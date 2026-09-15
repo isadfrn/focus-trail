@@ -1,6 +1,13 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+const { revokeSession } = vi.hoisted(() => ({ revokeSession: vi.fn() }));
+vi.mock("../lib/session.js", () => ({
+  COOKIE_NAME: "ft_token",
+  sessionCookieOptions: () => ({}),
+  revokeSession,
+}));
+
 import {
   InvalidCredentialsError,
   UnauthorizedError,
@@ -13,6 +20,8 @@ describe("MeController", () => {
     getMe: vi.fn(),
     updatePreferences: vi.fn(),
     changePassword: vi.fn(),
+    exportData: vi.fn(),
+    deleteAccount: vi.fn(),
   } as unknown as UserService;
 
   const controller = new MeController(users);
@@ -28,6 +37,10 @@ describe("MeController", () => {
       character: "mario",
       focusMinutes: 25,
       breakMinutes: 5,
+      autoCycle: false,
+      longBreakMinutes: 15,
+      pomodorosUntilLongBreak: 4,
+      dailyFocusGoalMinutes: 0,
       createdAt: new Date(),
     };
     vi.mocked(users.getMe).mockResolvedValue(user);
@@ -63,6 +76,10 @@ describe("MeController", () => {
       character: "luigi",
       focusMinutes: 40,
       breakMinutes: 8,
+      autoCycle: false,
+      longBreakMinutes: 15,
+      pomodorosUntilLongBreak: 4,
+      dailyFocusGoalMinutes: 0,
       createdAt: new Date(),
     };
     vi.mocked(users.updatePreferences).mockResolvedValue(user);
@@ -169,5 +186,75 @@ describe("MeController", () => {
 
     expect(reply.code).toHaveBeenCalledWith(401);
     expect(send).toHaveBeenCalledWith({ error: "Invalid Credentials" });
+  });
+
+  it("exports the account data with a download header", async () => {
+    const data = { exportedAt: "now", user: { id: "1" }, sessions: [] };
+    vi.mocked(users.exportData).mockResolvedValue(data as never);
+    const header = vi.fn();
+
+    await expect(
+      controller.exportData(
+        { user: { sub: "1", email: "a@b.com" } } as FastifyRequest,
+        { header } as never,
+      ),
+    ).resolves.toEqual(data);
+    expect(header).toHaveBeenCalledWith(
+      "Content-Disposition",
+      'attachment; filename="focus-trail-export.json"',
+    );
+  });
+
+  it("deletes the account, revokes the session and clears the cookie", async () => {
+    vi.mocked(users.deleteAccount).mockResolvedValue(undefined);
+    const send = vi.fn();
+    const clearCookie = vi.fn();
+    const reply = { send, clearCookie };
+
+    await controller.deleteAccount(
+      {
+        user: { sub: "1", email: "a@b.com", jti: "jti-1" },
+        body: { password: "password123" },
+      } as FastifyRequest,
+      reply as unknown as FastifyReply,
+    );
+
+    expect(users.deleteAccount).toHaveBeenCalledWith("1", "password123");
+    expect(revokeSession).toHaveBeenCalledWith("jti-1");
+    expect(clearCookie).toHaveBeenCalledWith("ft_token", {});
+    expect(send).toHaveBeenCalledWith({ ok: true });
+  });
+
+  it("rejects account deletion without a password", async () => {
+    const send = vi.fn();
+    const reply = { code: vi.fn().mockReturnValue({ send }) };
+
+    await controller.deleteAccount(
+      { user: { sub: "1", email: "a@b.com" }, body: {} } as FastifyRequest,
+      reply as unknown as FastifyReply,
+    );
+
+    expect(reply.code).toHaveBeenCalledWith(400);
+    expect(users.deleteAccount).not.toHaveBeenCalled();
+  });
+
+  it("maps a wrong password on deletion to 401", async () => {
+    vi.mocked(users.deleteAccount).mockRejectedValue(
+      new InvalidCredentialsError(),
+    );
+    const send = vi.fn();
+    const clearCookie = vi.fn();
+    const reply = { send, clearCookie, code: vi.fn().mockReturnValue({ send }) };
+
+    await controller.deleteAccount(
+      {
+        user: { sub: "1", email: "a@b.com", jti: "jti-1" },
+        body: { password: "wrong-password" },
+      } as FastifyRequest,
+      reply as unknown as FastifyReply,
+    );
+
+    expect(reply.code).toHaveBeenCalledWith(401);
+    expect(clearCookie).not.toHaveBeenCalled();
   });
 });

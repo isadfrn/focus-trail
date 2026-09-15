@@ -19,6 +19,7 @@ describe("SessionController", () => {
   const sessions = {
     create: vi.fn(),
     list: vi.fn(),
+    stats: vi.fn(),
     deleteOne: vi.fn(),
     deleteMany: vi.fn(),
     deleteAll: vi.fn(),
@@ -110,6 +111,42 @@ describe("SessionController", () => {
     );
     expect(reply.code).toHaveBeenCalledWith(400);
     expect(sessions.list).not.toHaveBeenCalled();
+  });
+
+  it("returns aggregated stats for a parsed query", async () => {
+    const reply = createReply();
+    const result = { days: [], totals: {} };
+    vi.mocked(sessions.stats).mockResolvedValue(result as never);
+
+    await expect(
+      controller.stats(
+        {
+          query: { from: "2026-09-01T00:00:00.000Z" },
+          user: { sub: "u1", email: "a@b.com" },
+        } as unknown as FastifyRequest,
+        reply as never,
+      ),
+    ).resolves.toEqual(result);
+    expect(sessions.stats).toHaveBeenCalledWith(
+      "u1",
+      expect.objectContaining({ from: "2026-09-01T00:00:00.000Z" }),
+    );
+  });
+
+  it("rejects an invalid stats range", async () => {
+    const reply = createReply();
+    await controller.stats(
+      {
+        query: {
+          from: "2026-09-10T00:00:00.000Z",
+          to: "2026-09-01T00:00:00.000Z",
+        },
+        user: { sub: "u1", email: "a@b.com" },
+      } as unknown as FastifyRequest,
+      reply as never,
+    );
+    expect(reply.code).toHaveBeenCalledWith(400);
+    expect(sessions.stats).not.toHaveBeenCalled();
   });
 
   it("rejects a delete with an invalid id", async () => {

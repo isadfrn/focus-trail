@@ -61,6 +61,10 @@ describe("AuthController", () => {
       character: "mario",
       focusMinutes: 25,
       breakMinutes: 5,
+      autoCycle: false,
+      longBreakMinutes: 15,
+      pomodorosUntilLongBreak: 4,
+      dailyFocusGoalMinutes: 0,
       createdAt: new Date(),
     };
     vi.mocked(auth.register).mockResolvedValue({
@@ -91,6 +95,10 @@ describe("AuthController", () => {
       character: "mario",
       focusMinutes: 25,
       breakMinutes: 5,
+      autoCycle: false,
+      longBreakMinutes: 15,
+      pomodorosUntilLongBreak: 4,
+      dailyFocusGoalMinutes: 0,
       createdAt: new Date(),
     };
     vi.mocked(auth.register).mockResolvedValue({
@@ -124,6 +132,10 @@ describe("AuthController", () => {
       character: "mario",
       focusMinutes: 25,
       breakMinutes: 5,
+      autoCycle: false,
+      longBreakMinutes: 15,
+      pomodorosUntilLongBreak: 4,
+      dailyFocusGoalMinutes: 0,
       createdAt: new Date(),
     };
     vi.mocked(auth.verifyEmail).mockResolvedValue(user);
@@ -233,6 +245,10 @@ describe("AuthController", () => {
       character: "mario",
       focusMinutes: 25,
       breakMinutes: 5,
+      autoCycle: false,
+      longBreakMinutes: 15,
+      pomodorosUntilLongBreak: 4,
+      dailyFocusGoalMinutes: 0,
       createdAt: new Date(),
     };
     vi.mocked(auth.login).mockResolvedValue(user);
