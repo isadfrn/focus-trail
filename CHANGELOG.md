@@ -1,6 +1,35 @@
 # Changelog
 
 
+## v0.4.0
+
+[compare changes](https://github.com/isadfrn/focus-trail/compare/v0.3.2...v0.4.0)
+
+### 🚀 Enhancements
+
+- Add new characters and backgrounds ([c1d8a4a](https://github.com/isadfrn/focus-trail/commit/c1d8a4a))
+- Add account management and session statistics endpoints ([4a847f6](https://github.com/isadfrn/focus-trail/commit/4a847f6))
+- Enhance user and pomodoro session models with new fields ([93fb858](https://github.com/isadfrn/focus-trail/commit/93fb858))
+- Enhance MeController with account management and data export features ([621f255](https://github.com/isadfrn/focus-trail/commit/621f255))
+- Enhance session management with task labeling and daily statistics ([422ab68](https://github.com/isadfrn/focus-trail/commit/422ab68))
+- Implement user deletion and data export features ([8ae1cb5](https://github.com/isadfrn/focus-trail/commit/8ae1cb5))
+- Add delete account schema and enhance preferences validation ([87bdfdb](https://github.com/isadfrn/focus-trail/commit/87bdfdb))
+- Enhance session schemas with task labeling and statistics validation ([473bf94](https://github.com/isadfrn/focus-trail/commit/473bf94))
+- Add deleteById method to UserRepository mocks in auth service tests ([5377bab](https://github.com/isadfrn/focus-trail/commit/5377bab))
+- Enhance session service with task labeling and daily statistics aggregation ([63f8d94](https://github.com/isadfrn/focus-trail/commit/63f8d94))
+- Enhance UserService with account deletion and data export functionalities ([2a72240](https://github.com/isadfrn/focus-trail/commit/2a72240))
+- Implement account management and session statistics features ([9cf3b4b](https://github.com/isadfrn/focus-trail/commit/9cf3b4b))
+- Enhance audio controls with volume management and chime toggle ([667420b](https://github.com/isadfrn/focus-trail/commit/667420b))
+- Integrate reduced motion support in Scene component and enhance performance tracking ([f73ce4e](https://github.com/isadfrn/focus-trail/commit/f73ce4e))
+- Implement chime functionality with preference management and audio playback ([ef04017](https://github.com/isadfrn/focus-trail/commit/ef04017))
+- Enhance performance tracking with new metrics and tests ([9bf881f](https://github.com/isadfrn/focus-trail/commit/9bf881f))
+- Implement session persistence and remaining time calculations ([13499cf](https://github.com/isadfrn/focus-trail/commit/13499cf))
+- Add support for reduced motion preferences in global styles ([7412027](https://github.com/isadfrn/focus-trail/commit/7412027))
+
+### ❤️ Contributors
+
+- Isadfrn ([@isadfrn](https://github.com/isadfrn))
+
 ## v0.3.2
 
 [compare changes](https://github.com/isadfrn/focus-trail/compare/v0.3.1...v0.3.2)
