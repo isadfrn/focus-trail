@@ -6,6 +6,7 @@ const { prismaMock } = vi.hoisted(() => ({
       findUnique: vi.fn(),
       create: vi.fn(),
       update: vi.fn(),
+      delete: vi.fn(),
     },
   },
 }));
@@ -22,6 +23,10 @@ const meSelect = {
   character: true,
   focusMinutes: true,
   breakMinutes: true,
+  autoCycle: true,
+  longBreakMinutes: true,
+  pomodorosUntilLongBreak: true,
+  dailyFocusGoalMinutes: true,
   createdAt: true,
 } as const;
 
@@ -111,6 +116,15 @@ describe("UserRepository", () => {
     expect(prismaMock.user.update).toHaveBeenCalledWith({
       where: { id: "1" },
       data: { passwordHash: "new-hash" },
+      select: { id: true },
+    });
+  });
+
+  it("deletes the user by id", async () => {
+    prismaMock.user.delete.mockResolvedValue({ id: "1" });
+    await repository.deleteById("1");
+    expect(prismaMock.user.delete).toHaveBeenCalledWith({
+      where: { id: "1" },
       select: { id: true },
     });
   });

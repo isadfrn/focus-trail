@@ -6,6 +6,7 @@ import {
   deleteSessionSchemaDoc,
   deleteSessionsSchemaDoc,
   listSessionsSchema,
+  statsSchemaDoc,
 } from "../docs/openapi-schemas.js";
 
 export async function sessionRoutes(app: FastifyInstance) {
@@ -16,6 +17,9 @@ export async function sessionRoutes(app: FastifyInstance) {
   );
   app.get("/", { schema: listSessionsSchema }, (request, reply) =>
     sessionController.list(request, reply),
+  );
+  app.get("/stats", { schema: statsSchemaDoc }, (request, reply) =>
+    sessionController.stats(request, reply),
   );
   app.delete("/", { schema: deleteSessionsSchemaDoc }, (request, reply) =>
     sessionController.removeMany(request, reply),

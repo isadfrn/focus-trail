@@ -6,6 +6,10 @@ const meSelect = {
   character: true,
   focusMinutes: true,
   breakMinutes: true,
+  autoCycle: true,
+  longBreakMinutes: true,
+  pomodorosUntilLongBreak: true,
+  dailyFocusGoalMinutes: true,
   createdAt: true,
 } as const;
 
@@ -13,6 +17,10 @@ export interface PreferencesUpdate {
   character?: string;
   focusMinutes?: number;
   breakMinutes?: number;
+  autoCycle?: boolean;
+  longBreakMinutes?: number;
+  pomodorosUntilLongBreak?: number;
+  dailyFocusGoalMinutes?: number;
 }
 
 export class UserRepository {
@@ -72,6 +80,13 @@ export class UserRepository {
     return prisma.user.update({
       where: { id },
       data: { passwordHash },
+      select: { id: true },
+    });
+  }
+
+  deleteById(id: string) {
+    return prisma.user.delete({
+      where: { id },
       select: { id: true },
     });
   }
