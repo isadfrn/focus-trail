@@ -7,6 +7,7 @@ on:
 
 env:
   IMAGE: ghcr.io/${{ github.repository_owner }}/focus-trail-backend
+  FRONTEND_IMAGE: ghcr.io/${{ github.repository_owner }}/focus-trail-frontend
 
 jobs:
   deploy:
@@ -20,21 +21,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: .nvmrc
-          cache: npm
-          cache-dependency-path: frontend/package-lock.json
-
-      - name: Build frontend
-        working-directory: frontend
-        env:
-          VITE_API_BASE: /focus/api
-        run: |
-          npm ci
-          npm run build
-
       - name: Login on GitHub Container Registry
         uses: docker/login-action@v3
         with:
@@ -42,13 +28,23 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and push image
+      - name: Build and push backend image
         uses: docker/build-push-action@v6
         with:
           context: ./backend
           file: ./backend/Dockerfile
           push: true
           tags: ${{ env.IMAGE }}:latest
+
+      - name: Build and push frontend image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./frontend
+          file: ./frontend/Dockerfile
+          push: true
+          build-args: |
+            VITE_API_BASE=/focus/api
+          tags: ${{ env.FRONTEND_IMAGE }}:latest
 
       - name: Setup SSH key
         run: |
@@ -73,18 +69,8 @@ jobs:
             ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} \
             "echo '$GHCR_TOKEN' | docker login ghcr.io -u '$GHCR_USER' --password-stdin && \
              cd ~/focus-trail && \
-             IMAGE=${{ env.IMAGE }}:latest docker compose -f docker-compose.prod.yml pull api && \
-             IMAGE=${{ env.IMAGE }}:latest docker compose -f docker-compose.prod.yml up -d"
-
-      - name: Ship frontend to VPS
-        run: |
-          ssh -p ${{ secrets.SSH_PORT }} -i ~/.ssh/id_ed25519 \
-            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} \
-            "mkdir -p /var/www/focus && rm -rf /var/www/focus/*"
-
-          scp -P ${{ secrets.SSH_PORT }} -i ~/.ssh/id_ed25519 -r \
-            frontend/dist/. \
-            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/var/www/focus/
+             IMAGE=${{ env.IMAGE }}:latest WEB_IMAGE=${{ env.FRONTEND_IMAGE }}:latest docker compose -f docker-compose.prod.yml pull api web && \
+             IMAGE=${{ env.IMAGE }}:latest WEB_IMAGE=${{ env.FRONTEND_IMAGE }}:latest docker compose -f docker-compose.prod.yml up -d"
 
       - name: Cleanup SSH key
         if: always()
