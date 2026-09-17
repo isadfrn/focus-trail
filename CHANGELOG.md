@@ -1,6 +1,18 @@
 # Changelog
 
 
+## v0.4.1
+
+[compare changes](https://github.com/isadfrn/focus-trail/compare/v0.4.0...v0.4.1)
+
+### 🚀 Enhancements
+
+- Update deployment process and add frontend container support ([5e92a80](https://github.com/isadfrn/focus-trail/commit/5e92a80))
+
+### ❤️ Contributors
+
+- Isadfrn ([@isadfrn](https://github.com/isadfrn))
+
 ## v0.4.0
 
 [compare changes](https://github.com/isadfrn/focus-trail/compare/v0.3.2...v0.4.0)
