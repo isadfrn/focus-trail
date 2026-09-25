@@ -344,7 +344,7 @@ export function ShareDialog({
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
-        <Dialog.Overlay className="fixed inset-0 z-40 bg-charcoal-blue-950/50 data-[state=open]:animate-fade-in data-[state=closed]:animate-fade-out" />
+        <Dialog.Overlay className="fixed inset-0 z-40 bg-slate-950/50 data-[state=open]:animate-fade-in data-[state=closed]:animate-fade-out" />
         <Dialog.Content
           aria-describedby={undefined}
           className="fixed left-1/2 top-1/2 z-50 flex max-h-[92dvh] w-[min(94vw,860px)] -translate-x-1/2 -translate-y-1/2 flex-col gap-4 overflow-y-auto scrollbar-thin rounded-2xl border border-border bg-surface p-5 shadow-app outline-none data-[state=open]:animate-menu-in data-[state=closed]:animate-menu-out"

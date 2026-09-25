@@ -4,18 +4,18 @@ import type { CharacterTheme, ScenePalette } from "../types/character";
 import { isLightColor } from "./color";
 
 const ON_DARK: ScenePalette = {
-  foreground: "#f8eed3",
-  accent: "#e4ba4e",
-  panel: "rgba(16, 30, 35, 0.55)",
+  foreground: "#f6f5fa",
+  accent: "#bfaee2",
+  panel: "rgba(23, 19, 31, 0.55)",
   panelBorder: "rgba(255, 255, 255, 0.15)",
-  onAccent: "#101e23",
+  onAccent: "#17131f",
 };
 
 const ON_LIGHT: ScenePalette = {
-  foreground: "#0b1518",
-  accent: "#20796f",
+  foreground: "#0e0c14",
+  accent: "#6a4da0",
   panel: "rgba(255, 255, 255, 0.62)",
-  panelBorder: "rgba(11, 21, 24, 0.12)",
+  panelBorder: "rgba(14, 12, 20, 0.12)",
   onAccent: "#ffffff",
 };
 

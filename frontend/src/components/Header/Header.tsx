@@ -49,7 +49,7 @@ export function Header() {
             <span className="block h-0.5 w-full rounded-[1px] bg-foreground" />
           </Dialog.Trigger>
           <Dialog.Portal>
-            <Dialog.Overlay className="fixed inset-0 z-40 bg-charcoal-blue-950/50 data-[state=open]:animate-fade-in data-[state=closed]:animate-fade-out" />
+            <Dialog.Overlay className="fixed inset-0 z-40 bg-slate-950/50 data-[state=open]:animate-fade-in data-[state=closed]:animate-fade-out" />
             <Dialog.Content
               aria-describedby={undefined}
               className={cn(

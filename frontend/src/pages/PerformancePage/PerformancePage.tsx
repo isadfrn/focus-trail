@@ -45,7 +45,7 @@ function Chart({ days }: { days: DayTotals[] }) {
               style={{ height: barHeight(day.focusSeconds, max) }}
             />
             <div
-              className="w-2 rounded-t bg-sandy-brown-400"
+              className="w-2 rounded-t bg-accent-400"
               style={{ height: barHeight(day.breakSeconds, max) }}
             />
           </div>
@@ -95,7 +95,7 @@ function GoalCard({
           Meta de hoje
         </span>
         {goalMinutes > 0 && (
-          <span className="text-xs font-semibold text-sandy-brown-500">
+          <span className="text-xs font-semibold text-accent-500">
             🔥 {streakLabel}
           </span>
         )}
@@ -210,7 +210,7 @@ export function PerformancePage() {
               <div className="mb-3 flex items-center justify-between gap-4">
                 <div className="flex items-center gap-4">
                   <LegendDot className="bg-primary" label="Foco" />
-                  <LegendDot className="bg-sandy-brown-400" label="Pausa" />
+                  <LegendDot className="bg-accent-400" label="Pausa" />
                 </div>
                 <span className="text-xs text-muted">
                   Melhor dia: {bestDayLabel}

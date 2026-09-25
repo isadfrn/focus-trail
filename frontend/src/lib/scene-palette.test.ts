@@ -18,12 +18,12 @@ function makeCharacter(overrides: Partial<CharacterTheme> = {}): CharacterTheme 
 describe("scene-palette", () => {
   it("uses the dark preset for a dark sky", () => {
     const palette = resolveScenePalette(makeCharacter({ skyColor: "#007474" }));
-    expect(palette.foreground).toBe("#f8eed3");
+    expect(palette.foreground).toBe("#f6f5fa");
   });
 
   it("uses the light preset for a light sky", () => {
     const palette = resolveScenePalette(makeCharacter({ skyColor: "#ffffff" }));
-    expect(palette.foreground).toBe("#0b1518");
+    expect(palette.foreground).toBe("#0e0c14");
   });
 
   it("lets a character override individual palette entries", () => {
