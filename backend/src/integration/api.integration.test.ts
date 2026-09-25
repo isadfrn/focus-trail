@@ -336,6 +336,59 @@ describe("sessions (integration)", () => {
       sessions: 3,
     });
   });
+
+  it("groups focus totals by task label ignoring case and breaks", async () => {
+    const { cookie } = await registerUser("tasks-int@example.com");
+    await createSession(cookie, {
+      type: "focus",
+      completed: true,
+      durationSeconds: 1500,
+      startedAt: "2026-09-10T09:00:00.000Z",
+      endedAt: "2026-09-10T09:25:00.000Z",
+      taskLabel: "Estudar inglês",
+    });
+    await createSession(cookie, {
+      type: "focus",
+      completed: false,
+      durationSeconds: 600,
+      startedAt: "2026-09-11T09:00:00.000Z",
+      endedAt: "2026-09-11T09:10:00.000Z",
+      taskLabel: "estudar inglês",
+    });
+    await createSession(cookie, {
+      type: "focus",
+      completed: true,
+      durationSeconds: 900,
+      startedAt: "2026-09-12T09:00:00.000Z",
+      endedAt: "2026-09-12T09:15:00.000Z",
+      taskLabel: "Outra tarefa",
+    });
+    await createSession(cookie, {
+      type: "break",
+      completed: true,
+      durationSeconds: 300,
+      startedAt: "2026-09-12T09:30:00.000Z",
+      endedAt: "2026-09-12T09:35:00.000Z",
+      taskLabel: "Estudar inglês",
+    });
+
+    const res = await app.inject({
+      method: "GET",
+      url: "/api/sessions/tasks",
+      headers: { cookie },
+    });
+    expect(res.statusCode).toBe(200);
+    const { tasks } = res.json();
+    expect(tasks).toHaveLength(2);
+    expect(tasks[0]).toMatchObject({ label: "Outra tarefa", focusSeconds: 900 });
+    expect(tasks[1]).toMatchObject({
+      label: "estudar inglês",
+      focusSeconds: 2100,
+      completedFocus: 1,
+      sessions: 2,
+      activeDays: 2,
+    });
+  });
 });
 
 describe("LGPD export and account deletion (integration)", () => {

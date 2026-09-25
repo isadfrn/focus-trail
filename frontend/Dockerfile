@@ -2,6 +2,8 @@ FROM node:24.20.0-slim AS build
 WORKDIR /app
 ARG VITE_API_BASE=/focus/api
 ENV VITE_API_BASE=$VITE_API_BASE
+ARG VITE_SHARE_URL=https://isabellanunes.dev/focus/
+ENV VITE_SHARE_URL=$VITE_SHARE_URL
 COPY package.json package-lock.json ./
 RUN npm ci
 COPY . .

@@ -4,6 +4,7 @@ import {
   createSessionSchema,
   listSessionsQuerySchema,
   statsQuerySchema,
+  tasksQuerySchema,
 } from "./session.schema.js";
 
 describe("createSessionSchema", () => {
@@ -123,6 +124,35 @@ describe("statsQuerySchema", () => {
   it("rejects a range where 'to' precedes 'from'", () => {
     expect(
       statsQuerySchema.safeParse({
+        from: "2026-09-10T00:00:00.000Z",
+        to: "2026-09-01T00:00:00.000Z",
+      }).success,
+    ).toBe(false);
+  });
+});
+
+describe("tasksQuerySchema", () => {
+  it("defaults the limit to 20", () => {
+    const parsed = tasksQuerySchema.parse({});
+    expect(parsed.limit).toBe(20);
+  });
+
+  it("coerces the limit and accepts a range", () => {
+    const parsed = tasksQuerySchema.parse({
+      limit: "5",
+      from: "2026-09-01T00:00:00.000Z",
+      to: "2026-09-10T00:00:00.000Z",
+    });
+    expect(parsed.limit).toBe(5);
+  });
+
+  it("rejects a limit above 50", () => {
+    expect(tasksQuerySchema.safeParse({ limit: 51 }).success).toBe(false);
+  });
+
+  it("rejects a range where 'to' precedes 'from'", () => {
+    expect(
+      tasksQuerySchema.safeParse({
         from: "2026-09-10T00:00:00.000Z",
         to: "2026-09-01T00:00:00.000Z",
       }).success,

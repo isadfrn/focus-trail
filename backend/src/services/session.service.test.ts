@@ -11,6 +11,7 @@ describe("SessionService", () => {
     listByUserId: vi.fn(),
     listAllForUser: vi.fn(),
     listDailyStats: vi.fn(),
+    listTaskSummaries: vi.fn(),
     deleteByIdForUser: vi.fn(),
     deleteManyForUser: vi.fn(),
     deleteAllForUser: vi.fn(),
@@ -178,6 +179,23 @@ describe("SessionService", () => {
       interruptedFocus: 1,
       sessions: 3,
     });
+  });
+
+  it("lists task summaries with parsed dates and limit", async () => {
+    const rows = [{ label: "Estudar inglês", focusSeconds: 900 }];
+    sessions.listTaskSummaries.mockResolvedValue(rows);
+
+    const result = await service.tasks("u1", {
+      from: "2026-09-01T00:00:00.000Z",
+      limit: 5,
+    });
+
+    expect(sessions.listTaskSummaries).toHaveBeenCalledWith("u1", {
+      from: new Date("2026-09-01T00:00:00.000Z"),
+      to: undefined,
+      limit: 5,
+    });
+    expect(result).toEqual({ tasks: rows });
   });
 
   it("deletes one and returns the count", async () => {

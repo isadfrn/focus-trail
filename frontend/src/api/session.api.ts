@@ -5,12 +5,26 @@ import type {
   SessionFilters,
   SessionsPage,
   SessionStats,
+  TasksResponse,
 } from "../types/session";
 
 export function statsQuery(params: { from?: string; to?: string }): string {
   const q = new URLSearchParams();
   if (params.from) q.set("from", params.from);
   if (params.to) q.set("to", params.to);
+  const qs = q.toString();
+  return qs ? `?${qs}` : "";
+}
+
+export function tasksQuery(params: {
+  from?: string;
+  to?: string;
+  limit?: number;
+}): string {
+  const q = new URLSearchParams();
+  if (params.from) q.set("from", params.from);
+  if (params.to) q.set("to", params.to);
+  if (params.limit) q.set("limit", String(params.limit));
   const qs = q.toString();
   return qs ? `?${qs}` : "";
 }
@@ -50,6 +64,8 @@ export const sessionApi = {
   } = {}) => request<SessionsPage>(`/sessions${sessionsQuery(params)}`),
   stats: (params: { from?: string; to?: string } = {}) =>
     request<SessionStats>(`/sessions/stats${statsQuery(params)}`),
+  tasks: (params: { from?: string; to?: string; limit?: number } = {}) =>
+    request<TasksResponse>(`/sessions/tasks${tasksQuery(params)}`),
   remove: (id: string) =>
     request<{ deleted: number }>(`/sessions/${id}`, { method: "DELETE" }),
   removeMany: (ids: string[]) =>

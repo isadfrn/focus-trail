@@ -1,7 +1,9 @@
 import * as ToggleGroup from "@radix-ui/react-toggle-group";
+import { useState } from "react";
 
 import { Button } from "../../components/Button/Button";
 import { Scene } from "../../components/Scene/Scene";
+import { ShareDialog } from "../../components/ShareDialog/ShareDialog";
 import { useTimer } from "../../hooks/useTimer";
 import { cn } from "../../lib/cn";
 import { formatClock } from "../../lib/format";
@@ -27,6 +29,7 @@ export function TimerPage() {
   } = useTimer();
 
   const palette = resolveScenePalette(character);
+  const [shareOpen, setShareOpen] = useState(false);
 
   return (
     <div style={sceneVars(palette)}>
@@ -87,8 +90,18 @@ export function TimerPage() {
               Parar
             </Button>
           )}
+          {status === "done" && type === "focus" && (
+            <Button variant="scene" size="lg" onClick={() => setShareOpen(true)}>
+              Compartilhar
+            </Button>
+          )}
         </div>
       </div>
+      <ShareDialog
+        open={shareOpen}
+        onOpenChange={setShareOpen}
+        initialTaskLabel={taskLabel}
+      />
     </div>
   );
 }

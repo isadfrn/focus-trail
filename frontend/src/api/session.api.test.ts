@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import * as http from "../lib/http";
-import { sessionApi, sessionsQuery, statsQuery } from "./session.api";
+import { sessionApi, sessionsQuery, statsQuery, tasksQuery } from "./session.api";
 
 describe("sessionsQuery", () => {
   it("is empty with no params", () => {
@@ -60,6 +60,25 @@ describe("statsQuery", () => {
   });
 });
 
+describe("tasksQuery", () => {
+  it("is empty with no params", () => {
+    expect(tasksQuery({})).toBe("");
+  });
+
+  it("serializes range and limit", () => {
+    const params = new URLSearchParams(
+      tasksQuery({
+        from: "2026-09-01T00:00:00.000Z",
+        to: "2026-09-10T00:00:00.000Z",
+        limit: 50,
+      }),
+    );
+    expect(params.get("from")).toBe("2026-09-01T00:00:00.000Z");
+    expect(params.get("to")).toBe("2026-09-10T00:00:00.000Z");
+    expect(params.get("limit")).toBe("50");
+  });
+});
+
 describe("sessionApi", () => {
   afterEach(() => vi.restoreAllMocks());
 
@@ -75,6 +94,7 @@ describe("sessionApi", () => {
     });
     await sessionApi.list({ limit: 20 });
     await sessionApi.stats({ from: "2026-09-01T00:00:00.000Z" });
+    await sessionApi.tasks({ limit: 50 });
     await sessionApi.remove("id-1");
     await sessionApi.removeMany(["id-1", "id-2"]);
     await sessionApi.removeAll();
@@ -86,7 +106,8 @@ describe("sessionApi", () => {
     expect(calls[0][0]).toBe("/sessions");
     expect(calls[0][1]).toMatchObject({ method: "POST" });
     expect(calls[1][0]).toContain("/sessions");
-    expect(calls[3][0]).toBe("/sessions/id-1");
-    expect(calls[3][1]).toMatchObject({ method: "DELETE" });
+    expect(calls[3][0]).toBe("/sessions/tasks?limit=50");
+    expect(calls[4][0]).toBe("/sessions/id-1");
+    expect(calls[4][1]).toMatchObject({ method: "DELETE" });
   });
 });

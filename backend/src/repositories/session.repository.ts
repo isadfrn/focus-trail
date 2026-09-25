@@ -38,6 +38,22 @@ export interface DailyStatRow {
   sessions: number;
 }
 
+export interface TaskSummaryRow {
+  label: string;
+  focusSeconds: number;
+  completedFocus: number;
+  sessions: number;
+  activeDays: number;
+  firstAt: Date;
+  lastAt: Date;
+}
+
+export interface TaskSummaryOptions {
+  from?: Date;
+  to?: Date;
+  limit: number;
+}
+
 export function buildSessionWhere(
   userId: string,
   filters: SessionFilters = {},
@@ -105,6 +121,33 @@ export class SessionRepository {
       WHERE ${where}
       GROUP BY 1
       ORDER BY 1 ASC
+    `;
+  }
+
+  listTaskSummaries(userId: string, options: TaskSummaryOptions) {
+    const conditions = [
+      Prisma.sql`user_id = ${userId}::uuid`,
+      Prisma.sql`type = 'focus'`,
+      Prisma.sql`task_label IS NOT NULL`,
+      Prisma.sql`btrim(task_label) <> ''`,
+    ];
+    if (options.from) conditions.push(Prisma.sql`started_at >= ${options.from}`);
+    if (options.to) conditions.push(Prisma.sql`started_at < ${options.to}`);
+    const where = Prisma.join(conditions, " AND ");
+
+    return prisma.$queryRaw<TaskSummaryRow[]>`
+      SELECT (array_agg(task_label ORDER BY started_at DESC))[1] AS "label",
+             COALESCE(SUM(duration_seconds), 0)::int AS "focusSeconds",
+             COALESCE(SUM(CASE WHEN completed THEN 1 ELSE 0 END), 0)::int AS "completedFocus",
+             COUNT(*)::int AS "sessions",
+             COUNT(DISTINCT date_trunc('day', started_at))::int AS "activeDays",
+             MIN(started_at) AS "firstAt",
+             MAX(started_at) AS "lastAt"
+      FROM pomodoro_sessions
+      WHERE ${where}
+      GROUP BY lower(btrim(task_label))
+      ORDER BY MAX(started_at) DESC
+      LIMIT ${options.limit}
     `;
   }
 

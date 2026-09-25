@@ -60,3 +60,17 @@ export interface SessionStats {
   days: DailyStat[];
   totals: StatsTotals;
 }
+
+export interface TaskSummary {
+  label: string;
+  focusSeconds: number;
+  completedFocus: number;
+  sessions: number;
+  activeDays: number;
+  firstAt: string;
+  lastAt: string;
+}
+
+export interface TasksResponse {
+  tasks: TaskSummary[];
+}

@@ -33,6 +33,7 @@ describe("UserService", () => {
     listByUserId: vi.fn(),
     listAllForUser: vi.fn(),
     listDailyStats: vi.fn(),
+    listTaskSummaries: vi.fn(),
     deleteByIdForUser: vi.fn(),
     deleteManyForUser: vi.fn(),
     deleteAllForUser: vi.fn(),

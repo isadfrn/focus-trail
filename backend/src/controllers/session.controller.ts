@@ -9,6 +9,7 @@ import {
   listSessionsQuerySchema,
   sessionIdParamSchema,
   statsQuerySchema,
+  tasksQuerySchema,
 } from "../schemas/session.schema.js";
 import {
   sessionService,
@@ -42,6 +43,13 @@ export class SessionController {
     if (!query) return;
 
     return this.sessions.stats(request.user.sub, query);
+  }
+
+  async tasks(request: FastifyRequest, reply: FastifyReply) {
+    const query = parseBody(tasksQuerySchema, request.query, reply);
+    if (!query) return;
+
+    return this.sessions.tasks(request.user.sub, query);
   }
 
   async remove(request: FastifyRequest, reply: FastifyReply) {

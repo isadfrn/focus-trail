@@ -1,6 +1,8 @@
 import manifest from "../assets/scenarios.json";
 import type { CharacterTheme, ScenePalette } from "../types/character";
 
+const HEX_COLOR_PATTERN = /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/;
+
 interface RawScenario {
   id: string;
   name: string;
@@ -74,6 +76,10 @@ function toCharacterTheme(raw: RawScenario): CharacterTheme {
   if (!raw.id) throw new Error(`[scenarios] ${where}: "id" field is required.`);
   if (!raw.name)
     throw new Error(`[scenarios] ${where}: "name" field is required.`);
+  if (!HEX_COLOR_PATTERN.test(raw.skyColor ?? ""))
+    throw new Error(
+      `[scenarios] ${where}: "skyColor" must be a hex color like "#8ec7ff", got "${raw.skyColor}".`,
+    );
   if (!raw.background)
     throw new Error(`[scenarios] ${where}: "background" field is required.`);
   if (!raw.terrain)

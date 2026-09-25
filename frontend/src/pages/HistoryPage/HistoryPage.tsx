@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { Button } from "../../components/Button/Button";
 import { ConfirmDialog } from "../../components/ConfirmDialog/ConfirmDialog";
+import { ShareDialog, type ShareScope } from "../../components/ShareDialog/ShareDialog";
 import { useSessions } from "../../hooks/useSessions";
 import { formatDateTime, formatDuration } from "../../lib/format";
 import {
@@ -43,6 +44,27 @@ function TrashIcon() {
   );
 }
 
+interface ShareTarget {
+  scope: ShareScope;
+  date: Date;
+  taskLabel?: string;
+}
+
+function ShareIcon() {
+  return (
+    <svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true">
+      <path
+        d="M8 10.5V2.5 M5 5.2 8 2.3l3 2.9 M3 8.5v4c0 .6.4 1 1 1h8c.6 0 1-.4 1-1v-4"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.3"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 function statusLabel(s: PomodoroSession) {
   return s.completed ? (
     <span className="text-xs text-ok">concluida</span>
@@ -70,6 +92,17 @@ export function HistoryPage() {
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [pending, setPending] = useState<Pending | null>(null);
   const [busy, setBusy] = useState(false);
+  const [shareTarget, setShareTarget] = useState<ShareTarget | null>(null);
+  const [shareOpen, setShareOpen] = useState(false);
+
+  const shareSession = (session: PomodoroSession) => {
+    setShareTarget({
+      scope: session.taskLabel ? "task" : "day",
+      date: new Date(session.startedAt),
+      taskLabel: session.taskLabel ?? undefined,
+    });
+    setShareOpen(true);
+  };
 
   useEffect(() => {
     const t = setTimeout(() => {
@@ -313,14 +346,26 @@ export function HistoryPage() {
                     <td>{formatDuration(s.durationSeconds)}</td>
                     <td>{statusLabel(s)}</td>
                     <td>
-                      <button
-                        type="button"
-                        onClick={() => setPending({ kind: "one", id: s.id })}
-                        aria-label="Apagar sessao"
-                        className="flex size-8 items-center justify-center rounded-lg text-muted cursor-pointer outline-none hover:bg-danger/10 hover:text-danger focus-visible:ring-2 focus-visible:ring-danger"
-                      >
-                        <TrashIcon />
-                      </button>
+                      <div className="flex items-center gap-1">
+                        {s.type === "focus" && (
+                          <button
+                            type="button"
+                            onClick={() => shareSession(s)}
+                            aria-label="Compartilhar sessão"
+                            className="flex size-8 items-center justify-center rounded-lg text-muted cursor-pointer outline-none hover:bg-background hover:text-primary focus-visible:ring-2 focus-visible:ring-primary"
+                          >
+                            <ShareIcon />
+                          </button>
+                        )}
+                        <button
+                          type="button"
+                          onClick={() => setPending({ kind: "one", id: s.id })}
+                          aria-label="Apagar sessao"
+                          className="flex size-8 items-center justify-center rounded-lg text-muted cursor-pointer outline-none hover:bg-danger/10 hover:text-danger focus-visible:ring-2 focus-visible:ring-danger"
+                        >
+                          <TrashIcon />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -349,14 +394,26 @@ export function HistoryPage() {
                   </span>
                   {statusLabel(s)}
                 </div>
-                <button
-                  type="button"
-                  onClick={() => setPending({ kind: "one", id: s.id })}
-                  aria-label="Apagar sessao"
-                  className="flex size-8 shrink-0 items-center justify-center rounded-lg text-muted cursor-pointer outline-none hover:bg-danger/10 hover:text-danger"
-                >
-                  <TrashIcon />
-                </button>
+                <div className="flex shrink-0 items-center gap-1">
+                  {s.type === "focus" && (
+                    <button
+                      type="button"
+                      onClick={() => shareSession(s)}
+                      aria-label="Compartilhar sessão"
+                      className="flex size-8 items-center justify-center rounded-lg text-muted cursor-pointer outline-none hover:bg-background hover:text-primary"
+                    >
+                      <ShareIcon />
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => setPending({ kind: "one", id: s.id })}
+                    aria-label="Apagar sessao"
+                    className="flex size-8 items-center justify-center rounded-lg text-muted cursor-pointer outline-none hover:bg-danger/10 hover:text-danger"
+                  >
+                    <TrashIcon />
+                  </button>
+                </div>
               </li>
             ))}
           </ul>
@@ -374,6 +431,14 @@ export function HistoryPage() {
           )}
         </>
       )}
+
+      <ShareDialog
+        open={shareOpen}
+        onOpenChange={setShareOpen}
+        initialScope={shareTarget?.scope}
+        date={shareTarget?.date}
+        initialTaskLabel={shareTarget?.taskLabel}
+      />
 
       <ConfirmDialog
         open={pending !== null}

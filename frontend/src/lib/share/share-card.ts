@@ -1,0 +1,239 @@
+export type ShareFormatId = "story" | "square";
+
+export interface ShareFormat {
+  id: ShareFormatId;
+  label: string;
+  width: number;
+  height: number;
+}
+
+export const SHARE_FORMATS: Record<ShareFormatId, ShareFormat> = {
+  story: { id: "story", label: "Story 9:16", width: 1080, height: 1920 },
+  square: { id: "square", label: "Post 1:1", width: 1080, height: 1080 },
+};
+
+export interface ShareStat {
+  value: string;
+  label: string;
+}
+
+export interface ShareGoal {
+  ratio: number;
+  leftLabel: string;
+  rightLabel: string;
+}
+
+export interface ShareCardContent {
+  kind: "day" | "task";
+  kicker: string;
+  subtitle?: string;
+  title?: string;
+  heroCaption?: string;
+  seconds: number;
+  goal?: ShareGoal;
+  stats: ShareStat[];
+}
+
+export interface DayShareSubject {
+  kind: "day";
+  date: Date;
+  focusSeconds: number;
+  completedFocus: number;
+  interruptedFocus: number;
+  goalMinutes: number;
+  streak: number;
+}
+
+export interface TaskShareSubject {
+  kind: "task";
+  label: string;
+  showLabel: boolean;
+  focusSeconds: number;
+  completedFocus: number;
+  activeDays: number;
+  firstAt: Date;
+}
+
+export type ShareSubject = DayShareSubject | TaskShareSubject;
+
+export interface HeroRun {
+  text: string;
+  unit: boolean;
+}
+
+const MAX_STATS = 3;
+
+function pluralize(count: number, singular: string, plural: string): string {
+  return count === 1 ? singular : plural;
+}
+
+export function buildHeroRuns(seconds: number): HeroRun[] {
+  const totalMinutes = Math.max(0, Math.floor(seconds / 60));
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+  const runs: HeroRun[] = [];
+  if (hours > 0) {
+    runs.push({ text: String(hours), unit: false }, { text: "h", unit: true });
+  }
+  if (hours === 0 || minutes > 0) {
+    runs.push(
+      {
+        text: hours > 0 ? String(minutes).padStart(2, "0") : String(minutes),
+        unit: false,
+      },
+      { text: "min", unit: true },
+    );
+  }
+  return runs;
+}
+
+export function formatShareDuration(seconds: number): string {
+  return buildHeroRuns(seconds)
+    .reduce<string[]>((parts, run) => {
+      if (run.unit) parts[parts.length - 1] += run.text;
+      else parts.push(run.text);
+      return parts;
+    }, [])
+    .join(" ");
+}
+
+function isSameLocalDay(first: Date, second: Date): boolean {
+  return (
+    first.getFullYear() === second.getFullYear() &&
+    first.getMonth() === second.getMonth() &&
+    first.getDate() === second.getDate()
+  );
+}
+
+export function formatLongDate(date: Date): string {
+  return new Intl.DateTimeFormat("pt-BR", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+  }).format(date);
+}
+
+export function formatShortDate(date: Date, now: Date): string {
+  const parts = new Intl.DateTimeFormat("pt-BR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "2-digit",
+  }).formatToParts(date);
+  const pick = (type: string) =>
+    parts.find((part) => part.type === type)?.value ?? "";
+  const dayAndMonth = `${pick("day")}/${pick("month")}`;
+  return date.getFullYear() === now.getFullYear()
+    ? dayAndMonth
+    : `${dayAndMonth}/${pick("year")}`;
+}
+
+function formatGoalDuration(minutes: number): string {
+  return formatShareDuration(minutes * 60);
+}
+
+function buildDayContent(subject: DayShareSubject, now: Date): ShareCardContent {
+  const stats: ShareStat[] = [];
+
+  if (subject.completedFocus > 0) {
+    stats.push({
+      value: String(subject.completedFocus),
+      label: pluralize(subject.completedFocus, "pomodoro", "pomodoros"),
+    });
+  }
+  if (subject.goalMinutes > 0 && subject.streak > 0) {
+    stats.push({
+      value: String(subject.streak),
+      label: pluralize(subject.streak, "dia seguido", "dias seguidos"),
+    });
+  }
+  const finished = subject.completedFocus + subject.interruptedFocus;
+  if (finished > 0) {
+    stats.push({
+      value: `${Math.round((subject.completedFocus / finished) * 100)}%`,
+      label: "concluídos",
+    });
+  }
+
+  const goalSeconds = subject.goalMinutes * 60;
+  const goal: ShareGoal | undefined =
+    goalSeconds > 0
+      ? {
+          ratio: Math.min(1, subject.focusSeconds / goalSeconds),
+          leftLabel: `Meta diária · ${formatGoalDuration(subject.goalMinutes)}`,
+          rightLabel:
+            subject.focusSeconds >= goalSeconds
+              ? "Meta batida"
+              : `${Math.floor((subject.focusSeconds / goalSeconds) * 100)}%`,
+        }
+      : undefined;
+
+  return {
+    kind: "day",
+    kicker: isSameLocalDay(subject.date, now) ? "FOCO DE HOJE" : "FOCO DO DIA",
+    subtitle: formatLongDate(subject.date),
+    seconds: subject.focusSeconds,
+    goal,
+    stats: stats.slice(0, MAX_STATS),
+  };
+}
+
+function buildTaskContent(
+  subject: TaskShareSubject,
+  now: Date,
+): ShareCardContent {
+  const stats: ShareStat[] = [];
+  if (subject.completedFocus > 0) {
+    stats.push({
+      value: String(subject.completedFocus),
+      label: pluralize(subject.completedFocus, "pomodoro", "pomodoros"),
+    });
+  }
+  if (subject.activeDays > 0) {
+    stats.push({
+      value: String(subject.activeDays),
+      label: pluralize(subject.activeDays, "dia", "dias"),
+    });
+  }
+  stats.push({ value: formatShortDate(subject.firstAt, now), label: "desde" });
+
+  return {
+    kind: "task",
+    kicker: "TAREFA",
+    title: subject.showLabel ? subject.label : undefined,
+    heroCaption: "de foco no total",
+    seconds: subject.focusSeconds,
+    stats: stats.slice(0, MAX_STATS),
+  };
+}
+
+export function buildCardContent(
+  subject: ShareSubject,
+  now: Date = new Date(),
+): ShareCardContent {
+  return subject.kind === "day"
+    ? buildDayContent(subject, now)
+    : buildTaskContent(subject, now);
+}
+
+export function buildShareText(
+  subject: ShareSubject,
+  now: Date = new Date(),
+): string {
+  const duration = formatShareDuration(subject.focusSeconds);
+  if (subject.kind === "day") {
+    const when = isSameLocalDay(subject.date, now)
+      ? "Hoje eu foquei"
+      : `Em ${formatLongDate(subject.date)} eu foquei`;
+    return `${when} ${duration} no Focus Trail 🍅`;
+  }
+  const target = subject.showLabel ? `na tarefa "${subject.label}"` : "em uma tarefa";
+  return `Já foquei ${duration} ${target} com o Focus Trail 🍅`;
+}
+
+export function buildShareCaption(
+  subject: ShareSubject,
+  url: string,
+  now: Date = new Date(),
+): string {
+  return `${buildShareText(subject, now)}\n${url}`;
+}

@@ -20,6 +20,7 @@ describe("SessionController", () => {
     create: vi.fn(),
     list: vi.fn(),
     stats: vi.fn(),
+    tasks: vi.fn(),
     deleteOne: vi.fn(),
     deleteMany: vi.fn(),
     deleteAll: vi.fn(),
@@ -147,6 +148,39 @@ describe("SessionController", () => {
     );
     expect(reply.code).toHaveBeenCalledWith(400);
     expect(sessions.stats).not.toHaveBeenCalled();
+  });
+
+  it("returns task summaries for a parsed query", async () => {
+    const reply = createReply();
+    const result = { tasks: [] };
+    vi.mocked(sessions.tasks).mockResolvedValue(result as never);
+
+    await expect(
+      controller.tasks(
+        {
+          query: { limit: "5" },
+          user: { sub: "u1", email: "a@b.com" },
+        } as unknown as FastifyRequest,
+        reply as never,
+      ),
+    ).resolves.toEqual(result);
+    expect(sessions.tasks).toHaveBeenCalledWith(
+      "u1",
+      expect.objectContaining({ limit: 5 }),
+    );
+  });
+
+  it("rejects an invalid tasks query", async () => {
+    const reply = createReply();
+    await controller.tasks(
+      {
+        query: { limit: "500" },
+        user: { sub: "u1", email: "a@b.com" },
+      } as unknown as FastifyRequest,
+      reply as never,
+    );
+    expect(reply.code).toHaveBeenCalledWith(400);
+    expect(sessions.tasks).not.toHaveBeenCalled();
   });
 
   it("rejects a delete with an invalid id", async () => {

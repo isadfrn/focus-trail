@@ -59,6 +59,19 @@ export const statsQuerySchema = z
 
 export type StatsQuery = z.infer<typeof statsQuerySchema>;
 
+export const tasksQuerySchema = z
+  .object({
+    from: z.string().datetime().optional(),
+    to: z.string().datetime().optional(),
+    limit: z.coerce.number().int().min(1).max(50).default(20),
+  })
+  .refine((v) => !v.from || !v.to || new Date(v.to) >= new Date(v.from), {
+    message: "'to' must be greater than or equal to 'from'",
+    path: ["to"],
+  });
+
+export type TasksQuery = z.infer<typeof tasksQuerySchema>;
+
 export const sessionIdParamSchema = z.object({
   id: z.string().uuid(),
 });

@@ -402,6 +402,58 @@ export const statsSchemaDoc = {
   },
 } satisfies FastifySchema;
 
+export const taskSummarySchema = {
+  type: "object",
+  required: [
+    "label",
+    "focusSeconds",
+    "completedFocus",
+    "sessions",
+    "activeDays",
+    "firstAt",
+    "lastAt",
+  ],
+  additionalProperties: false,
+  properties: {
+    label: { type: "string" },
+    focusSeconds: { type: "integer", minimum: 0 },
+    completedFocus: { type: "integer", minimum: 0 },
+    sessions: { type: "integer", minimum: 0 },
+    activeDays: { type: "integer", minimum: 0 },
+    firstAt: { type: "string", format: "date-time" },
+    lastAt: { type: "string", format: "date-time" },
+  },
+} as const;
+
+export const tasksSchemaDoc = {
+  tags: ["Sessions"],
+  summary: "Focus totals grouped by task label",
+  description:
+    "Groups the authenticated user's focus sessions by task label (case-insensitive, trimmed), most recently used first. Optionally restricted by `from`/`to`.",
+  security: cookieAuthSecurity,
+  querystring: {
+    type: "object",
+    additionalProperties: false,
+    properties: {
+      from: { type: "string", format: "date-time" },
+      to: { type: "string", format: "date-time" },
+      limit: { type: "integer", minimum: 1, maximum: 50, default: 20 },
+    },
+  },
+  response: {
+    200: {
+      type: "object",
+      required: ["tasks"],
+      additionalProperties: false,
+      properties: {
+        tasks: { type: "array", items: taskSummarySchema },
+      },
+    },
+    400: errorResponseSchema,
+    401: errorResponseSchema,
+  },
+} satisfies FastifySchema;
+
 export const deleteResultSchema = {
   type: "object",
   required: ["deleted"],

@@ -11,6 +11,7 @@ import type {
   CreateSessionInput,
   ListSessionsQuery,
   StatsQuery,
+  TasksQuery,
 } from "../schemas/session.schema.js";
 
 export class SessionService {
@@ -81,6 +82,15 @@ export class SessionService {
     );
 
     return { days, totals };
+  }
+
+  async tasks(userId: string, query: TasksQuery) {
+    const tasks = await this.sessions.listTaskSummaries(userId, {
+      from: query.from ? new Date(query.from) : undefined,
+      to: query.to ? new Date(query.to) : undefined,
+      limit: query.limit,
+    });
+    return { tasks };
   }
 
   async deleteOne(userId: string, id: string) {

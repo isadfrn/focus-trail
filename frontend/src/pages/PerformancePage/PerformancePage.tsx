@@ -1,5 +1,7 @@
 import { useState } from "react";
 
+import { Button } from "../../components/Button/Button";
+import { ShareDialog } from "../../components/ShareDialog/ShareDialog";
 import { usePerformance } from "../../hooks/usePerformance";
 import { formatDuration } from "../../lib/format";
 import type { DayTotals, TodayProgress } from "../../lib/performance";
@@ -141,6 +143,7 @@ export function PerformancePage() {
   const goalMinutes = user?.dailyFocusGoalMinutes ?? 0;
 
   const [windowDays, setWindowDays] = useState(14);
+  const [shareOpen, setShareOpen] = useState(false);
   const {
     days,
     totals,
@@ -164,21 +167,24 @@ export function PerformancePage() {
     <div className="flex flex-col gap-5">
       <div className="flex items-end justify-between gap-3">
         <h1 className="m-0 text-2xl font-bold">Performance</h1>
-        <label className="flex flex-col gap-1 text-xs text-muted">
-          Período
-          <select
-            value={windowDays}
-            onChange={(e) => setWindowDays(Number(e.target.value))}
-            aria-label="Período"
-            className={field}
-          >
-            {WINDOW_OPTIONS.map((option) => (
-              <option key={option} value={option}>
-                {option} dias
-              </option>
-            ))}
-          </select>
-        </label>
+        <div className="flex items-end gap-3">
+          <Button onClick={() => setShareOpen(true)}>Compartilhar hoje</Button>
+          <label className="flex flex-col gap-1 text-xs text-muted">
+            Período
+            <select
+              value={windowDays}
+              onChange={(e) => setWindowDays(Number(e.target.value))}
+              aria-label="Período"
+              className={field}
+            >
+              {WINDOW_OPTIONS.map((option) => (
+                <option key={option} value={option}>
+                  {option} dias
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
       </div>
 
       {error ? (
@@ -220,6 +226,8 @@ export function PerformancePage() {
           )}
         </>
       )}
+
+      <ShareDialog open={shareOpen} onOpenChange={setShareOpen} />
     </div>
   );
 }

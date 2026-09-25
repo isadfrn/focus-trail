@@ -17,6 +17,7 @@
 - Scenario picker in the app menu (locked while a session is running).
 - Email/password auth with cookie-based JWT sessions and server-side session revocation.
 - Session history per user.
+- Shareable focus cards (day or task) rendered client-side in canvas from the active scenario, for Instagram, TikTok, LinkedIn and X (see [Sharing](#sharing)).
 - Backend startup check that fails fast with an actionable message when the database is unreachable or unmigrated.
 
 ## Screenshots
@@ -132,6 +133,8 @@ Base path: `/api`
 | `GET`  | `/me`            | session | Current user                   |
 | `POST` | `/sessions`      | session | Record a Pomodoro session      |
 | `GET`  | `/sessions`      | session | List the user's sessions       |
+| `GET`  | `/sessions/stats` | session | Daily focus/break statistics  |
+| `GET`  | `/sessions/tasks` | session | Focus totals grouped by task   |
 
 An HTTP request collection is available in [`backend/bruno`](backend/bruno).
 
@@ -153,6 +156,14 @@ To add a scenario: drop the images in the pools and add a block referencing them
 ```
 
 The character `sheet` is a single sprite sheet whose frames are detected automatically (one frame = idle, two or more = walk animation). Optional per-scenario knobs: `frames`, `height`, `terrainHeight`, `baseline`, `cameraSpeed`, `terrainSpeed`, `spriteSpeed`.
+
+## Sharing
+
+The share dialog (Timer after a focus session, Performance, History rows) renders a PNG card in the browser — nothing is uploaded. Two formats: Story/TikTok `1080×1920` and Post `1080×1080`.
+
+- The card is drawn from the same scenario data as the timer scene (`scenarios.json` + the asset pools), so adding, removing or replacing scenarios and images updates the cards with no extra work. The layout adapts to each scenario's character height and palette.
+- The link printed on the card and added to the caption comes from `VITE_SHARE_URL` (build-time, default `https://isabellanunes.dev/focus/`). Point it to a landing page later — no code change needed (`frontend/Dockerfile` exposes it as a build arg).
+- Instagram and TikTok have no web share link: on mobile the native share sheet receives the image; on desktop download the PNG. X and LinkedIn open their composers and the image is copied to the clipboard for pasting.
 
 ## Scripts
 

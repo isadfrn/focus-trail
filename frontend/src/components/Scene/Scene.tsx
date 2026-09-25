@@ -2,15 +2,18 @@ import { useEffect, useRef, useState, type CSSProperties } from "react";
 
 import { useReducedMotion } from "../../hooks/useReducedMotion";
 import { useSpriteSheet } from "../../hooks/useSpriteSheet";
+import {
+  DEFAULT_TERRAIN_HEIGHT,
+  resolveBaseline,
+  resolveSpriteScale,
+  resolveTerrainHeight,
+} from "../../lib/scene-metrics";
 import type { CharacterTheme } from "../../types/character";
 
 const DEFAULT_FRAME_MS = 140;
-const DEFAULT_SPRITE_HEIGHT = 90;
-const DEFAULT_TERRAIN_HEIGHT = 96;
 const DEFAULT_CAMERA_SECONDS = 20;
 const DEFAULT_GROUND_SECONDS = 0.7;
 const GROUND_BASE_PX_PER_SEC = DEFAULT_TERRAIN_HEIGHT / DEFAULT_GROUND_SECONDS;
-const GROUND_OVERLAP = 2;
 
 interface SceneProps {
   character: CharacterTheme;
@@ -44,8 +47,8 @@ export function Scene({ character, walking }: SceneProps) {
   const sprite = useSpriteSheet(character.sheet, character.frames);
   const frameCount = sprite?.frames.length ?? 0;
 
-  const terrainHeight = character.terrainHeight ?? DEFAULT_TERRAIN_HEIGHT;
-  const baseline = character.baseline ?? terrainHeight - GROUND_OVERLAP;
+  const terrainHeight = resolveTerrainHeight(character);
+  const baseline = resolveBaseline(character);
   const cameraSpeed = character.cameraSpeed ?? 1;
   const terrainSpeed = character.terrainSpeed ?? 1;
   const spriteSpeed = character.spriteSpeed ?? 1;
@@ -146,9 +149,7 @@ function CharacterSprite({
   const { contentTop, contentHeight, sheetWidth, sheetHeight, frames } = sprite;
   const rect = frames[frame] ?? frames[0];
 
-  const scale = character.height
-    ? character.height / contentHeight
-    : Math.max(1, Math.round(DEFAULT_SPRITE_HEIGHT / contentHeight));
+  const scale = resolveSpriteScale(character, contentHeight);
 
   return (
     <div

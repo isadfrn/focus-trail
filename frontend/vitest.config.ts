@@ -18,12 +18,14 @@ export default defineConfig({
         "src/providers/**",
         "src/api/**",
         "src/components/AudioControls/**",
+        "src/components/ShareDialog/**",
       ],
       exclude: [
         "src/**/*.test.{ts,tsx}",
         "src/test/**",
         "src/lib/platform/**",
         "src/hooks/useSpriteSheet.ts",
+        "src/lib/share/share-render.ts",
       ],
       thresholds: {
         lines: 85,

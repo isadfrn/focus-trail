@@ -1,0 +1,19 @@
+meta {
+  name: Session Tasks
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/api/sessions/tasks?limit=20
+  body: none
+  auth: none
+}
+
+params:query {
+  limit: 20
+}
+
+vars:pre-request {
+  baseUrl: http://localhost:3001
+}

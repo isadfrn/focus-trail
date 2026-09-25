@@ -107,6 +107,37 @@ describe("SessionRepository", () => {
     expect(prismaMock.$queryRaw).toHaveBeenCalledTimes(1);
   });
 
+  it("lists task summaries through a raw grouped query", async () => {
+    const rows = [
+      {
+        label: "Estudar inglês",
+        focusSeconds: 4500,
+        completedFocus: 3,
+        sessions: 3,
+        activeDays: 2,
+        firstAt: new Date("2026-09-01T10:00:00.000Z"),
+        lastAt: new Date("2026-09-02T10:00:00.000Z"),
+      },
+    ];
+    prismaMock.$queryRaw.mockResolvedValue(rows);
+
+    await expect(
+      repository.listTaskSummaries("u1", {
+        from: new Date("2026-09-01T00:00:00.000Z"),
+        to: new Date("2026-09-30T00:00:00.000Z"),
+        limit: 10,
+      }),
+    ).resolves.toEqual(rows);
+    expect(prismaMock.$queryRaw).toHaveBeenCalledTimes(1);
+  });
+
+  it("lists task summaries without a date range", async () => {
+    prismaMock.$queryRaw.mockResolvedValue([]);
+    await expect(
+      repository.listTaskSummaries("u1", { limit: 20 }),
+    ).resolves.toEqual([]);
+  });
+
   it("deletes one session scoped to the user", async () => {
     prismaMock.pomodoroSession.deleteMany.mockResolvedValue({ count: 1 });
     await repository.deleteByIdForUser("u1", "s1");
