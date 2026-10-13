@@ -45,6 +45,10 @@ describe("scene-metrics", () => {
     expect(resolveSpriteScale(makeCharacter(), 400)).toBe(1);
   });
 
+  it("scales below one when the character height is under the sprite content", () => {
+    expect(resolveSpriteScale(makeCharacter({ height: 180 }), 240)).toBe(0.75);
+  });
+
   it("scales to an explicit character height", () => {
     expect(resolveSpriteScale(makeCharacter({ height: 120 }), 40)).toBe(3);
   });
