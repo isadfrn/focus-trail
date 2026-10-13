@@ -20,6 +20,14 @@ interface SceneProps {
   walking: boolean;
 }
 
+function scaledTileWidth(
+  naturalWidth: number,
+  naturalHeight: number,
+  heightPx: number,
+): number {
+  return Math.max(1, Math.round((naturalWidth * heightPx) / naturalHeight));
+}
+
 function useRepeatTileWidth(url: string, heightPx: number): number {
   const [width, setWidth] = useState(0);
   useEffect(() => {
@@ -27,7 +35,7 @@ function useRepeatTileWidth(url: string, heightPx: number): number {
     const img = new Image();
     const measure = () => {
       if (cancelled || !img.naturalWidth || !img.naturalHeight) return;
-      setWidth((img.naturalWidth * heightPx) / img.naturalHeight);
+      setWidth(scaledTileWidth(img.naturalWidth, img.naturalHeight, heightPx));
     };
     img.onload = measure;
     img.src = url;
@@ -44,7 +52,10 @@ export function Scene({ character, walking }: SceneProps) {
   const [hasWalked, setHasWalked] = useState(false);
   const reducedMotion = useReducedMotion();
 
-  const sprite = useSpriteSheet(character.sheet, character.frames);
+  const sprite = useSpriteSheet(character.sheet, {
+    frameCount: character.frames,
+    grid: character.grid,
+  });
   const frameCount = sprite?.frames.length ?? 0;
 
   const terrainHeight = resolveTerrainHeight(character);
@@ -57,6 +68,7 @@ export function Scene({ character, walking }: SceneProps) {
 
   const sceneRef = useRef<HTMLDivElement>(null);
   const [bgTileWidth, setBgTileWidth] = useState(0);
+  const [bgUpscaled, setBgUpscaled] = useState(true);
   const groundTileWidth = useRepeatTileWidth(character.terrain, terrainHeight);
   const groundPxPerSec = GROUND_BASE_PX_PER_SEC * cameraSpeed * terrainSpeed;
   const groundSeconds =
@@ -72,7 +84,8 @@ export function Scene({ character, walking }: SceneProps) {
     const measure = () => {
       if (cancelled || !img.naturalWidth || !img.naturalHeight) return;
       const height = el.clientHeight || window.innerHeight;
-      setBgTileWidth((img.naturalWidth * height) / img.naturalHeight);
+      setBgTileWidth(scaledTileWidth(img.naturalWidth, img.naturalHeight, height));
+      setBgUpscaled(height >= img.naturalHeight);
     };
     img.onload = measure;
     img.src = character.background;
@@ -99,25 +112,34 @@ export function Scene({ character, walking }: SceneProps) {
   return (
     <div
       ref={sceneRef}
-      className="group pointer-events-none fixed inset-0 z-0 overflow-hidden bg-repeat-x [background-position:0_bottom] [background-size:auto_100%] [image-rendering:pixelated] animate-bg-scroll [animation-play-state:paused] data-[walking=true]:[animation-play-state:running]"
+      className="group pointer-events-none fixed inset-0 z-0 overflow-hidden"
       data-walking={walking}
       aria-hidden="true"
-      style={
-        {
-          backgroundColor: character.skyColor,
-          backgroundImage: `url(${character.background})`,
-          animationDuration: `${bgSeconds}s`,
-          "--bg-tile-w": bgTileWidth ? `${bgTileWidth}px` : "1024px",
-        } as CSSProperties
-      }
+      style={{ backgroundColor: character.skyColor }}
     >
       <div
-        className="absolute inset-x-0 bottom-0 bg-repeat-x [background-position:0_bottom] [image-rendering:pixelated] animate-ground-scroll [animation-play-state:paused] group-data-[walking=true]:[animation-play-state:running]"
+        className="absolute inset-y-0 left-0 bg-repeat-x [background-position:0_bottom] [will-change:transform] animate-bg-scroll [animation-play-state:paused] group-data-[walking=true]:[animation-play-state:running]"
         style={
           {
+            width: "calc(100% + var(--bg-tile-w))",
+            backgroundImage: `url(${character.background})`,
+            backgroundSize: bgTileWidth ? `${bgTileWidth}px 100%` : "auto 100%",
+            imageRendering: bgUpscaled ? "pixelated" : "auto",
+            animationDuration: `${bgSeconds}s`,
+            "--bg-tile-w": bgTileWidth ? `${bgTileWidth}px` : "1024px",
+          } as CSSProperties
+        }
+      />
+      <div
+        className="absolute bottom-0 left-0 bg-repeat-x [background-position:0_bottom] [image-rendering:pixelated] [will-change:transform] animate-ground-scroll [animation-play-state:paused] group-data-[walking=true]:[animation-play-state:running]"
+        style={
+          {
+            width: "calc(100% + var(--ground-tile-w))",
             height: terrainHeight,
             backgroundImage: `url(${character.terrain})`,
-            backgroundSize: `auto ${terrainHeight}px`,
+            backgroundSize: groundTileWidth
+              ? `${groundTileWidth}px ${terrainHeight}px`
+              : `auto ${terrainHeight}px`,
             animationDuration: `${groundSeconds}s`,
             "--ground-tile-w": groundTileWidth ? `${groundTileWidth}px` : "96px",
           } as CSSProperties
@@ -146,21 +168,22 @@ function CharacterSprite({
   frame: number;
   baseline: number;
 }) {
-  const { contentTop, contentHeight, sheetWidth, sheetHeight, frames } = sprite;
+  const { contentHeight, sheetWidth, sheetHeight, frames } = sprite;
   const rect = frames[frame] ?? frames[0];
 
   const scale = resolveSpriteScale(character, contentHeight);
 
   return (
     <div
-      className="absolute left-1/2 -translate-x-1/2 bg-no-repeat [image-rendering:pixelated]"
+      className="absolute left-1/2 -translate-x-1/2 bg-no-repeat"
       style={{
+        imageRendering: scale < 1 ? "auto" : "pixelated",
         bottom: baseline,
         width: rect.width * scale,
         height: contentHeight * scale,
         backgroundImage: `url(${character.sheet})`,
         backgroundSize: `${sheetWidth * scale}px ${sheetHeight * scale}px`,
-        backgroundPosition: `${-rect.x * scale}px ${-contentTop * scale}px`,
+        backgroundPosition: `${-rect.x * scale}px ${-rect.y * scale}px`,
       }}
     />
   );
