@@ -6,6 +6,11 @@ export interface ScenePalette {
   onAccent: string;
 }
 
+export interface SpriteGrid {
+  columns: number;
+  rows: number;
+}
+
 export interface CharacterTheme {
   id: string;
   name: string;
@@ -14,6 +19,7 @@ export interface CharacterTheme {
   terrain: string;
   sheet: string;
   frames?: number;
+  grid?: SpriteGrid;
   height?: number;
   terrainHeight?: number;
   baseline?: number;
