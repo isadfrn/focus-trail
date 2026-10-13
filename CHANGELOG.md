@@ -1,6 +1,31 @@
 # Changelog
 
 
+## v0.5.0
+
+[compare changes](https://github.com/isadfrn/focus-trail/compare/v0.4.1...v0.5.0)
+
+### 🚀 Enhancements
+
+- Add shareable focus cards and session task statistics ([15c90bc](https://github.com/isadfrn/focus-trail/commit/15c90bc))
+- Change color style ([69e3eca](https://github.com/isadfrn/focus-trail/commit/69e3eca))
+- Update character and scenario assets, remove unused backgrounds and terrains ([557f501](https://github.com/isadfrn/focus-trail/commit/557f501))
+- Enhance character scenarios with grid support and update toCharacterTheme function ([6d20254](https://github.com/isadfrn/focus-trail/commit/6d20254))
+- Refactor Scene component for improved tile width calculation and background handling ([8b602e4](https://github.com/isadfrn/focus-trail/commit/8b602e4))
+- Implement useGaplessLoop hook for audio playback management ([5351f02](https://github.com/isadfrn/focus-trail/commit/5351f02))
+- Add sliceSpriteSheet functionality with grid support and refactor related functions ([839fe25](https://github.com/isadfrn/focus-trail/commit/839fe25))
+- Implement gapless audio loop functionality ([6b03e93](https://github.com/isadfrn/focus-trail/commit/6b03e93))
+- Add test for scaling below one when character height is under sprite content ([7713cda](https://github.com/isadfrn/focus-trail/commit/7713cda))
+- Enhance sprite frame handling and add new tests for grid cropping and rendering behavior ([5da9ee4](https://github.com/isadfrn/focus-trail/commit/5da9ee4))
+- Update sprite layout handling and improve scaling logic in share scene rendering ([4f21f9f](https://github.com/isadfrn/focus-trail/commit/4f21f9f))
+- Add gapless loop functionality to AudioProvider and implement related tests ([0956e9f](https://github.com/isadfrn/focus-trail/commit/0956e9f))
+- Add SpriteGrid interface and integrate it into CharacterTheme ([679235d](https://github.com/isadfrn/focus-trail/commit/679235d))
+- Optimize background and ground scrolling animations using translate3d ([f79d428](https://github.com/isadfrn/focus-trail/commit/f79d428))
+
+### ❤️ Contributors
+
+- Isadfrn ([@isadfrn](https://github.com/isadfrn))
+
 ## v0.4.1
 
 [compare changes](https://github.com/isadfrn/focus-trail/compare/v0.4.0...v0.4.1)
