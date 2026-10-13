@@ -25,12 +25,11 @@ const sprite = {
   layout: {
     sheetWidth: 90,
     sheetHeight: 30,
-    contentTop: 0,
     contentHeight: 30,
     frames: [
-      { x: 0, width: 30 },
-      { x: 30, width: 30 },
-      { x: 60, width: 30 },
+      { x: 0, y: 0, width: 30 },
+      { x: 30, y: 0, width: 30 },
+      { x: 60, y: 0, width: 30 },
     ],
   },
 };
@@ -39,12 +38,12 @@ const images = { background: makeImage(256, 256), terrain: makeImage(32, 32) };
 
 describe("pickWalkFrame", () => {
   it("picks a frame about a third into the walk cycle", () => {
-    const frames = Array.from({ length: 16 }, (_, index) => ({ x: index, width: 1 }));
+    const frames = Array.from({ length: 16 }, (_, index) => ({ x: index, y: 0, width: 1 }));
     expect(pickWalkFrame(frames)).toBe(frames[5]);
   });
 
   it("falls back to the first frame for a single-frame sheet", () => {
-    const frames = [{ x: 0, width: 10 }];
+    const frames = [{ x: 0, y: 0, width: 10 }];
     expect(pickWalkFrame(frames)).toBe(frames[0]);
   });
 });
@@ -105,6 +104,56 @@ describe("drawShareScene", () => {
     const drawCalls = fake.callsOf("drawImage").length;
     expect(scales).toBeGreaterThan(0);
     expect(drawCalls).toBeGreaterThan(scales);
+  });
+
+  it("crops the sprite frame from its own row of a grid sheet", () => {
+    const fake = createFakeContext();
+    const gridSprite = {
+      image: {} as CanvasImageSource,
+      layout: {
+        sheetWidth: 90,
+        sheetHeight: 90,
+        contentHeight: 24,
+        frames: [
+          { x: 3, y: 2, width: 20 },
+          { x: 33, y: 2, width: 20 },
+          { x: 3, y: 32, width: 20 },
+          { x: 33, y: 32, width: 20 },
+          { x: 3, y: 62, width: 20 },
+          { x: 33, y: 62, width: 20 },
+        ],
+      },
+    };
+
+    drawShareScene(fake.ctx, 1080, 1080, makeCharacter(), images, gridSprite, 0);
+
+    const spriteDraw = fake.callsOf("drawImage").at(-1);
+    expect(spriteDraw?.args.slice(0, 5)).toEqual([gridSprite.image, 3, 32, 20, 24]);
+  });
+
+  it("shrinks below the native size with smoothing when the scenario height is smaller", () => {
+    const fake = createFakeContext();
+    const geometry = drawShareScene(
+      fake.ctx,
+      1080,
+      800,
+      makeCharacter({ height: 15 }),
+      images,
+      sprite,
+      0,
+    );
+
+    expect(geometry.characterBottom - geometry.characterTop).toBe(15);
+    const spriteDraw = fake.callsOf("drawImage").at(-1);
+    expect(spriteDraw?.state.imageSmoothingEnabled).toBe(true);
+  });
+
+  it("keeps pixel-crisp rendering when the sprite is not shrunk", () => {
+    const fake = createFakeContext();
+    drawShareScene(fake.ctx, 1080, 800, makeCharacter({ height: 120 }), images, sprite, 0);
+
+    const spriteDraw = fake.callsOf("drawImage").at(-1);
+    expect(spriteDraw?.state.imageSmoothingEnabled).toBe(false);
   });
 
   it("uses an explicit sprite height from the scenario", () => {
