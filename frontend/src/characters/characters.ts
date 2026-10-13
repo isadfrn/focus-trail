@@ -1,9 +1,13 @@
 import manifest from "../assets/scenarios.json";
-import type { CharacterTheme, ScenePalette } from "../types/character";
+import type {
+  CharacterTheme,
+  ScenePalette,
+  SpriteGrid,
+} from "../types/character";
 
 const HEX_COLOR_PATTERN = /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/;
 
-interface RawScenario {
+export interface RawScenario {
   id: string;
   name: string;
   skyColor: string;
@@ -11,6 +15,7 @@ interface RawScenario {
   terrain: string;
   sheet: string;
   frames?: number;
+  grid?: SpriteGrid;
   height?: number;
   terrainHeight?: number;
   baseline?: number;
@@ -70,7 +75,7 @@ function resolveAsset(
   return url;
 }
 
-function toCharacterTheme(raw: RawScenario): CharacterTheme {
+export function toCharacterTheme(raw: RawScenario): CharacterTheme {
   const where = `Scenario "${raw.id ?? "(no id)"}"`;
 
   if (!raw.id) throw new Error(`[scenarios] ${where}: "id" field is required.`);
@@ -90,6 +95,19 @@ function toCharacterTheme(raw: RawScenario): CharacterTheme {
     );
   if (raw.frames !== undefined && (!Number.isInteger(raw.frames) || raw.frames < 1))
     throw new Error(`[scenarios] ${where}: "frames" must be an integer >= 1.`);
+  if (raw.grid !== undefined) {
+    if (raw.frames !== undefined)
+      throw new Error(
+        `[scenarios] ${where}: use either "frames" (horizontal strip) or "grid", not both.`,
+      );
+    for (const field of ["columns", "rows"] as const) {
+      const value = raw.grid[field];
+      if (!Number.isInteger(value) || value < 1)
+        throw new Error(
+          `[scenarios] ${where}: "grid.${field}" must be an integer >= 1.`,
+        );
+    }
+  }
   for (const field of ["height", "terrainHeight", "baseline"] as const) {
     const value = raw[field];
     if (value !== undefined && value <= 0)
@@ -111,6 +129,7 @@ function toCharacterTheme(raw: RawScenario): CharacterTheme {
     terrain: resolveAsset(terrainPool, raw.terrain, "terrain", raw.id),
     sheet: resolveAsset(characterPool, raw.sheet, "character", raw.id),
     frames: raw.frames,
+    grid: raw.grid,
     height: raw.height,
     terrainHeight: raw.terrainHeight,
     baseline: raw.baseline,
