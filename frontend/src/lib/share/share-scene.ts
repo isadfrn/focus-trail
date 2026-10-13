@@ -130,22 +130,22 @@ export function drawShareScene(
     }
   }
 
-  const { contentTop, contentHeight, frames } = sprite.layout;
+  const { contentHeight, frames } = sprite.layout;
   const frame = pickWalkFrame(frames);
-  const scale = Math.max(
-    1,
-    Math.round(resolveSpriteScale(character, contentHeight) * unit),
-  );
+  const sceneScale = resolveSpriteScale(character, contentHeight) * unit;
+  const scale = character.height ? sceneScale : Math.max(1, Math.round(sceneScale));
   const drawWidth = frame.width * scale;
   const drawHeight = contentHeight * scale;
   const drawX = Math.round((width - drawWidth) / 2);
   const drawY = Math.round(
     groundBottom - resolveBaseline(character) * unit - drawHeight,
   );
+  ctx.imageSmoothingEnabled = scale < 1;
+  ctx.imageSmoothingQuality = "high";
   ctx.drawImage(
     sprite.image,
     frame.x,
-    contentTop,
+    frame.y,
     frame.width,
     contentHeight,
     drawX,

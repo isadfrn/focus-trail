@@ -1,4 +1,8 @@
-import { sliceSpriteSheet, type SpriteLayout } from "../../hooks/useSpriteSheet";
+import {
+  sliceSpriteSheet,
+  wholeSheetLayout,
+  type SpriteLayout,
+} from "../../hooks/useSpriteSheet";
 import type { CharacterTheme } from "../../types/character";
 import { resolveScenePalette } from "../scene-palette";
 import type { ShareCardContent, ShareFormat } from "./share-card";
@@ -60,15 +64,12 @@ async function loadSprite(character: CharacterTheme): Promise<SceneSprite> {
     if (!ctx) throw new Error("share: no 2d context");
     ctx.drawImage(image, 0, 0);
     const { data } = ctx.getImageData(0, 0, width, height);
-    layout = sliceSpriteSheet(data, width, height, character.frames);
+    layout = sliceSpriteSheet(data, width, height, {
+      frameCount: character.frames,
+      grid: character.grid,
+    });
   } catch {
-    layout = {
-      sheetWidth: width,
-      sheetHeight: height,
-      contentTop: 0,
-      contentHeight: height,
-      frames: [{ x: 0, width }],
-    };
+    layout = wholeSheetLayout(width, height);
   }
   return { image, layout };
 }
