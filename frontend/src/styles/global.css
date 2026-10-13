@@ -149,18 +149,18 @@ body {
 
 @keyframes bgScroll {
   from {
-    background-position: 0 bottom;
+    transform: translate3d(0, 0, 0);
   }
   to {
-    background-position: calc(-1 * var(--bg-tile-w, 1024px)) bottom;
+    transform: translate3d(calc(-1 * var(--bg-tile-w, 1024px)), 0, 0);
   }
 }
 @keyframes groundScroll {
   from {
-    background-position: 0 bottom;
+    transform: translate3d(0, 0, 0);
   }
   to {
-    background-position: calc(-1 * var(--ground-tile-w, 96px)) bottom;
+    transform: translate3d(calc(-1 * var(--ground-tile-w, 96px)), 0, 0);
   }
 }
 @keyframes toastIn {
