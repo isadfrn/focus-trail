@@ -1,41 +1,18 @@
 {
-  "default": "diddy",
+  "default": "female-japanese-student",
   "scenarios": [
     {
-      "id": "diddy",
-      "name": "Diddy Kong",
-      "skyColor": "#123a2a",
-      "background": "forest-background.png",
-      "terrain": "forest-ground.png",
-      "sheet": "diddy.png",
-      "terrainHeight": 450,
-      "baseline": 54,
-      "spriteSpeed": 3
-    },
-    {
-      "id": "mario-frog",
-      "name": "Mario Frog",
-      "skyColor": "#8ec7ff",
-      "background": "light-blue-sky.png",
-      "terrain": "land-dark-grass.png",
-      "sheet": "mario-frog.png"
-    },
-    {
-      "id": "mario-kart",
-      "name": "Mario Kart",
-      "skyColor": "#f4d06f",
-      "background": "grass-yellow-sky.png",
-      "terrain": "land-with-grass.png",
-      "sheet": "mario-kart.png"
-    },
-    {
-      "id": "mega-man",
-      "name": "Mega Man",
-      "skyColor": "#8ec7ff",
-      "background": "grass-blocks-sky.png",
-      "terrain": "land-with-grass.png",
-      "sheet": "mega-man.png",
-      "spriteSpeed": 3
+      "id": "female-japanese-student",
+      "name": "Estudante japonesa",
+      "skyColor": "#36a9fc",
+      "background": "japan-street-sunny.jpeg",
+      "terrain": "concrete.png",
+      "sheet": "female-japanese-student.png",
+      "grid": { "columns": 3, "rows": 3 },
+      "height": 180,
+      "baseline": 62,
+      "cameraSpeed": 1.5,
+      "spriteSpeed": 1.5
     }
   ]
 }
