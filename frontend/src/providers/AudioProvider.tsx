@@ -9,6 +9,7 @@ import {
   type ReactNode,
 } from "react";
 
+import { useGaplessLoop } from "../hooks/useGaplessLoop";
 import { isChimeEnabled, persistChimeEnabled } from "../lib/chime";
 import { storage } from "../lib/platform/storage";
 import {
@@ -129,12 +130,19 @@ export function AudioProvider({ children }: { children: ReactNode }) {
     else el.pause();
   }, [musicPlaying, musicCurrent]);
 
+  const gaplessEffect = useGaplessLoop(
+    effectCurrent?.url,
+    effectPlaying,
+    effectVolume,
+  );
+  const effectUsesElement = gaplessEffect.fallback;
+
   useEffect(() => {
     const el = effectRef.current;
     if (!el) return;
-    if (effectPlaying) safePlay(el);
+    if (effectPlaying && effectUsesElement) safePlay(el);
     else el.pause();
-  }, [effectPlaying, effectCurrent]);
+  }, [effectPlaying, effectCurrent, effectUsesElement]);
 
   useEffect(() => {
     if (musicRef.current) musicRef.current.volume = musicVolume;
@@ -195,10 +203,10 @@ export function AudioProvider({ children }: { children: ReactNode }) {
       el?.pause();
       setEffectPlaying(false);
     } else {
-      safePlay(el);
+      if (effectUsesElement) safePlay(el);
       setEffectPlaying(true);
     }
-  }, [effectPlaying]);
+  }, [effectPlaying, effectUsesElement]);
 
   const selectEffect = useCallback((id: string) => {
     const i = effectTracks.findIndex((t) => t.id === id);
