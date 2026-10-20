@@ -57,7 +57,7 @@ function startOfUtcDayBefore(days: number): Date {
 
 export function usePerformance(
   windowDays: number = DEFAULT_WINDOW_DAYS,
-  goalMinutes: number = 0,
+  goalMinutes = 0,
 ): UsePerformance {
   const [allDays, setAllDays] = useState<DailyStat[]>([]);
   const [loading, setLoading] = useState(true);

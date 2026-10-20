@@ -2,13 +2,14 @@ import * as ToggleGroup from "@radix-ui/react-toggle-group";
 import { useState } from "react";
 
 import { Button } from "../../components/Button/Button";
+import { EditableClock } from "../../components/EditableClock/EditableClock";
 import { Scene } from "../../components/Scene/Scene";
 import { ShareDialog } from "../../components/ShareDialog/ShareDialog";
 import { useTimer } from "../../hooks/useTimer";
-import { cn } from "../../lib/cn";
-import { formatClock } from "../../lib/format";
+import { MAX_MINUTES_BY_TYPE, parseMinutes } from "../../lib/duration";
 import { resolveScenePalette, sceneVars } from "../../lib/scene-palette";
 import { useCharacter } from "../../providers/CharacterProvider";
+import { useToast } from "../../providers/ToastProvider";
 
 const presetItem =
   "rounded-[10px] border border-scene-panel-border bg-scene-panel px-3.5 py-2 text-sm text-scene-foreground backdrop-blur-sm cursor-pointer transition-colors disabled:opacity-50 disabled:cursor-not-allowed data-[state=on]:border-scene-accent data-[state=on]:font-semibold data-[state=on]:text-scene-accent";
@@ -22,6 +23,7 @@ export function TimerPage() {
     running,
     presets,
     selectPreset,
+    updateDuration,
     taskLabel,
     setTaskLabel,
     start,
@@ -30,6 +32,17 @@ export function TimerPage() {
 
   const palette = resolveScenePalette(character);
   const [shareOpen, setShareOpen] = useState(false);
+  const toast = useToast();
+
+  const commitDuration = (rawMinutes: string) => {
+    const maxMinutes = MAX_MINUTES_BY_TYPE[type];
+    const minutes = parseMinutes(rawMinutes, maxMinutes);
+    if (minutes === null) {
+      toast(`Informe um número inteiro entre 1 e ${maxMinutes} minutos.`);
+      return;
+    }
+    void updateDuration(type, minutes);
+  };
 
   return (
     <div style={sceneVars(palette)}>
@@ -69,16 +82,12 @@ export function TimerPage() {
           />
         )}
 
-        <div
-          role="timer"
-          aria-label={`Tempo restante: ${formatClock(remaining)}`}
-          className={cn(
-            "rounded-2xl border border-scene-panel-border bg-scene-panel px-6 py-2 font-extrabold leading-none tabular-nums tracking-[2px] backdrop-blur-sm [font-size:clamp(52px,15vw,96px)] [text-shadow:0_2px_14px_rgba(11,21,24,0.35)]",
-            running ? "text-scene-accent" : "text-scene-foreground",
-          )}
-        >
-          {formatClock(remaining)}
-        </div>
+        <EditableClock
+          remaining={remaining}
+          running={running}
+          editable={!running}
+          onCommit={commitDuration}
+        />
 
         <div className="flex gap-3">
           {status !== "running" ? (
@@ -91,7 +100,11 @@ export function TimerPage() {
             </Button>
           )}
           {status === "done" && type === "focus" && (
-            <Button variant="scene" size="lg" onClick={() => setShareOpen(true)}>
+            <Button
+              variant="scene"
+              size="lg"
+              onClick={() => setShareOpen(true)}
+            >
               Compartilhar
             </Button>
           )}

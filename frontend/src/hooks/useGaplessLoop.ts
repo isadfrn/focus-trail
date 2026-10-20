@@ -22,7 +22,7 @@ export function useGaplessLoop(
     if (fallback || !url) return;
     if (!playing && !loopRef.current) return;
 
-    if (!loopRef.current) loopRef.current = createGaplessLoop();
+    loopRef.current ??= createGaplessLoop();
     const loop = loopRef.current;
     if (!loop) {
       setFallback(true);

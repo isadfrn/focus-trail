@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import { authApi } from "../api/auth.api";
 import { sessionApi } from "../api/session.api";
 import { ApiError } from "../errors/api-error";
 import { playSessionChime } from "../lib/chime";
@@ -42,7 +43,7 @@ interface RunningSession {
 }
 
 export function useTimer() {
-  const { user } = useAuth();
+  const { user, updateUser } = useAuth();
   const focusMinutes = user?.focusMinutes ?? DEFAULT_FOCUS_MINUTES;
   const breakMinutes = user?.breakMinutes ?? DEFAULT_BREAK_MINUTES;
   const longBreakMinutes = user?.longBreakMinutes ?? DEFAULT_LONG_BREAK_MINUTES;
@@ -274,6 +275,25 @@ export function useTimer() {
     [status],
   );
 
+  const updateDuration = useCallback(
+    async (targetType: SessionType, minutes: number) => {
+      if (status === "running") return;
+      const preferences =
+        targetType === "focus"
+          ? { focusMinutes: minutes }
+          : { breakMinutes: minutes };
+      try {
+        const { user: updated } = await authApi.updatePreferences(preferences);
+        updateUser(updated);
+        setPhase(targetType === "focus" ? "focus" : "shortBreak");
+        setStatus("idle");
+      } catch {
+        toast("Nao consegui salvar o novo tempo. Tente de novo.");
+      }
+    },
+    [status, updateUser, toast],
+  );
+
   const start = useCallback(() => {
     if (status === "running") return;
     completedFocusRef.current = 0;
@@ -306,6 +326,7 @@ export function useTimer() {
     autoCycle,
     presets,
     selectPreset,
+    updateDuration,
     taskLabel,
     setTaskLabel,
     start,

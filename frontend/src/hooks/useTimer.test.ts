@@ -12,18 +12,23 @@ const mocks = vi.hoisted(() => ({
   setRunning: vi.fn(),
   toast: vi.fn(),
   create: vi.fn(),
+  updateUser: vi.fn(),
+  updatePreferences: vi.fn(),
   notify: vi.fn(),
   chime: vi.fn(),
 }));
 
 vi.mock("../providers/AuthProvider", () => ({
-  useAuth: () => ({ user: mocks.user }),
+  useAuth: () => ({ user: mocks.user, updateUser: mocks.updateUser }),
 }));
 vi.mock("../providers/TimerActivityProvider", () => ({
   useTimerActivity: () => ({ running: false, setRunning: mocks.setRunning }),
 }));
 vi.mock("../providers/ToastProvider", () => ({
   useToast: () => mocks.toast,
+}));
+vi.mock("../api/auth.api", () => ({
+  authApi: { updatePreferences: mocks.updatePreferences },
 }));
 vi.mock("../api/session.api", () => ({
   sessionApi: { create: mocks.create },
@@ -275,5 +280,47 @@ describe("useTimer", () => {
     });
     act(() => result.current.stop());
     expect(localStorage.getItem("ft_timer_active")).toBeNull();
+  });
+
+  it("saves a new focus duration to the preferences and updates the user", async () => {
+    const updated = { focusMinutes: 40 };
+    mocks.updatePreferences.mockResolvedValue({ user: updated });
+    const { result } = renderHook(() => useTimer());
+    await act(async () => {
+      await result.current.updateDuration("focus", 40);
+    });
+    expect(mocks.updatePreferences).toHaveBeenCalledWith({ focusMinutes: 40 });
+    expect(mocks.updateUser).toHaveBeenCalledWith(updated);
+  });
+
+  it("saves a new break duration to the preferences", async () => {
+    mocks.updatePreferences.mockResolvedValue({ user: { breakMinutes: 10 } });
+    const { result } = renderHook(() => useTimer());
+    await act(async () => {
+      await result.current.updateDuration("break", 10);
+    });
+    expect(mocks.updatePreferences).toHaveBeenCalledWith({ breakMinutes: 10 });
+    expect(result.current.type).toBe("break");
+  });
+
+  it("toasts when saving the new duration fails", async () => {
+    mocks.updatePreferences.mockRejectedValue(new Error("network"));
+    const { result } = renderHook(() => useTimer());
+    await act(async () => {
+      await result.current.updateDuration("focus", 40);
+    });
+    expect(mocks.updateUser).not.toHaveBeenCalled();
+    expect(mocks.toast).toHaveBeenCalledWith(
+      expect.stringContaining("Nao consegui salvar o novo tempo"),
+    );
+  });
+
+  it("ignores duration changes while the timer is running", async () => {
+    const { result } = renderHook(() => useTimer());
+    act(() => result.current.start());
+    await act(async () => {
+      await result.current.updateDuration("focus", 40);
+    });
+    expect(mocks.updatePreferences).not.toHaveBeenCalled();
   });
 });

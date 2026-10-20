@@ -63,8 +63,8 @@ export function useAudio(): AudioValue {
 
 function safePlay(el: HTMLAudioElement | null) {
   if (!el) return;
-  const p = el.play();
-  if (p && typeof p.catch === "function") p.catch(() => {});
+  const playback: Promise<void> | undefined = el.play();
+  playback?.catch(() => {});
 }
 
 function initialIndex(tracks: Track[], key: string): number {

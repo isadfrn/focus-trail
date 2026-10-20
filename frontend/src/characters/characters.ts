@@ -31,22 +31,28 @@ interface Manifest {
 }
 
 const backgroundPool = toFilenameMap(
-  import.meta.glob("../assets/background/*.{png,gif,webp,jpg,jpeg,svg}", {
-    eager: true,
-    import: "default",
-  }) as Record<string, string>,
+  import.meta.glob<string>(
+    "../assets/background/*.{png,gif,webp,jpg,jpeg,svg}",
+    {
+      eager: true,
+      import: "default",
+    },
+  ),
 );
 const characterPool = toFilenameMap(
-  import.meta.glob("../assets/character/*.{png,gif,webp,jpg,jpeg,svg}", {
-    eager: true,
-    import: "default",
-  }) as Record<string, string>,
+  import.meta.glob<string>(
+    "../assets/character/*.{png,gif,webp,jpg,jpeg,svg}",
+    {
+      eager: true,
+      import: "default",
+    },
+  ),
 );
 const terrainPool = toFilenameMap(
-  import.meta.glob("../assets/terrain/*.{png,gif,webp,jpg,jpeg,svg}", {
+  import.meta.glob<string>("../assets/terrain/*.{png,gif,webp,jpg,jpeg,svg}", {
     eager: true,
     import: "default",
-  }) as Record<string, string>,
+  }),
 );
 
 function toFilenameMap(glob: Record<string, string>): Record<string, string> {
@@ -93,7 +99,10 @@ export function toCharacterTheme(raw: RawScenario): CharacterTheme {
     throw new Error(
       `[scenarios] ${where}: "sheet" field is required (the character sprite sheet).`,
     );
-  if (raw.frames !== undefined && (!Number.isInteger(raw.frames) || raw.frames < 1))
+  if (
+    raw.frames !== undefined &&
+    (!Number.isInteger(raw.frames) || raw.frames < 1)
+  )
     throw new Error(`[scenarios] ${where}: "frames" must be an integer >= 1.`);
   if (raw.grid !== undefined) {
     if (raw.frames !== undefined)
@@ -125,7 +134,12 @@ export function toCharacterTheme(raw: RawScenario): CharacterTheme {
     id: raw.id,
     name: raw.name,
     skyColor: raw.skyColor,
-    background: resolveAsset(backgroundPool, raw.background, "background", raw.id),
+    background: resolveAsset(
+      backgroundPool,
+      raw.background,
+      "background",
+      raw.id,
+    ),
     terrain: resolveAsset(terrainPool, raw.terrain, "terrain", raw.id),
     sheet: resolveAsset(characterPool, raw.sheet, "character", raw.id),
     frames: raw.frames,

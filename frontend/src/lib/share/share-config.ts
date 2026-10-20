@@ -2,7 +2,8 @@ const DEFAULT_SHARE_URL = "https://isabellanunes.dev/focus/";
 
 export function getShareUrl(): string {
   const configured = import.meta.env.VITE_SHARE_URL?.trim();
-  return configured ? configured : DEFAULT_SHARE_URL;
+  if (!configured) return DEFAULT_SHARE_URL;
+  return configured;
 }
 
 export function getShareLabel(): string {

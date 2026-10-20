@@ -18,6 +18,7 @@ export default defineConfig({
         "src/providers/**",
         "src/api/**",
         "src/components/AudioControls/**",
+        "src/components/EditableClock/**",
         "src/components/ShareDialog/**",
       ],
       exclude: [

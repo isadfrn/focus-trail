@@ -116,7 +116,7 @@ describe("hero", () => {
     drawHero(wide.ctx, 128 * 3600 + 5 * 60, 500, 300, SHARE_LAYOUTS.story, palette, 800);
     const sizes = wide
       .callsOf("fillText")
-      .map((call) => Number(String(call.state.font).match(/(\d+(\.\d+)?)px/)?.[1]));
+      .map((call) => Number((/(\d+(\.\d+)?)px/.exec(String(call.state.font)))?.[1]));
     expect(Math.max(...sizes)).toBeLessThan(SHARE_LAYOUTS.story.hero);
   });
 
@@ -145,7 +145,7 @@ describe("drawStatsRow", () => {
       { value: "100%", label: "concluídos" },
     ]);
     const valueCall = fake.callsOf("fillText")[0];
-    const size = Number(String(valueCall.state.font).match(/(\d+(\.\d+)?)px/)?.[1]);
+    const size = Number((/(\d+(\.\d+)?)px/.exec(String(valueCall.state.font)))?.[1]);
     expect(size).toBeLessThan(SHARE_LAYOUTS.story.statNumber);
   });
 });

@@ -2,6 +2,8 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import type * as ShareActions from "../../lib/share/share-actions";
+
 vi.mock("../../hooks/useShareData", () => ({ useShareData: vi.fn() }));
 vi.mock("../../hooks/useShareCard", () => ({ useShareCard: vi.fn() }));
 vi.mock("../../providers/AuthProvider", () => ({
@@ -22,9 +24,9 @@ vi.mock("../../providers/CharacterProvider", () => ({
 const toast = vi.fn();
 vi.mock("../../providers/ToastProvider", () => ({ useToast: () => toast }));
 vi.mock("../../lib/share/share-actions", async () => {
-  const actual = await vi.importActual<
-    typeof import("../../lib/share/share-actions")
-  >("../../lib/share/share-actions");
+  const actual = await vi.importActual<typeof ShareActions>(
+    "../../lib/share/share-actions",
+  );
   return {
     ...actual,
     canShareFile: vi.fn(),
