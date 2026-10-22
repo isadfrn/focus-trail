@@ -1,6 +1,20 @@
 # Changelog
 
 
+## v0.5.1
+
+[compare changes](https://github.com/isadfrn/focus-trail/compare/v0.5.0...v0.5.1)
+
+### 🚀 Enhancements
+
+- Add new character assets for male Japanese student and Tora Akita ([6df95e2](https://github.com/isadfrn/focus-trail/commit/6df95e2))
+- Add EditableClock component for timer editing functionality ([10f6c18](https://github.com/isadfrn/focus-trail/commit/10f6c18))
+- Integrate cycle-done sound into chime playback functionality ([f4d0006](https://github.com/isadfrn/focus-trail/commit/f4d0006))
+
+### ❤️ Contributors
+
+- Isadfrn ([@isadfrn](https://github.com/isadfrn))
+
 ## v0.5.0
 
 [compare changes](https://github.com/isadfrn/focus-trail/compare/v0.4.1...v0.5.0)
