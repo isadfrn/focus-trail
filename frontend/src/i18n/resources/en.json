@@ -1,0 +1,321 @@
+{
+  "errors": {
+    "emailTaken": "That email is already registered.",
+    "invalidCredentials": "Incorrect email or password.",
+    "invalidBody": "Enter a valid email and a password with at least 10 characters.",
+    "tooManyRequests": "Too many attempts. Wait a moment and try again.",
+    "generic": "Something went wrong. Try again."
+  },
+  "auth": {
+    "tabs": {
+      "login": "Sign in",
+      "register": "Sign up"
+    },
+    "fields": {
+      "email": "Email",
+      "password": "Password",
+      "confirmPassword": "Confirm password"
+    },
+    "forgotLink": "Forgot my password",
+    "verify": {
+      "title": "Confirm email",
+      "instructions": "Confirm the code sent to <strong>{{email}}</strong>.",
+      "codeLabel": "6-digit code",
+      "codeSent": "We sent a 6-digit code to your email.",
+      "resent": "If the account exists, a new code was sent.",
+      "invalidCode": "Invalid or expired code. Resend it and try again.",
+      "confirm": "Confirm",
+      "resend": "Resend code",
+      "back": "Back"
+    }
+  },
+  "forgot": {
+    "title": "Recover password",
+    "requestInstructions": "Enter your email and we will send a code to reset your password.",
+    "sendCode": "Send code",
+    "backToLogin": "Back to sign in",
+    "resetTitle": "Reset password",
+    "resetInstructions": "If there is an account for <strong>{{email}}</strong>, we sent a code. Enter it with your new password.",
+    "codeLabel": "6-digit code",
+    "newPassword": "New password",
+    "passwordHint": "At least 10 characters, with a letter and a number.",
+    "confirmNewPassword": "Confirm new password",
+    "resetSubmit": "Reset password",
+    "codeRequired": "Enter the 6-digit code.",
+    "invalidCode": "Invalid or expired code. Request a new one and try again.",
+    "done": "Password reset successfully.",
+    "goToLogin": "Go to sign in"
+  },
+  "validation": {
+    "passwordTooShort": "The password must have at least 10 characters.",
+    "passwordWeak": "The password must have at least one letter and one number.",
+    "passwordMismatch": "The passwords do not match."
+  },
+  "menu": {
+    "open": "Menu",
+    "close": "Close",
+    "timer": "Timer",
+    "history": "History",
+    "performance": "Performance",
+    "profile": "Profile",
+    "scenario": "Scene",
+    "sound": "Sound",
+    "logout": "Sign out"
+  },
+  "scenario": {
+    "label": "Scene",
+    "locked": "You can't change the scene while the timer is running."
+  },
+  "audio": {
+    "music": "Music",
+    "noise": "Noise",
+    "noFiles": "No files.",
+    "volumeShort": "Vol",
+    "play": "Play {{channel}}",
+    "pause": "Pause {{channel}}",
+    "volume": "{{channel}} volume",
+    "progress": "{{channel}} progress",
+    "endAlert": "Alert at the end of the session",
+    "endAlertLabel": "Sound alert at the end of the session"
+  },
+  "timer": {
+    "presets": {
+      "focus": "Focus",
+      "break": "Break"
+    },
+    "taskPlaceholder": "What will I focus on?",
+    "start": "Start",
+    "restart": "Restart",
+    "stop": "Stop",
+    "share": "Share",
+    "invalidMinutes": "Enter a whole number between 1 and {{max}} minutes.",
+    "sessionSaved": "Session completed and saved.",
+    "sessionInterrupted": "Session interrupted - recorded.",
+    "sessionSaveFailed": "Could not save the session ({{code}}).",
+    "durationSaveFailed": "Could not save the new time. Try again.",
+    "finishedTitle": {
+      "focus": "Focus complete!",
+      "break": "Break complete!"
+    },
+    "finishedBody": "Your session has ended.",
+    "clock": {
+      "durationLabel": "Duration in minutes",
+      "minutesUnit": "min",
+      "remaining": "Time remaining: {{time}}",
+      "remainingEditable": "Time remaining: {{time}}. Click to edit",
+      "editHint": "Click to edit the time"
+    }
+  },
+  "common": {
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "loading": "Loading...",
+    "close": "Close"
+  },
+  "history": {
+    "title": "History",
+    "filters": {
+      "date": "Date",
+      "type": "Type",
+      "status": "Status",
+      "duration": "Duration (min)",
+      "durationOperator": "Duration operator",
+      "minutesPlaceholder": "min",
+      "task": "Task",
+      "taskPlaceholder": "Search by task",
+      "all": "All",
+      "clear": "Clear filters",
+      "deleteSelected": "Delete selected",
+      "deleteSelectedCount": "Delete selected ({{count}})",
+      "deleteAll": "Delete all"
+    },
+    "types": {
+      "focus": "Focus",
+      "break": "Break"
+    },
+    "statusOptions": {
+      "completed": "Completed",
+      "interrupted": "Interrupted"
+    },
+    "statusRow": {
+      "completed": "completed",
+      "interrupted": "interrupted"
+    },
+    "empty": "No sessions yet.",
+    "emptyFiltered": "No sessions match these filters.",
+    "loadingMore": "Loading more...",
+    "endOfList": "End of history.",
+    "columns": {
+      "when": "When",
+      "type": "Type",
+      "task": "Task",
+      "duration": "Duration",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "selectAll": "Select all loaded",
+    "selectSession": "Select session from {{date}}",
+    "shareSession": "Share session",
+    "deleteSession": "Delete session",
+    "deleted_one": "Session deleted.",
+    "deleted_other": "{{count}} sessions deleted.",
+    "deleteFailed": "Could not delete. Try again.",
+    "confirm": {
+      "title": "Delete sessions",
+      "all": "Delete ALL your sessions? This action cannot be undone.",
+      "selected_one": "Delete {{count}} selected session? This action cannot be undone.",
+      "selected_other": "Delete {{count}} selected sessions? This action cannot be undone.",
+      "one": "Delete this session? This action cannot be undone."
+    }
+  },
+  "performance": {
+    "title": "Performance",
+    "shareToday": "Share today",
+    "period": "Period",
+    "daysOption": "{{days}} days",
+    "goalToday": "Today's goal",
+    "streak_one": "{{count}} day",
+    "streak_other": "{{count}} days",
+    "goalProgress": "Daily focus goal progress",
+    "goalReached": "Goal reached today! 🎉",
+    "goalEmpty": "Set a daily focus goal in your profile to track your progress and your streak.",
+    "metrics": {
+      "focus": "Focus",
+      "break": "Break",
+      "completion": "Completion",
+      "ratio": "Focus:Break"
+    },
+    "bestDay": "Best day: {{value}}",
+    "noData": "No sessions in the last {{days}} days. Run a timer to start seeing your performance.",
+    "chartTooltip": "{{date}} — focus {{focus}}, break {{breakTime}}"
+  },
+  "loadErrors": {
+    "history": "Could not load your history.",
+    "performance": "Could not load your performance.",
+    "shareData": "Could not load your focus data."
+  },
+  "profile": {
+    "title": "Profile",
+    "preferences": {
+      "title": "Preferences",
+      "defaultScene": "Default scene",
+      "focusMinutes": "Focus (minutes)",
+      "breakMinutes": "Break (minutes)",
+      "dailyGoal": "Daily focus goal (minutes, 0 = no goal)",
+      "autoCycle": "Chain sessions automatically (focus → break → focus)",
+      "longBreakMinutes": "Long break (minutes)",
+      "cyclesUntilLongBreak": "Cycles until the long break",
+      "save": "Save preferences",
+      "saving": "Saving...",
+      "saved": "Preferences saved.",
+      "saveFailed": "Could not save your preferences. Try again.",
+      "errors": {
+        "focus": "Focus must be a whole number between {{min}} and {{max}} minutes.",
+        "break": "Break must be a whole number between {{min}} and {{max}} minutes.",
+        "longBreak": "Long break must be a whole number between {{min}} and {{max}} minutes.",
+        "cycles": "Cycles until the long break must be between {{min}} and {{max}}.",
+        "goal": "Daily goal must be a whole number between {{min}} and {{max}} minutes."
+      }
+    },
+    "password": {
+      "title": "Change password",
+      "currentPassword": "Current password",
+      "newPassword": "New password",
+      "hint": "At least 10 characters, with a letter and a number.",
+      "confirmPassword": "Confirm new password",
+      "submit": "Change password",
+      "saving": "Saving...",
+      "updated": "Password updated.",
+      "mismatch": "The confirmation does not match the new password.",
+      "tooShort": "The new password must have at least 10 characters.",
+      "wrongCurrent": "Current password is incorrect.",
+      "invalidNew": "The new password must have at least 10 characters, with a letter and a number.",
+      "failed": "Could not change the password. Try again."
+    },
+    "privacy": {
+      "title": "Privacy and data",
+      "description": "Download a copy of all your data or permanently delete your account.",
+      "export": "Export my data",
+      "exporting": "Exporting...",
+      "exported": "Your data was exported.",
+      "exportFailed": "Could not export your data. Try again.",
+      "deleteTitle": "Delete account",
+      "deleteDescription": "This action is permanent and deletes your account and all of your history. Enter your password to confirm.",
+      "passwordLabel": "Password",
+      "passwordRequired": "Enter your password to confirm.",
+      "wrongPassword": "Incorrect password.",
+      "deleteButton": "Delete my account",
+      "deleteFailed": "Could not delete the account. Try again.",
+      "deleted": "Your account was deleted.",
+      "confirmDescription": "Your account and all of your history will be deleted forever. This action cannot be undone.",
+      "confirmLabel": "Delete forever"
+    }
+  },
+  "share": {
+    "title": "Share",
+    "previewAlt": "Preview of the share card",
+    "generating": "Generating image...",
+    "generationFailed": "Could not generate the image.",
+    "nothingToShare": "Nothing to share yet.",
+    "whatToShare": "What to share",
+    "scope": {
+      "day": "Day",
+      "task": "Task"
+    },
+    "task": "Task",
+    "noTasks": "You don't have any focus recorded with a task yet. Fill in “What will I focus on?” on the timer to track your totals.",
+    "showTaskLabel": "Show the task name",
+    "format": "Format",
+    "formatLabel": "Image format",
+    "actions": {
+      "share": "Share",
+      "download": "Download image",
+      "copyImage": "Copy image",
+      "postX": "Post on X",
+      "postLinkedIn": "Post on LinkedIn",
+      "copyCaption": "Copy caption"
+    },
+    "hint": "Instagram and TikTok: on your phone use “Share”; on a computer download the image and post it from the app. The link appears on the image and in the caption.",
+    "toasts": {
+      "shareFailed": "Could not open sharing. Download the image and post it manually.",
+      "downloaded": "Image downloaded.",
+      "imageCopied": "Image copied.",
+      "imageCopyUnsupported": "Your browser doesn't allow copying images. Use “Download image”.",
+      "captionCopied": "Caption copied.",
+      "captionCopyFailed": "Could not copy the caption.",
+      "composerCopied": "Image copied. Paste it into the post with Ctrl+V (or Cmd+V).",
+      "composerManual": "Download the image and attach it to the post."
+    },
+    "fileKind": {
+      "day": "day",
+      "task": "task"
+    },
+    "card": {
+      "kicker": {
+        "today": "TODAY'S FOCUS",
+        "day": "DAY'S FOCUS",
+        "task": "TASK"
+      },
+      "heroCaption": "of focus in total",
+      "pomodoros_one": "pomodoro",
+      "pomodoros_other": "pomodoros",
+      "streak_one": "day in a row",
+      "streak_other": "days in a row",
+      "days_one": "day",
+      "days_other": "days",
+      "completed": "completed",
+      "since": "since",
+      "dailyGoal": "Daily goal · {{duration}}",
+      "goalReached": "Goal reached"
+    },
+    "text": {
+      "today": "Today I focused for {{duration}} on Focus Trail 🍅",
+      "otherDay": "On {{date}} I focused for {{duration}} on Focus Trail 🍅",
+      "taskWithLabel": "I've focused for {{duration}} on the task \"{{label}}\" with Focus Trail 🍅",
+      "taskWithoutLabel": "I've focused for {{duration}} on a task with Focus Trail 🍅"
+    }
+  },
+  "scenarios": {
+    "female-japanese-student": "Japanese student"
+  }
+}

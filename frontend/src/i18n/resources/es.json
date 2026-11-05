@@ -1,0 +1,321 @@
+{
+  "errors": {
+    "emailTaken": "Ese correo electrónico ya está registrado.",
+    "invalidCredentials": "Correo electrónico o contraseña incorrectos.",
+    "invalidBody": "Ingresa un correo electrónico válido y una contraseña de al menos 10 caracteres.",
+    "tooManyRequests": "Demasiados intentos. Espera un momento e inténtalo de nuevo.",
+    "generic": "Algo salió mal. Inténtalo de nuevo."
+  },
+  "auth": {
+    "tabs": {
+      "login": "Iniciar sesión",
+      "register": "Registrarse"
+    },
+    "fields": {
+      "email": "Correo electrónico",
+      "password": "Contraseña",
+      "confirmPassword": "Confirmar contraseña"
+    },
+    "forgotLink": "Olvidé mi contraseña",
+    "verify": {
+      "title": "Confirmar correo electrónico",
+      "instructions": "Confirma el código enviado a <strong>{{email}}</strong>.",
+      "codeLabel": "Código de 6 dígitos",
+      "codeSent": "Enviamos un código de 6 dígitos a tu correo electrónico.",
+      "resent": "Si la cuenta existe, se envió un nuevo código.",
+      "invalidCode": "Código inválido o vencido. Reenvíalo e inténtalo de nuevo.",
+      "confirm": "Confirmar",
+      "resend": "Reenviar código",
+      "back": "Volver"
+    }
+  },
+  "forgot": {
+    "title": "Recuperar contraseña",
+    "requestInstructions": "Ingresa tu correo electrónico y te enviaremos un código para restablecer la contraseña.",
+    "sendCode": "Enviar código",
+    "backToLogin": "Volver al inicio de sesión",
+    "resetTitle": "Restablecer contraseña",
+    "resetInstructions": "Si hay una cuenta para <strong>{{email}}</strong>, enviamos un código. Ingrésalo junto con la nueva contraseña.",
+    "codeLabel": "Código de 6 dígitos",
+    "newPassword": "Nueva contraseña",
+    "passwordHint": "Al menos 10 caracteres, con una letra y un número.",
+    "confirmNewPassword": "Confirmar nueva contraseña",
+    "resetSubmit": "Restablecer contraseña",
+    "codeRequired": "Ingresa el código de 6 dígitos.",
+    "invalidCode": "Código inválido o vencido. Solicita uno nuevo e inténtalo de nuevo.",
+    "done": "Contraseña restablecida con éxito.",
+    "goToLogin": "Ir al inicio de sesión"
+  },
+  "validation": {
+    "passwordTooShort": "La contraseña debe tener al menos 10 caracteres.",
+    "passwordWeak": "La contraseña debe tener al menos una letra y un número.",
+    "passwordMismatch": "Las contraseñas no coinciden."
+  },
+  "menu": {
+    "open": "Menú",
+    "close": "Cerrar",
+    "timer": "Temporizador",
+    "history": "Historial",
+    "performance": "Rendimiento",
+    "profile": "Perfil",
+    "scenario": "Escena",
+    "sound": "Sonido",
+    "logout": "Cerrar sesión"
+  },
+  "scenario": {
+    "label": "Escena",
+    "locked": "No se puede cambiar de escena con el temporizador en marcha."
+  },
+  "audio": {
+    "music": "Música",
+    "noise": "Ruido",
+    "noFiles": "Ningún archivo.",
+    "volumeShort": "Vol",
+    "play": "Reproducir {{channel}}",
+    "pause": "Pausar {{channel}}",
+    "volume": "Volumen de {{channel}}",
+    "progress": "Progreso de {{channel}}",
+    "endAlert": "Alerta al final de la sesión",
+    "endAlertLabel": "Alerta sonora al final de la sesión"
+  },
+  "timer": {
+    "presets": {
+      "focus": "Enfoque",
+      "break": "Descanso"
+    },
+    "taskPlaceholder": "¿En qué voy a concentrarme?",
+    "start": "Iniciar",
+    "restart": "Reiniciar",
+    "stop": "Detener",
+    "share": "Compartir",
+    "invalidMinutes": "Ingresa un número entero entre 1 y {{max}} minutos.",
+    "sessionSaved": "Sesión completada y guardada.",
+    "sessionInterrupted": "Sesión interrumpida - registrada.",
+    "sessionSaveFailed": "No pude guardar la sesión ({{code}}).",
+    "durationSaveFailed": "No pude guardar el nuevo tiempo. Inténtalo de nuevo.",
+    "finishedTitle": {
+      "focus": "¡Enfoque completado!",
+      "break": "¡Descanso completado!"
+    },
+    "finishedBody": "Tu sesión terminó.",
+    "clock": {
+      "durationLabel": "Duración en minutos",
+      "minutesUnit": "min",
+      "remaining": "Tiempo restante: {{time}}",
+      "remainingEditable": "Tiempo restante: {{time}}. Haz clic para editar",
+      "editHint": "Haz clic para editar el tiempo"
+    }
+  },
+  "common": {
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "loading": "Cargando...",
+    "close": "Cerrar"
+  },
+  "history": {
+    "title": "Historial",
+    "filters": {
+      "date": "Fecha",
+      "type": "Tipo",
+      "status": "Estado",
+      "duration": "Duración (min)",
+      "durationOperator": "Operador de duración",
+      "minutesPlaceholder": "min",
+      "task": "Tarea",
+      "taskPlaceholder": "Buscar por tarea",
+      "all": "Todos",
+      "clear": "Limpiar filtros",
+      "deleteSelected": "Eliminar seleccionadas",
+      "deleteSelectedCount": "Eliminar seleccionadas ({{count}})",
+      "deleteAll": "Eliminar todo"
+    },
+    "types": {
+      "focus": "Enfoque",
+      "break": "Descanso"
+    },
+    "statusOptions": {
+      "completed": "Completada",
+      "interrupted": "Interrumpida"
+    },
+    "statusRow": {
+      "completed": "completada",
+      "interrupted": "interrumpida"
+    },
+    "empty": "Aún no hay sesiones.",
+    "emptyFiltered": "Ninguna sesión coincide con estos filtros.",
+    "loadingMore": "Cargando más...",
+    "endOfList": "Fin del historial.",
+    "columns": {
+      "when": "Cuándo",
+      "type": "Tipo",
+      "task": "Tarea",
+      "duration": "Duración",
+      "status": "Estado",
+      "actions": "Acciones"
+    },
+    "selectAll": "Seleccionar todas las cargadas",
+    "selectSession": "Seleccionar sesión del {{date}}",
+    "shareSession": "Compartir sesión",
+    "deleteSession": "Eliminar sesión",
+    "deleted_one": "Sesión eliminada.",
+    "deleted_other": "{{count}} sesiones eliminadas.",
+    "deleteFailed": "No pude eliminar. Inténtalo de nuevo.",
+    "confirm": {
+      "title": "Eliminar sesiones",
+      "all": "¿Eliminar TODAS tus sesiones? Esta acción no se puede deshacer.",
+      "selected_one": "¿Eliminar {{count}} sesión seleccionada? Esta acción no se puede deshacer.",
+      "selected_other": "¿Eliminar {{count}} sesiones seleccionadas? Esta acción no se puede deshacer.",
+      "one": "¿Eliminar esta sesión? Esta acción no se puede deshacer."
+    }
+  },
+  "performance": {
+    "title": "Rendimiento",
+    "shareToday": "Compartir hoy",
+    "period": "Período",
+    "daysOption": "{{days}} días",
+    "goalToday": "Meta de hoy",
+    "streak_one": "{{count}} día",
+    "streak_other": "{{count}} días",
+    "goalProgress": "Progreso de la meta diaria de enfoque",
+    "goalReached": "¡Meta cumplida hoy! 🎉",
+    "goalEmpty": "Define una meta diaria de enfoque en tu perfil para seguir tu progreso y tu racha.",
+    "metrics": {
+      "focus": "Enfoque",
+      "break": "Descanso",
+      "completion": "Finalización",
+      "ratio": "Enfoque:Descanso"
+    },
+    "bestDay": "Mejor día: {{value}}",
+    "noData": "Sin sesiones en los últimos {{days}} días. Inicia un temporizador para empezar a ver tu rendimiento.",
+    "chartTooltip": "{{date}} — enfoque {{focus}}, descanso {{breakTime}}"
+  },
+  "loadErrors": {
+    "history": "No pude cargar tu historial.",
+    "performance": "No pude cargar tu rendimiento.",
+    "shareData": "No pude cargar tus datos de enfoque."
+  },
+  "profile": {
+    "title": "Perfil",
+    "preferences": {
+      "title": "Preferencias",
+      "defaultScene": "Escena predeterminada",
+      "focusMinutes": "Enfoque (minutos)",
+      "breakMinutes": "Descanso (minutos)",
+      "dailyGoal": "Meta diaria de enfoque (minutos, 0 = sin meta)",
+      "autoCycle": "Encadenar sesiones automáticamente (enfoque → descanso → enfoque)",
+      "longBreakMinutes": "Descanso largo (minutos)",
+      "cyclesUntilLongBreak": "Ciclos hasta el descanso largo",
+      "save": "Guardar preferencias",
+      "saving": "Guardando...",
+      "saved": "Preferencias guardadas.",
+      "saveFailed": "No pude guardar tus preferencias. Inténtalo de nuevo.",
+      "errors": {
+        "focus": "El enfoque debe ser un número entero entre {{min}} y {{max}} minutos.",
+        "break": "El descanso debe ser un número entero entre {{min}} y {{max}} minutos.",
+        "longBreak": "El descanso largo debe ser un número entero entre {{min}} y {{max}} minutos.",
+        "cycles": "Los ciclos hasta el descanso largo deben estar entre {{min}} y {{max}}.",
+        "goal": "La meta diaria debe ser un número entero entre {{min}} y {{max}} minutos."
+      }
+    },
+    "password": {
+      "title": "Cambiar contraseña",
+      "currentPassword": "Contraseña actual",
+      "newPassword": "Nueva contraseña",
+      "hint": "Al menos 10 caracteres, con una letra y un número.",
+      "confirmPassword": "Confirmar nueva contraseña",
+      "submit": "Cambiar contraseña",
+      "saving": "Guardando...",
+      "updated": "Contraseña actualizada.",
+      "mismatch": "La confirmación no coincide con la nueva contraseña.",
+      "tooShort": "La nueva contraseña debe tener al menos 10 caracteres.",
+      "wrongCurrent": "La contraseña actual es incorrecta.",
+      "invalidNew": "La nueva contraseña debe tener al menos 10 caracteres, con una letra y un número.",
+      "failed": "No pude cambiar la contraseña. Inténtalo de nuevo."
+    },
+    "privacy": {
+      "title": "Privacidad y datos",
+      "description": "Descarga una copia de todos tus datos o elimina tu cuenta de forma permanente.",
+      "export": "Exportar mis datos",
+      "exporting": "Exportando...",
+      "exported": "Tus datos fueron exportados.",
+      "exportFailed": "No pude exportar tus datos. Inténtalo de nuevo.",
+      "deleteTitle": "Eliminar cuenta",
+      "deleteDescription": "Esta acción es permanente y elimina tu cuenta y todo tu historial. Ingresa tu contraseña para confirmar.",
+      "passwordLabel": "Contraseña",
+      "passwordRequired": "Ingresa tu contraseña para confirmar.",
+      "wrongPassword": "Contraseña incorrecta.",
+      "deleteButton": "Eliminar mi cuenta",
+      "deleteFailed": "No pude eliminar la cuenta. Inténtalo de nuevo.",
+      "deleted": "Tu cuenta fue eliminada.",
+      "confirmDescription": "Tu cuenta y todo tu historial se eliminarán para siempre. Esta acción no se puede deshacer.",
+      "confirmLabel": "Eliminar para siempre"
+    }
+  },
+  "share": {
+    "title": "Compartir",
+    "previewAlt": "Vista previa de la tarjeta para compartir",
+    "generating": "Generando imagen...",
+    "generationFailed": "No pude generar la imagen.",
+    "nothingToShare": "Aún no hay nada para compartir.",
+    "whatToShare": "Qué compartir",
+    "scope": {
+      "day": "Día",
+      "task": "Tarea"
+    },
+    "task": "Tarea",
+    "noTasks": "Aún no tienes enfoque registrado con una tarea. Completa “¿En qué voy a concentrarme?” en el temporizador para seguir tus totales.",
+    "showTaskLabel": "Mostrar el nombre de la tarea",
+    "format": "Formato",
+    "formatLabel": "Formato de la imagen",
+    "actions": {
+      "share": "Compartir",
+      "download": "Descargar imagen",
+      "copyImage": "Copiar imagen",
+      "postX": "Publicar en X",
+      "postLinkedIn": "Publicar en LinkedIn",
+      "copyCaption": "Copiar texto"
+    },
+    "hint": "Instagram y TikTok: en el celular usa “Compartir”; en la computadora descarga la imagen y publícala desde la app. El enlace aparece en la imagen y en el texto.",
+    "toasts": {
+      "shareFailed": "No pude abrir el menú de compartir. Descarga la imagen y publícala manualmente.",
+      "downloaded": "Imagen descargada.",
+      "imageCopied": "Imagen copiada.",
+      "imageCopyUnsupported": "Tu navegador no permite copiar imágenes. Usa “Descargar imagen”.",
+      "captionCopied": "Texto copiado.",
+      "captionCopyFailed": "No pude copiar el texto.",
+      "composerCopied": "Imagen copiada. Pégala en la publicación con Ctrl+V (o Cmd+V).",
+      "composerManual": "Descarga la imagen y adjúntala a la publicación."
+    },
+    "fileKind": {
+      "day": "dia",
+      "task": "tarea"
+    },
+    "card": {
+      "kicker": {
+        "today": "ENFOQUE DE HOY",
+        "day": "ENFOQUE DEL DÍA",
+        "task": "TAREA"
+      },
+      "heroCaption": "de enfoque en total",
+      "pomodoros_one": "pomodoro",
+      "pomodoros_other": "pomodoros",
+      "streak_one": "día seguido",
+      "streak_other": "días seguidos",
+      "days_one": "día",
+      "days_other": "días",
+      "completed": "completados",
+      "since": "desde",
+      "dailyGoal": "Meta diaria · {{duration}}",
+      "goalReached": "Meta cumplida"
+    },
+    "text": {
+      "today": "Hoy me concentré {{duration}} en Focus Trail 🍅",
+      "otherDay": "El {{date}} me concentré {{duration}} en Focus Trail 🍅",
+      "taskWithLabel": "Ya me concentré {{duration}} en la tarea \"{{label}}\" con Focus Trail 🍅",
+      "taskWithoutLabel": "Ya me concentré {{duration}} en una tarea con Focus Trail 🍅"
+    }
+  },
+  "scenarios": {
+    "female-japanese-student": "Estudiante japonesa"
+  }
+}

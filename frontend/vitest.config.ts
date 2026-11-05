@@ -14,6 +14,7 @@ export default defineConfig({
       reporter: ["text", "json-summary", "html"],
       include: [
         "src/hooks/**",
+        "src/i18n/**",
         "src/lib/**",
         "src/providers/**",
         "src/api/**",
@@ -24,6 +25,7 @@ export default defineConfig({
       exclude: [
         "src/**/*.test.{ts,tsx}",
         "src/test/**",
+        "src/i18n/**/*.d.ts",
         "src/lib/platform/**",
         "src/hooks/useSpriteSheet.ts",
         "src/lib/share/share-render.ts",

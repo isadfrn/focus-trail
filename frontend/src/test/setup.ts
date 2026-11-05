@@ -1,4 +1,13 @@
 import "@testing-library/jest-dom/vitest";
+import { beforeEach } from "vitest";
+
+import i18n from "../i18n";
+
+await i18n.changeLanguage("pt");
+
+beforeEach(async () => {
+  await i18n.changeLanguage("pt");
+});
 
 const proto = Element.prototype as unknown as Record<string, unknown>;
 proto.hasPointerCapture ??= () => false;
