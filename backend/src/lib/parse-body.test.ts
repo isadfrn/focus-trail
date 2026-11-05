@@ -30,6 +30,9 @@ describe("parseBody", () => {
 
     expect(data).toBeNull();
     expect(reply.code).toHaveBeenCalledWith(400);
-    expect(reply.send).toHaveBeenCalledWith({ error: "Invalid Body" });
+    expect(reply.send).toHaveBeenCalledWith({
+      error: "Invalid Body",
+      code: "VALIDATION_ERROR",
+    });
   });
 });

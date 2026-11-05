@@ -9,12 +9,14 @@ import {
   updatePreferencesSchemaDoc,
 } from "../docs/openapi-schemas.js";
 import { env } from "../env.js";
+import { ErrorCodes } from "../errors/app-error.js";
 
 const sensitiveRateLimit = {
   max: env.NODE_ENV === "test" ? 10_000 : 5,
   timeWindow: "1 minute" as const,
   errorResponseBuilder: () => ({
     error: "Too Many Requests",
+    code: ErrorCodes.tooManyRequests,
   }),
 };
 

@@ -2,10 +2,11 @@ import type { FastifySchema } from "fastify";
 
 export const errorResponseSchema = {
   type: "object",
-  required: ["error"],
+  required: ["error", "code"],
   additionalProperties: false,
   properties: {
     error: { type: "string" },
+    code: { type: "string" },
   },
 } as const;
 

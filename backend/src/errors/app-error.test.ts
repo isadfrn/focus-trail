@@ -57,6 +57,7 @@ describe("sendAppError", () => {
     expect(reply.code).toHaveBeenCalledWith(409);
     expect(send).toHaveBeenCalledWith({
       error: "Unable to complete registration",
+      code: "CONFLICT",
     });
   });
 
@@ -76,14 +77,14 @@ describe("serializeError", () => {
     });
     expect(serializeError(error)).toEqual({
       statusCode: 409,
-      body: { error: "Unable to complete registration" },
+      body: { error: "Unable to complete registration", code: "CONFLICT" },
     });
   });
 
   it("maps unknown errors to generic 500", () => {
     expect(serializeError(new Error("db down"))).toEqual({
       statusCode: 500,
-      body: { error: "Internal Server Error" },
+      body: { error: "Internal Server Error", code: "INTERNAL_ERROR" },
     });
   });
 });

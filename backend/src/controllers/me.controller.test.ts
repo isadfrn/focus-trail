@@ -66,7 +66,10 @@ describe("MeController", () => {
     );
 
     expect(reply.code).toHaveBeenCalledWith(401);
-    expect(send).toHaveBeenCalledWith({ error: "Unauthorized" });
+    expect(send).toHaveBeenCalledWith({
+      error: "Unauthorized",
+      code: "UNAUTHORIZED",
+    });
   });
 
   it("updates preferences with a valid body", async () => {
@@ -185,7 +188,10 @@ describe("MeController", () => {
     );
 
     expect(reply.code).toHaveBeenCalledWith(401);
-    expect(send).toHaveBeenCalledWith({ error: "Invalid Credentials" });
+    expect(send).toHaveBeenCalledWith({
+      error: "Invalid Credentials",
+      code: "INVALID_CREDENTIALS",
+    });
   });
 
   it("exports the account data with a download header", async () => {
@@ -244,7 +250,11 @@ describe("MeController", () => {
     );
     const send = vi.fn();
     const clearCookie = vi.fn();
-    const reply = { send, clearCookie, code: vi.fn().mockReturnValue({ send }) };
+    const reply = {
+      send,
+      clearCookie,
+      code: vi.fn().mockReturnValue({ send }),
+    };
 
     await controller.deleteAccount(
       {

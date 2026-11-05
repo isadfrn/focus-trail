@@ -2,6 +2,7 @@ import type { FastifyInstance } from "fastify";
 
 import { authController } from "../controllers/auth.controller.js";
 import { env } from "../env.js";
+import { ErrorCodes } from "../errors/app-error.js";
 import {
   forgotPasswordSchemaDoc,
   loginSchema,
@@ -17,6 +18,7 @@ const authRateLimit = {
   timeWindow: "1 minute" as const,
   errorResponseBuilder: () => ({
     error: "Too Many Requests",
+    code: ErrorCodes.tooManyRequests,
   }),
 };
 
@@ -42,7 +44,10 @@ export async function authRoutes(app: FastifyInstance) {
   );
   app.post(
     "/resend-verification",
-    { schema: resendVerificationSchemaDoc, config: { rateLimit: authRateLimit } },
+    {
+      schema: resendVerificationSchemaDoc,
+      config: { rateLimit: authRateLimit },
+    },
     (request, reply) => authController.resendVerification(request, reply),
   );
   app.post(

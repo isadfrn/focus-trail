@@ -50,7 +50,10 @@ describe("AuthController", () => {
     const reply = createReply();
     await controller.register({ body: {} } as FastifyRequest, reply as never);
     expect(reply.code).toHaveBeenCalledWith(400);
-    expect(reply.send).toHaveBeenCalledWith({ error: "Invalid Body" });
+    expect(reply.send).toHaveBeenCalledWith({
+      error: "Invalid Body",
+      code: "VALIDATION_ERROR",
+    });
   });
 
   it("registers and issues session", async () => {

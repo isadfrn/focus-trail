@@ -7,6 +7,7 @@ import Fastify from "fastify";
 import { registerSwagger } from "./docs/swagger.js";
 import { healthSchema } from "./docs/openapi-schemas.js";
 import { env } from "./env.js";
+import { ErrorCodes } from "./errors/app-error.js";
 import { registerErrorHandler } from "./errors/send-app-error.js";
 import { isTrustedOriginRequest } from "./lib/origin.js";
 import { COOKIE_NAME } from "./lib/session.js";
@@ -40,6 +41,7 @@ export async function buildApp() {
     timeWindow: "1 minute",
     errorResponseBuilder: () => ({
       error: "Too Many Requests",
+      code: ErrorCodes.tooManyRequests,
     }),
   });
 
@@ -61,7 +63,9 @@ export async function buildApp() {
       delete request.headers.authorization;
     }
     if (!isTrustedOriginRequest(request)) {
-      return reply.code(403).send({ error: "Forbidden Origin" });
+      return reply
+        .code(403)
+        .send({ error: "Forbidden Origin", code: ErrorCodes.forbiddenOrigin });
     }
   });
 
@@ -74,14 +78,20 @@ export async function buildApp() {
       await request.jwtVerify();
       const jti = request.user.jti;
       if (!jti) {
-        return reply.code(401).send({ error: "Unauthorized" });
+        return reply
+          .code(401)
+          .send({ error: "Unauthorized", code: ErrorCodes.unauthorized });
       }
       const session = await authSessionRepository.findActiveById(jti);
       if (!session) {
-        return reply.code(401).send({ error: "Unauthorized" });
+        return reply
+          .code(401)
+          .send({ error: "Unauthorized", code: ErrorCodes.unauthorized });
       }
     } catch {
-      return reply.code(401).send({ error: "Unauthorized" });
+      return reply
+        .code(401)
+        .send({ error: "Unauthorized", code: ErrorCodes.unauthorized });
     }
   });
 

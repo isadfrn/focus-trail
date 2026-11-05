@@ -2,16 +2,16 @@ import { Prisma } from "@prisma/client";
 import type { FastifyError, FastifyReply, FastifyRequest } from "fastify";
 
 import { env } from "../env.js";
-import { AppError, ConflictError } from "./app-error.js";
+import { AppError, ConflictError, ErrorCodes } from "./app-error.js";
 
 export function serializeError(error: unknown): {
   statusCode: number;
-  body: { error: string };
+  body: { error: string; code: string };
 } {
   if (error instanceof AppError) {
     return {
       statusCode: error.statusCode,
-      body: { error: error.message },
+      body: { error: error.message, code: error.code },
     };
   }
 
@@ -22,13 +22,13 @@ export function serializeError(error: unknown): {
     const conflict = new ConflictError();
     return {
       statusCode: conflict.statusCode,
-      body: { error: conflict.message },
+      body: { error: conflict.message, code: conflict.code },
     };
   }
 
   return {
     statusCode: 500,
-    body: { error: "Internal Server Error" },
+    body: { error: "Internal Server Error", code: ErrorCodes.internal },
   };
 }
 
@@ -67,7 +67,7 @@ export function registerErrorHandler(
     ) {
       const message =
         error instanceof Error ? error.message : "Internal Server Error";
-      void reply.code(500).send({ error: message });
+      void reply.code(500).send({ error: message, code: ErrorCodes.internal });
       return;
     }
 

@@ -45,7 +45,7 @@ describe("registerErrorHandler", () => {
     handler(new AppError("nope", 400, "X"), {}, reply);
 
     expect(reply.code).toHaveBeenCalledWith(400);
-    expect(reply.send).toHaveBeenCalledWith({ error: "nope" });
+    expect(reply.send).toHaveBeenCalledWith({ error: "nope", code: "X" });
     expect(app.log.error).not.toHaveBeenCalled();
   });
 
@@ -57,6 +57,7 @@ describe("registerErrorHandler", () => {
     expect(app.log.error).toHaveBeenCalled();
     expect(reply.send).toHaveBeenCalledWith({
       error: "Internal Server Error",
+      code: "INTERNAL_ERROR",
     });
   });
 
@@ -65,7 +66,10 @@ describe("registerErrorHandler", () => {
     const { handler, reply } = setup();
     handler(new Error("secret db"), {}, reply);
 
-    expect(reply.send).toHaveBeenCalledWith({ error: "secret db" });
+    expect(reply.send).toHaveBeenCalledWith({
+      error: "secret db",
+      code: "INTERNAL_ERROR",
+    });
   });
 
   it("no-ops when reply already sent", () => {
