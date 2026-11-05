@@ -1,8 +1,8 @@
 FROM node:24.20.0-slim AS build
 WORKDIR /app
-ARG VITE_API_BASE=/focus/api
+ARG VITE_API_BASE=/app/api
 ENV VITE_API_BASE=$VITE_API_BASE
-ARG VITE_SHARE_URL=https://isabellanunes.dev/focus/
+ARG VITE_SHARE_URL=https://focustrail.com.br/app/
 ENV VITE_SHARE_URL=$VITE_SHARE_URL
 COPY package.json package-lock.json ./
 RUN npm ci
@@ -11,5 +11,5 @@ RUN npm run build
 
 FROM nginx:1.27-alpine AS runtime
 COPY nginx.conf /etc/nginx/conf.d/default.conf
-COPY --from=build /app/dist /usr/share/nginx/html/focus
+COPY --from=build /app/dist /usr/share/nginx/html/app
 EXPOSE 80

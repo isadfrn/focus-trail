@@ -5,7 +5,7 @@ description: Work on the Focus Trail desktop (Tauri) app — architecture, build
 
 # Desktop app (Tauri v2)
 
-The desktop app is a **wrapper**: `frontend/src-tauri/tauri.conf.json` sets `build.frontendDist` and `devUrl` to the live site (`https://isabellanunes.dev/focus/`). It loads the deployed web app at runtime — no bundled frontend. So **web deploys reflect automatically**; you only rebuild the installer for native-shell changes (Rust, window, icon, updater, or the pointed URL).
+The desktop app is a **wrapper**: `frontend/src-tauri/tauri.conf.json` sets `build.frontendDist` and `devUrl` to the live site (`https://focustrail.com.br/app/`). It loads the deployed web app at runtime — no bundled frontend. So **web deploys reflect automatically**; you only rebuild the installer for native-shell changes (Rust, window, icon, updater, or the pointed URL).
 
 ## Build
 

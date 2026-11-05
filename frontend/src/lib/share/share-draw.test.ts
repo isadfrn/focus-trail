@@ -153,9 +153,9 @@ describe("drawStatsRow", () => {
 describe("drawPill", () => {
   it("draws a rounded pill with the link text in the on-accent color", () => {
     const fake = createFakeContext(() => 200);
-    drawPill(fake.ctx, 540, 900, "isabellanunes.dev/focus", SHARE_LAYOUTS.story, palette);
+    drawPill(fake.ctx, 540, 900, "focustrail.com.br/app", SHARE_LAYOUTS.story, palette);
     const text = fake.callsOf("fillText")[0];
-    expect(text.args[0]).toBe("isabellanunes.dev/focus");
+    expect(text.args[0]).toBe("focustrail.com.br/app");
     expect(text.state.fillStyle).toBe(palette.onAccent);
     expect(fake.callsOf("roundRect")).toHaveLength(1);
   });

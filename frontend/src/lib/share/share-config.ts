@@ -1,4 +1,4 @@
-const DEFAULT_SHARE_URL = "https://isabellanunes.dev/focus/";
+const DEFAULT_SHARE_URL = "https://focustrail.com.br/app/";
 
 export function getShareUrl(): string {
   const configured = import.meta.env.VITE_SHARE_URL?.trim();

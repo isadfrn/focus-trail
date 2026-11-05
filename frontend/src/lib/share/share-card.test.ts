@@ -193,7 +193,7 @@ describe("buildCardContent for a task", () => {
 });
 
 describe("buildShareCaption", () => {
-  const url = "https://isabellanunes.dev/focus/";
+  const url = "https://focustrail.com.br/app/";
 
   it("writes a caption for today", () => {
     expect(buildShareCaption(daySubject(), url, now)).toBe(

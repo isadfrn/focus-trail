@@ -122,7 +122,7 @@ describe("ShareDialog", () => {
       seconds: 9300,
     });
     expect(params.content?.goal?.leftLabel).toBe("Meta diária · 3h");
-    expect(params.linkLabel).toBe("isabellanunes.dev/focus");
+    expect(params.linkLabel).toBe("focustrail.com.br/app");
   });
 
   it("shows loading and error placeholders instead of a preview", () => {
@@ -257,7 +257,7 @@ describe("ShareDialog", () => {
 
     const caption = vi.mocked(actions.copyTextToClipboard).mock.calls[0][0];
     expect(caption).toContain("Hoje eu foquei 2h 35min");
-    expect(caption).toContain("https://isabellanunes.dev/focus/?utm_source=focus-trail-share");
+    expect(caption).toContain("https://focustrail.com.br/app/?utm_source=focus-trail-share");
     expect(caption).toContain("utm_campaign=day");
     await waitFor(() => expect(toast).toHaveBeenCalledWith("Legenda copiada."));
 

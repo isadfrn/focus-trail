@@ -164,7 +164,7 @@ The `name` is the fallback label. To translate it, add a `scenarios.<id>` key to
 The share dialog (Timer after a focus session, Performance, History rows) renders a PNG card in the browser — nothing is uploaded. Two formats: Story/TikTok `1080×1920` and Post `1080×1080`.
 
 - The card is drawn from the same scenario data as the timer scene (`scenarios.json` + the asset pools), so adding, removing or replacing scenarios and images updates the cards with no extra work. The layout adapts to each scenario's character height and palette.
-- The link printed on the card and added to the caption comes from `VITE_SHARE_URL` (build-time, default `https://isabellanunes.dev/focus/`). Point it to a landing page later — no code change needed (`frontend/Dockerfile` exposes it as a build arg).
+- The link printed on the card and added to the caption comes from `VITE_SHARE_URL` (build-time, default `https://focustrail.com.br/app/`). Point it to a landing page later — no code change needed (`frontend/Dockerfile` exposes it as a build arg).
 - Instagram and TikTok have no web share link: on mobile the native share sheet receives the image; on desktop download the PNG. X and LinkedIn open their composers and the image is copied to the clipboard for pasting.
 
 ## Scripts
