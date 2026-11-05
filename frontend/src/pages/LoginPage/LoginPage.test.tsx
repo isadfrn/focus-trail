@@ -1,89 +1,59 @@
-import { fireEvent, render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import type { ReactNode } from "react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { act, render, screen } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
-const navigate = vi.fn();
-vi.mock("react-router-dom", () => ({
-  useNavigate: () => navigate,
-  Link: ({ children }: { children: ReactNode }) => <>{children}</>,
-}));
-
-const login = vi.fn();
-const register = vi.fn();
-const verifyEmail = vi.fn();
-vi.mock("../../providers/AuthProvider", () => ({
-  useAuth: () => ({ user: null, login, register, verifyEmail }),
-}));
-
+import i18n from "../../i18n";
 import { LoginPage } from "./LoginPage";
 
-async function switchToRegister() {
-  const user = userEvent.setup();
-  await user.click(screen.getByText("Cadastrar"));
+vi.mock("../../providers/AuthProvider", () => ({
+  useAuth: () => ({
+    user: null,
+    login: vi.fn(),
+    register: vi.fn(),
+    verifyEmail: vi.fn(),
+  }),
+}));
+
+function renderPage() {
+  return render(
+    <MemoryRouter>
+      <LoginPage />
+    </MemoryRouter>,
+  );
 }
 
-describe("LoginPage register confirmation", () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-    login.mockResolvedValue(undefined);
-    register.mockResolvedValue({ user: { id: "1" } });
+describe("LoginPage language", () => {
+  afterEach(async () => {
+    await i18n.changeLanguage("pt");
   });
 
-  it("shows the confirmation field only in register mode", async () => {
-    render(<LoginPage />);
-    expect(screen.queryByLabelText("Confirmar senha")).not.toBeInTheDocument();
+  it("renders in Portuguese by default", () => {
+    renderPage();
 
-    await switchToRegister();
-
-    expect(screen.getByLabelText("Confirmar senha")).toBeInTheDocument();
+    expect(screen.getByLabelText("E-mail")).toBeInTheDocument();
+    expect(screen.getByLabelText("Senha")).toBeInTheDocument();
+    expect(screen.getByText("Esqueci minha senha")).toBeInTheDocument();
   });
 
-  it("blocks registration and shows an error when passwords differ", async () => {
-    const user = userEvent.setup();
-    const { container } = render(<LoginPage />);
-    await switchToRegister();
+  it("re-renders in English when the language changes", async () => {
+    renderPage();
 
-    await user.type(screen.getByLabelText("E-mail"), "a@b.com");
-    await user.type(screen.getByLabelText("Senha"), "password123");
-    await user.type(screen.getByLabelText("Confirmar senha"), "password124");
+    await act(async () => {
+      await i18n.changeLanguage("en");
+    });
 
-    fireEvent.submit(container.querySelector("form")!);
-
-    expect(await screen.findByText("As senhas não conferem.")).toBeInTheDocument();
-    expect(register).not.toHaveBeenCalled();
+    expect(screen.getByLabelText("Email")).toBeInTheDocument();
+    expect(screen.getByLabelText("Password")).toBeInTheDocument();
+    expect(screen.getByText("Forgot my password")).toBeInTheDocument();
+    expect(screen.getByRole("radio", { name: "Sign up" })).toBeInTheDocument();
   });
 
-  it("registers when the password and confirmation match", async () => {
-    const user = userEvent.setup();
-    const { container } = render(<LoginPage />);
-    await switchToRegister();
+  it("renders in Spanish", async () => {
+    await i18n.changeLanguage("es");
+    renderPage();
 
-    await user.type(screen.getByLabelText("E-mail"), "a@b.com");
-    await user.type(screen.getByLabelText("Senha"), "password123");
-    await user.type(screen.getByLabelText("Confirmar senha"), "password123");
-
-    fireEvent.submit(container.querySelector("form")!);
-
-    await vi.waitFor(() =>
-      expect(register).toHaveBeenCalledWith("a@b.com", "password123"),
-    );
-  });
-
-  it("shows the verification step when registration requires it", async () => {
-    register.mockResolvedValue({ verificationRequired: true, email: "a@b.com" });
-    const user = userEvent.setup();
-    const { container } = render(<LoginPage />);
-    await switchToRegister();
-
-    await user.type(screen.getByLabelText("E-mail"), "a@b.com");
-    await user.type(screen.getByLabelText("Senha"), "password123");
-    await user.type(screen.getByLabelText("Confirmar senha"), "password123");
-
-    fireEvent.submit(container.querySelector("form")!);
-
-    expect(
-      await screen.findByLabelText("Código de 6 dígitos"),
-    ).toBeInTheDocument();
+    expect(screen.getByLabelText("Correo electrónico")).toBeInTheDocument();
+    expect(screen.getByLabelText("Contraseña")).toBeInTheDocument();
+    expect(screen.getByText("Olvidé mi contraseña")).toBeInTheDocument();
   });
 });

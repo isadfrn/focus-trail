@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { Button } from "../../components/Button/Button";
 import { ConfirmDialog } from "../../components/ConfirmDialog/ConfirmDialog";
@@ -65,15 +66,20 @@ function ShareIcon() {
   );
 }
 
-function statusLabel(s: PomodoroSession) {
-  return s.completed ? (
-    <span className="text-xs text-ok">concluida</span>
+function StatusLabel({ session }: { session: PomodoroSession }) {
+  const { t } = useTranslation();
+
+  return session.completed ? (
+    <span className="text-xs text-ok">{t("history.statusRow.completed")}</span>
   ) : (
-    <span className="text-xs text-muted">interrompida</span>
+    <span className="text-xs text-muted">
+      {t("history.statusRow.interrupted")}
+    </span>
   );
 }
 
 export function HistoryPage() {
+  const { t } = useTranslation();
   const {
     sessions,
     loading,
@@ -105,11 +111,11 @@ export function HistoryPage() {
   };
 
   useEffect(() => {
-    const t = setTimeout(() => {
+    const timeoutId = setTimeout(() => {
       setFilters(buildSessionFilters(form));
       setSelected(new Set());
     }, 250);
-    return () => clearTimeout(t);
+    return () => clearTimeout(timeoutId);
   }, [form, setFilters]);
 
   const sentinelRef = useRef<HTMLDivElement>(null);
@@ -166,9 +172,9 @@ export function HistoryPage() {
       }
       setSelected(new Set());
       setPending(null);
-      toast(count === 1 ? "Sessao apagada." : `${count} sessoes apagadas.`);
+      toast(t("history.deleted", { count }));
     } catch {
-      toast("Nao consegui apagar. Tente de novo.");
+      toast(t("history.deleteFailed"));
     } finally {
       setBusy(false);
     }
@@ -176,20 +182,20 @@ export function HistoryPage() {
 
   const pendingText =
     pending?.kind === "all"
-      ? "Apagar TODAS as suas sessoes? Essa acao nao pode ser desfeita."
+      ? t("history.confirm.all")
       : pending?.kind === "selected"
-        ? `Apagar ${pending.ids.length} sessao(oes) selecionada(s)? Essa acao nao pode ser desfeita.`
+        ? t("history.confirm.selected", { count: pending.ids.length })
         : pending?.kind === "one"
-          ? "Apagar esta sessao? Essa acao nao pode ser desfeita."
+          ? t("history.confirm.one")
           : "";
 
   return (
     <div>
-      <h1 className="m-0 mb-4 text-2xl font-bold">Historico</h1>
+      <h1 className="m-0 mb-4 text-2xl font-bold">{t("history.title")}</h1>
 
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
         <label className="flex flex-col gap-1 text-xs text-muted">
-          Data
+          {t("history.filters.date")}
           <input
             type="date"
             value={form.date}
@@ -198,7 +204,7 @@ export function HistoryPage() {
           />
         </label>
         <label className="flex flex-col gap-1 text-xs text-muted">
-          Tipo
+          {t("history.filters.type")}
           <select
             value={form.type}
             onChange={(e) =>
@@ -206,13 +212,13 @@ export function HistoryPage() {
             }
             className={fieldClass}
           >
-            <option value="">Todos</option>
-            <option value="focus">Foco</option>
-            <option value="break">Pausa</option>
+            <option value="">{t("history.filters.all")}</option>
+            <option value="focus">{t("history.types.focus")}</option>
+            <option value="break">{t("history.types.break")}</option>
           </select>
         </label>
         <label className="flex flex-col gap-1 text-xs text-muted">
-          Status
+          {t("history.filters.status")}
           <select
             value={form.status}
             onChange={(e) =>
@@ -220,20 +226,22 @@ export function HistoryPage() {
             }
             className={fieldClass}
           >
-            <option value="">Todos</option>
-            <option value="completed">Concluida</option>
-            <option value="interrupted">Interrompida</option>
+            <option value="">{t("history.filters.all")}</option>
+            <option value="completed">{t("history.statusOptions.completed")}</option>
+            <option value="interrupted">
+              {t("history.statusOptions.interrupted")}
+            </option>
           </select>
         </label>
         <label className="flex flex-col gap-1 text-xs text-muted">
-          Duracao (min)
+          {t("history.filters.duration")}
           <div className="flex gap-1">
             <select
               value={form.durationOp}
               onChange={(e) =>
                 update({ durationOp: e.target.value as FilterForm["durationOp"] })
               }
-              aria-label="Operador de duracao"
+              aria-label={t("history.filters.durationOperator")}
               className={`${fieldClass} w-14`}
             >
               <option value="">—</option>
@@ -245,7 +253,7 @@ export function HistoryPage() {
               type="number"
               inputMode="numeric"
               min={0}
-              placeholder="min"
+              placeholder={t("history.filters.minutesPlaceholder")}
               value={form.durationMinutes}
               onChange={(e) => update({ durationMinutes: e.target.value })}
               className={`${fieldClass} w-full`}
@@ -253,12 +261,12 @@ export function HistoryPage() {
           </div>
         </label>
         <label className="col-span-2 flex flex-col gap-1 text-xs text-muted sm:col-span-4">
-          Tarefa
+          {t("history.filters.task")}
           <input
             type="text"
             value={form.task}
             onChange={(e) => update({ task: e.target.value })}
-            placeholder="Buscar por tarefa"
+            placeholder={t("history.filters.taskPlaceholder")}
             className={fieldClass}
           />
         </label>
@@ -267,7 +275,7 @@ export function HistoryPage() {
       <div className="mt-3 flex flex-wrap items-center gap-2">
         {filtersActive && (
           <Button variant="ghost" onClick={() => setForm(emptyFilterForm)}>
-            Limpar filtros
+            {t("history.filters.clear")}
           </Button>
         )}
         <Button
@@ -276,7 +284,9 @@ export function HistoryPage() {
           disabled={selected.size === 0}
           onClick={() => setPending({ kind: "selected", ids: [...selected] })}
         >
-          Apagar selecionados{selected.size > 0 ? ` (${selected.size})` : ""}
+          {selected.size > 0
+            ? t("history.filters.deleteSelectedCount", { count: selected.size })
+            : t("history.filters.deleteSelected")}
         </Button>
         <Button
           variant="ghost"
@@ -284,19 +294,21 @@ export function HistoryPage() {
           disabled={sessions.length === 0}
           onClick={() => setPending({ kind: "all" })}
         >
-          Apagar tudo
+          {t("history.filters.deleteAll")}
         </Button>
       </div>
 
       {error ? (
         <div className="mt-8 text-center text-danger">{error}</div>
       ) : loading ? (
-        <div className="mt-8 text-center text-muted">Carregando...</div>
+        <div className="mt-8 text-center text-muted">
+          {t("common.loading")}
+        </div>
       ) : sessions.length === 0 ? (
         <div className="mt-8 text-center text-muted">
           {filtersActive
-            ? "Nenhuma sessao para esses filtros."
-            : "Nenhuma sessao ainda."}
+            ? t("history.emptyFiltered")
+            : t("history.empty")}
         </div>
       ) : (
         <>
@@ -309,17 +321,17 @@ export function HistoryPage() {
                       type="checkbox"
                       checked={allSelected}
                       onChange={toggleAll}
-                      aria-label="Selecionar todas as carregadas"
+                      aria-label={t("history.selectAll")}
                       className={checkbox}
                     />
                   </th>
-                  <th>Quando</th>
-                  <th>Tipo</th>
-                  <th>Tarefa</th>
-                  <th>Duracao</th>
-                  <th>Status</th>
+                  <th>{t("history.columns.when")}</th>
+                  <th>{t("history.columns.type")}</th>
+                  <th>{t("history.columns.task")}</th>
+                  <th>{t("history.columns.duration")}</th>
+                  <th>{t("history.columns.status")}</th>
                   <th className="w-10">
-                    <span className="sr-only">Acoes</span>
+                    <span className="sr-only">{t("history.columns.actions")}</span>
                   </th>
                 </tr>
               </thead>
@@ -334,24 +346,28 @@ export function HistoryPage() {
                         type="checkbox"
                         checked={selected.has(s.id)}
                         onChange={() => toggle(s.id)}
-                        aria-label={`Selecionar sessao de ${formatDateTime(s.startedAt)}`}
+                        aria-label={t("history.selectSession", {
+                          date: formatDateTime(s.startedAt),
+                        })}
                         className={checkbox}
                       />
                     </td>
                     <td>{formatDateTime(s.startedAt)}</td>
-                    <td>{s.type === "focus" ? "Foco" : "Pausa"}</td>
+                    <td>{t(s.type === "focus" ? "history.types.focus" : "history.types.break")}</td>
                     <td className="max-w-[220px] truncate text-muted">
                       {s.taskLabel ?? "—"}
                     </td>
                     <td>{formatDuration(s.durationSeconds)}</td>
-                    <td>{statusLabel(s)}</td>
+                    <td>
+                      <StatusLabel session={s} />
+                    </td>
                     <td>
                       <div className="flex items-center gap-1">
                         {s.type === "focus" && (
                           <button
                             type="button"
                             onClick={() => shareSession(s)}
-                            aria-label="Compartilhar sessão"
+                            aria-label={t("history.shareSession")}
                             className="flex size-8 items-center justify-center rounded-lg text-muted cursor-pointer outline-none hover:bg-background hover:text-primary focus-visible:ring-2 focus-visible:ring-primary"
                           >
                             <ShareIcon />
@@ -360,7 +376,7 @@ export function HistoryPage() {
                         <button
                           type="button"
                           onClick={() => setPending({ kind: "one", id: s.id })}
-                          aria-label="Apagar sessao"
+                          aria-label={t("history.deleteSession")}
                           className="flex size-8 items-center justify-center rounded-lg text-muted cursor-pointer outline-none hover:bg-danger/10 hover:text-danger focus-visible:ring-2 focus-visible:ring-danger"
                         >
                           <TrashIcon />
@@ -381,7 +397,7 @@ export function HistoryPage() {
               >
                 <div className="flex min-w-0 flex-col gap-0.5">
                   <span className="font-medium">
-                    {s.type === "focus" ? "Foco" : "Pausa"} -{" "}
+                    {t(s.type === "focus" ? "history.types.focus" : "history.types.break")} -{" "}
                     {formatDuration(s.durationSeconds)}
                   </span>
                   {s.taskLabel && (
@@ -392,14 +408,14 @@ export function HistoryPage() {
                   <span className="text-xs text-muted">
                     {formatDateTime(s.startedAt)}
                   </span>
-                  {statusLabel(s)}
+                  <StatusLabel session={s} />
                 </div>
                 <div className="flex shrink-0 items-center gap-1">
                   {s.type === "focus" && (
                     <button
                       type="button"
                       onClick={() => shareSession(s)}
-                      aria-label="Compartilhar sessão"
+                      aria-label={t("history.shareSession")}
                       className="flex size-8 items-center justify-center rounded-lg text-muted cursor-pointer outline-none hover:bg-background hover:text-primary"
                     >
                       <ShareIcon />
@@ -408,7 +424,7 @@ export function HistoryPage() {
                   <button
                     type="button"
                     onClick={() => setPending({ kind: "one", id: s.id })}
-                    aria-label="Apagar sessao"
+                    aria-label={t("history.deleteSession")}
                     className="flex size-8 items-center justify-center rounded-lg text-muted cursor-pointer outline-none hover:bg-danger/10 hover:text-danger"
                   >
                     <TrashIcon />
@@ -421,12 +437,12 @@ export function HistoryPage() {
           <div ref={sentinelRef} className="h-8" aria-hidden="true" />
           {loadingMore && (
             <div className="py-2 text-center text-sm text-muted">
-              Carregando mais...
+              {t("history.loadingMore")}
             </div>
           )}
           {!hasMore && (
             <div className="py-2 text-center text-xs text-muted">
-              Fim do historico.
+              {t("history.endOfList")}
             </div>
           )}
         </>
@@ -445,7 +461,7 @@ export function HistoryPage() {
         onOpenChange={(open) => {
           if (!open && !busy) setPending(null);
         }}
-        title="Apagar sessoes"
+        title={t("history.confirm.title")}
         description={pendingText}
         busy={busy}
         onConfirm={confirm}

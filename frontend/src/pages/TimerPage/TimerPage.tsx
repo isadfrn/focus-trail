@@ -1,5 +1,6 @@
 import * as ToggleGroup from "@radix-ui/react-toggle-group";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { Button } from "../../components/Button/Button";
 import { EditableClock } from "../../components/EditableClock/EditableClock";
@@ -15,6 +16,7 @@ const presetItem =
   "rounded-[10px] border border-scene-panel-border bg-scene-panel px-3.5 py-2 text-sm text-scene-foreground backdrop-blur-sm cursor-pointer transition-colors disabled:opacity-50 disabled:cursor-not-allowed data-[state=on]:border-scene-accent data-[state=on]:font-semibold data-[state=on]:text-scene-accent";
 
 export function TimerPage() {
+  const { t } = useTranslation();
   const { character } = useCharacter();
   const {
     type,
@@ -38,7 +40,7 @@ export function TimerPage() {
     const maxMinutes = MAX_MINUTES_BY_TYPE[type];
     const minutes = parseMinutes(rawMinutes, maxMinutes);
     if (minutes === null) {
-      toast(`Informe um número inteiro entre 1 e ${maxMinutes} minutos.`);
+      toast(t("timer.invalidMinutes", { max: maxMinutes }));
       return;
     }
     void updateDuration(type, minutes);
@@ -76,8 +78,8 @@ export function TimerPage() {
             onChange={(event) => setTaskLabel(event.target.value)}
             disabled={running}
             maxLength={120}
-            placeholder="No que vou focar?"
-            aria-label="No que vou focar?"
+            placeholder={t("timer.taskPlaceholder")}
+            aria-label={t("timer.taskPlaceholder")}
             className="w-[min(320px,80vw)] rounded-[10px] border border-scene-panel-border bg-scene-panel px-3.5 py-2 text-center text-sm text-scene-foreground backdrop-blur-sm outline-none placeholder:text-scene-foreground/60 focus:border-scene-accent disabled:opacity-50"
           />
         )}
@@ -92,11 +94,11 @@ export function TimerPage() {
         <div className="flex gap-3">
           {status !== "running" ? (
             <Button variant="scene" size="lg" onClick={start}>
-              {status === "done" ? "Recomecar" : "Iniciar"}
+              {status === "done" ? t("timer.restart") : t("timer.start")}
             </Button>
           ) : (
             <Button variant="danger" size="lg" onClick={stop}>
-              Parar
+              {t("timer.stop")}
             </Button>
           )}
           {status === "done" && type === "focus" && (
@@ -105,7 +107,7 @@ export function TimerPage() {
               size="lg"
               onClick={() => setShareOpen(true)}
             >
-              Compartilhar
+              {t("timer.share")}
             </Button>
           )}
         </div>

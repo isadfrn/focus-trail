@@ -1,16 +1,19 @@
 import * as Label from "@radix-ui/react-label";
 import { useState, type FormEvent } from "react";
+import { useTranslation } from "react-i18next";
 
 import { authApi } from "../../api/auth.api";
 import { Button } from "../../components/Button/Button";
 import { ConfirmDialog } from "../../components/ConfirmDialog/ConfirmDialog";
 import { ApiError } from "../../errors/api-error";
+import i18next from "../../i18n";
 import {
   DEFAULT_BREAK_MINUTES,
   DEFAULT_FOCUS_MINUTES,
   DEFAULT_LONG_BREAK_MINUTES,
   DEFAULT_POMODOROS_UNTIL_LONG_BREAK,
 } from "../../hooks/useTimer";
+import { scenarioName } from "../../lib/scenario-name";
 import { useAuth } from "../../providers/AuthProvider";
 import { useCharacter } from "../../providers/CharacterProvider";
 import { useToast } from "../../providers/ToastProvider";
@@ -23,11 +26,10 @@ const field =
 
 function passwordErrorMessage(err: unknown): string {
   if (err instanceof ApiError) {
-    if (err.status === 401) return "Senha atual incorreta.";
-    if (err.status === 400)
-      return "A nova senha precisa ter ao menos 10 caracteres, com letra e número.";
+    if (err.status === 401) return i18next.t("profile.password.wrongCurrent");
+    if (err.status === 400) return i18next.t("profile.password.invalidNew");
   }
-  return "Não consegui trocar a senha. Tente de novo.";
+  return i18next.t("profile.password.failed");
 }
 
 function downloadJson(filename: string, data: unknown) {
@@ -43,6 +45,7 @@ function downloadJson(filename: string, data: unknown) {
 }
 
 export function ProfilePage() {
+  const { t } = useTranslation();
   const { user, updateUser, logout } = useAuth();
   const { characters, setCharacterId } = useCharacter();
   const toast = useToast();
@@ -89,9 +92,9 @@ export function ProfilePage() {
     try {
       const data = await authApi.exportData();
       downloadJson("focus-trail-export.json", data);
-      toast("Seus dados foram exportados.");
+      toast(t("profile.privacy.exported"));
     } catch {
-      toast("Não consegui exportar seus dados. Tente de novo.");
+      toast(t("profile.privacy.exportFailed"));
     } finally {
       setExporting(false);
     }
@@ -100,7 +103,7 @@ export function ProfilePage() {
   const requestDelete = () => {
     setDeleteError(null);
     if (deletePassword.length === 0) {
-      setDeleteError("Digite sua senha para confirmar.");
+      setDeleteError(t("profile.privacy.passwordRequired"));
       return;
     }
     setConfirmingDelete(true);
@@ -112,14 +115,14 @@ export function ProfilePage() {
     try {
       await authApi.deleteAccount(deletePassword);
       setConfirmingDelete(false);
-      toast("Sua conta foi excluída.");
+      toast(t("profile.privacy.deleted"));
       await logout();
     } catch (err) {
       setConfirmingDelete(false);
       setDeleteError(
         err instanceof ApiError && err.status === 401
-          ? "Senha incorreta."
-          : "Não consegui excluir a conta. Tente de novo.",
+          ? t("profile.privacy.wrongPassword")
+          : t("profile.privacy.deleteFailed"),
       );
     } finally {
       setDeleting(false);
@@ -133,26 +136,26 @@ export function ProfilePage() {
     const focus = Number(focusInput);
     const brk = Number(breakInput);
     if (!Number.isInteger(focus) || focus < 1 || focus > 180) {
-      toast("Foco deve ser um número inteiro entre 1 e 180 minutos.");
+      toast(t("profile.preferences.errors.focus", { min: 1, max: 180 }));
       return;
     }
     if (!Number.isInteger(brk) || brk < 1 || brk > 60) {
-      toast("Pausa deve ser um número inteiro entre 1 e 60 minutos.");
+      toast(t("profile.preferences.errors.break", { min: 1, max: 60 }));
       return;
     }
     const longBreak = Number(longBreakInput);
     const pomodoros = Number(pomodorosInput);
     if (!Number.isInteger(longBreak) || longBreak < 1 || longBreak > 60) {
-      toast("Pausa longa deve ser um número inteiro entre 1 e 60 minutos.");
+      toast(t("profile.preferences.errors.longBreak", { min: 1, max: 60 }));
       return;
     }
     if (!Number.isInteger(pomodoros) || pomodoros < 1 || pomodoros > 12) {
-      toast("Ciclos até a pausa longa deve ser entre 1 e 12.");
+      toast(t("profile.preferences.errors.cycles", { min: 1, max: 12 }));
       return;
     }
     const goal = Number(goalInput);
     if (!Number.isInteger(goal) || goal < 0 || goal > 1440) {
-      toast("Meta diária deve ser um número inteiro entre 0 e 1440 minutos.");
+      toast(t("profile.preferences.errors.goal", { min: 0, max: 1440 }));
       return;
     }
 
@@ -169,9 +172,9 @@ export function ProfilePage() {
       });
       updateUser(updated);
       setCharacterId(updated.character);
-      toast("Preferências salvas.");
+      toast(t("profile.preferences.saved"));
     } catch {
-      toast("Não consegui salvar as preferências. Tente de novo.");
+      toast(t("profile.preferences.saveFailed"));
     } finally {
       setSavingPrefs(false);
     }
@@ -183,11 +186,11 @@ export function ProfilePage() {
     setPasswordError(null);
 
     if (newPassword !== confirmPassword) {
-      setPasswordError("A confirmação não bate com a nova senha.");
+      setPasswordError(t("profile.password.mismatch"));
       return;
     }
     if (newPassword.length < 10) {
-      setPasswordError("A nova senha precisa ter ao menos 10 caracteres.");
+      setPasswordError(t("profile.password.tooShort"));
       return;
     }
 
@@ -197,7 +200,7 @@ export function ProfilePage() {
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
-      toast("Senha atualizada.");
+      toast(t("profile.password.updated"));
     } catch (err) {
       setPasswordError(passwordErrorMessage(err));
     } finally {
@@ -208,15 +211,19 @@ export function ProfilePage() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="m-0 mb-1 text-2xl font-bold">Perfil</h1>
+        <h1 className="m-0 mb-1 text-2xl font-bold">{t("profile.title")}</h1>
         <p className="text-muted">{user.email}</p>
       </div>
 
       <form onSubmit={savePreferences} className={card}>
-        <h2 className="m-0 text-lg font-semibold">Preferências</h2>
+        <h2 className="m-0 text-lg font-semibold">
+          {t("profile.preferences.title")}
+        </h2>
 
         <div className="flex flex-col gap-1.5 text-sm">
-          <Label.Root htmlFor="scene">Cenário padrão</Label.Root>
+          <Label.Root htmlFor="scene">
+            {t("profile.preferences.defaultScene")}
+          </Label.Root>
           <select
             id="scene"
             value={sceneId}
@@ -225,7 +232,7 @@ export function ProfilePage() {
           >
             {characters.map((c) => (
               <option key={c.id} value={c.id}>
-                {c.name}
+                {scenarioName(c)}
               </option>
             ))}
           </select>
@@ -233,7 +240,9 @@ export function ProfilePage() {
 
         <div className="grid grid-cols-2 gap-3 max-sm:grid-cols-1">
           <div className="flex flex-col gap-1.5 text-sm">
-            <Label.Root htmlFor="focus">Foco (minutos)</Label.Root>
+            <Label.Root htmlFor="focus">
+              {t("profile.preferences.focusMinutes")}
+            </Label.Root>
             <input
               id="focus"
               type="number"
@@ -247,7 +256,9 @@ export function ProfilePage() {
             />
           </div>
           <div className="flex flex-col gap-1.5 text-sm">
-            <Label.Root htmlFor="break">Pausa (minutos)</Label.Root>
+            <Label.Root htmlFor="break">
+              {t("profile.preferences.breakMinutes")}
+            </Label.Root>
             <input
               id="break"
               type="number"
@@ -264,7 +275,7 @@ export function ProfilePage() {
 
         <div className="flex flex-col gap-1.5 text-sm">
           <Label.Root htmlFor="daily-goal">
-            Meta diária de foco (minutos, 0 = sem meta)
+            {t("profile.preferences.dailyGoal")}
           </Label.Root>
           <input
             id="daily-goal"
@@ -285,13 +296,15 @@ export function ProfilePage() {
             onChange={(e) => setAutoCycle(e.target.checked)}
             className="size-4 cursor-pointer accent-primary"
           />
-          Encadear sessões automaticamente (foco → pausa → foco)
+          {t("profile.preferences.autoCycle")}
         </label>
 
         {autoCycle && (
           <div className="grid grid-cols-2 gap-3 max-sm:grid-cols-1">
             <div className="flex flex-col gap-1.5 text-sm">
-              <Label.Root htmlFor="long-break">Pausa longa (minutos)</Label.Root>
+              <Label.Root htmlFor="long-break">
+                {t("profile.preferences.longBreakMinutes")}
+              </Label.Root>
               <input
                 id="long-break"
                 type="number"
@@ -304,7 +317,9 @@ export function ProfilePage() {
               />
             </div>
             <div className="flex flex-col gap-1.5 text-sm">
-              <Label.Root htmlFor="pomodoros">Ciclos até a pausa longa</Label.Root>
+              <Label.Root htmlFor="pomodoros">
+                {t("profile.preferences.cyclesUntilLongBreak")}
+              </Label.Root>
               <input
                 id="pomodoros"
                 type="number"
@@ -325,15 +340,21 @@ export function ProfilePage() {
           disabled={savingPrefs}
           className="self-start"
         >
-          {savingPrefs ? "Salvando..." : "Salvar preferências"}
+          {savingPrefs
+            ? t("profile.preferences.saving")
+            : t("profile.preferences.save")}
         </Button>
       </form>
 
       <form onSubmit={changePassword} className={card}>
-        <h2 className="m-0 text-lg font-semibold">Trocar senha</h2>
+        <h2 className="m-0 text-lg font-semibold">
+          {t("profile.password.title")}
+        </h2>
 
         <div className="flex flex-col gap-1.5 text-sm">
-          <Label.Root htmlFor="current-password">Senha atual</Label.Root>
+          <Label.Root htmlFor="current-password">
+            {t("profile.password.currentPassword")}
+          </Label.Root>
           <input
             id="current-password"
             type="password"
@@ -346,7 +367,9 @@ export function ProfilePage() {
         </div>
 
         <div className="flex flex-col gap-1.5 text-sm">
-          <Label.Root htmlFor="new-password">Nova senha</Label.Root>
+          <Label.Root htmlFor="new-password">
+            {t("profile.password.newPassword")}
+          </Label.Root>
           <input
             id="new-password"
             type="password"
@@ -358,12 +381,14 @@ export function ProfilePage() {
             className={field}
           />
           <span className="text-xs text-muted">
-            Ao menos 10 caracteres, com letra e número.
+            {t("profile.password.hint")}
           </span>
         </div>
 
         <div className="flex flex-col gap-1.5 text-sm">
-          <Label.Root htmlFor="confirm-password">Confirmar nova senha</Label.Root>
+          <Label.Root htmlFor="confirm-password">
+            {t("profile.password.confirmPassword")}
+          </Label.Root>
           <input
             id="confirm-password"
             type="password"
@@ -385,15 +410,18 @@ export function ProfilePage() {
           disabled={savingPassword}
           className="self-start"
         >
-          {savingPassword ? "Salvando..." : "Trocar senha"}
+          {savingPassword
+            ? t("profile.password.saving")
+            : t("profile.password.submit")}
         </Button>
       </form>
 
       <section className={card}>
-        <h2 className="m-0 text-lg font-semibold">Privacidade e dados</h2>
+        <h2 className="m-0 text-lg font-semibold">
+          {t("profile.privacy.title")}
+        </h2>
         <p className="text-sm text-muted">
-          Baixe uma cópia de todos os seus dados ou exclua sua conta
-          permanentemente.
+          {t("profile.privacy.description")}
         </p>
 
         <Button
@@ -402,17 +430,22 @@ export function ProfilePage() {
           className="self-start"
           onClick={exportData}
         >
-          {exporting ? "Exportando..." : "Exportar meus dados"}
+          {exporting
+            ? t("profile.privacy.exporting")
+            : t("profile.privacy.export")}
         </Button>
 
         <div className="mt-2 flex flex-col gap-2 border-t border-border pt-4">
-          <h3 className="m-0 text-sm font-semibold text-danger">Excluir conta</h3>
+          <h3 className="m-0 text-sm font-semibold text-danger">
+            {t("profile.privacy.deleteTitle")}
+          </h3>
           <p className="text-sm text-muted">
-            Esta ação é permanente e apaga sua conta e todo o seu histórico.
-            Digite sua senha para confirmar.
+            {t("profile.privacy.deleteDescription")}
           </p>
           <div className="flex flex-col gap-1.5 text-sm">
-            <Label.Root htmlFor="delete-password">Senha</Label.Root>
+            <Label.Root htmlFor="delete-password">
+              {t("profile.privacy.passwordLabel")}
+            </Label.Root>
             <input
               id="delete-password"
               type="password"
@@ -432,7 +465,7 @@ export function ProfilePage() {
             className="self-start"
             onClick={requestDelete}
           >
-            Excluir minha conta
+            {t("profile.privacy.deleteButton")}
           </Button>
         </div>
       </section>
@@ -442,9 +475,9 @@ export function ProfilePage() {
         onOpenChange={(open) => {
           if (!open && !deleting) setConfirmingDelete(false);
         }}
-        title="Excluir conta"
-        description="Sua conta e todo o histórico serão apagados para sempre. Essa ação não pode ser desfeita."
-        confirmLabel="Excluir para sempre"
+        title={t("profile.privacy.deleteTitle")}
+        description={t("profile.privacy.confirmDescription")}
+        confirmLabel={t("profile.privacy.confirmLabel")}
         busy={deleting}
         onConfirm={deleteAccount}
       />

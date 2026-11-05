@@ -1,5 +1,6 @@
 import * as Label from "@radix-ui/react-label";
 import { useState, type FormEvent } from "react";
+import { Trans, useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router-dom";
 
 import logo from "../../assets/logo.png";
@@ -17,6 +18,7 @@ const fieldInput =
   "rounded-[10px] border border-border bg-background px-3 py-2.5 text-foreground outline-none focus:border-primary focus:ring-2 focus:ring-primary/40";
 
 export function ForgotPasswordPage() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const navigate = useNavigate();
   const [step, setStep] = useState<Step>("request");
@@ -53,7 +55,7 @@ export function ForgotPasswordPage() {
       return;
     }
     if (code.length !== 6) {
-      setError("Informe o código de 6 dígitos.");
+      setError(t("forgot.codeRequired"));
       return;
     }
 
@@ -62,7 +64,7 @@ export function ForgotPasswordPage() {
       await authApi.resetPassword(email, code, newPassword);
       setStep("done");
     } catch {
-      setError("Código inválido ou expirado. Peça um novo e tente de novo.");
+      setError(t("forgot.invalidCode"));
     } finally {
       setBusy(false);
     }
@@ -78,10 +80,10 @@ export function ForgotPasswordPage() {
             className="mx-auto h-20 w-auto max-sm:h-16"
           />
           <p className="text-center text-sm text-foreground">
-            Senha redefinida com sucesso.
+            {t("forgot.done")}
           </p>
           <Button variant="primary" asChild className="w-full">
-            <Link to="/login">Ir para o login</Link>
+            <Link to="/login">{t("forgot.goToLogin")}</Link>
           </Button>
         </div>
       ) : step === "request" ? (
@@ -91,13 +93,13 @@ export function ForgotPasswordPage() {
             alt="Focus Trail"
             className="mx-auto h-20 w-auto max-sm:h-16"
           />
-          <h1 className="sr-only">Recuperar senha</h1>
+          <h1 className="sr-only">{t("forgot.title")}</h1>
           <p className="text-center text-sm text-muted">
-            Informe seu e-mail e enviaremos um código para redefinir a senha.
+            {t("forgot.requestInstructions")}
           </p>
 
           <div className="flex flex-col gap-1.5 text-sm">
-            <Label.Root htmlFor="email">E-mail</Label.Root>
+            <Label.Root htmlFor="email">{t("auth.fields.email")}</Label.Root>
             <input
               id="email"
               type="email"
@@ -115,13 +117,13 @@ export function ForgotPasswordPage() {
             disabled={busy}
             className="w-full"
           >
-            {busy ? "..." : "Enviar código"}
+            {busy ? "..." : t("forgot.sendCode")}
           </Button>
           <Link
             to="/login"
             className="text-center text-sm text-primary no-underline hover:underline"
           >
-            Voltar ao login
+            {t("forgot.backToLogin")}
           </Link>
         </form>
       ) : (
@@ -131,14 +133,17 @@ export function ForgotPasswordPage() {
             alt="Focus Trail"
             className="mx-auto h-20 w-auto max-sm:h-16"
           />
-          <h1 className="sr-only">Redefinir senha</h1>
+          <h1 className="sr-only">{t("forgot.resetTitle")}</h1>
           <p className="text-center text-sm text-muted">
-            Se houver uma conta para <strong>{email}</strong>, enviamos um
-            código. Informe-o com a nova senha.
+            <Trans
+              i18nKey="forgot.resetInstructions"
+              values={{ email }}
+              components={{ strong: <strong /> }}
+            />
           </p>
 
           <div className="flex flex-col gap-1.5 text-sm">
-            <Label.Root htmlFor="code">Código de 6 dígitos</Label.Root>
+            <Label.Root htmlFor="code">{t("forgot.codeLabel")}</Label.Root>
             <input
               id="code"
               inputMode="numeric"
@@ -153,7 +158,7 @@ export function ForgotPasswordPage() {
           </div>
 
           <div className="flex flex-col gap-1.5 text-sm">
-            <Label.Root htmlFor="new-password">Nova senha</Label.Root>
+            <Label.Root htmlFor="new-password">{t("forgot.newPassword")}</Label.Root>
             <input
               id="new-password"
               type="password"
@@ -165,12 +170,12 @@ export function ForgotPasswordPage() {
               className={fieldInput}
             />
             <span className="text-xs text-muted">
-              Ao menos 10 caracteres, com letra e número.
+              {t("forgot.passwordHint")}
             </span>
           </div>
 
           <div className="flex flex-col gap-1.5 text-sm">
-            <Label.Root htmlFor="confirm">Confirmar nova senha</Label.Root>
+            <Label.Root htmlFor="confirm">{t("forgot.confirmNewPassword")}</Label.Root>
             <input
               id="confirm"
               type="password"
@@ -190,13 +195,13 @@ export function ForgotPasswordPage() {
             disabled={busy}
             className="w-full"
           >
-            {busy ? "..." : "Redefinir senha"}
+            {busy ? "..." : t("forgot.resetSubmit")}
           </Button>
           <Link
             to="/login"
             className="text-center text-sm text-primary no-underline hover:underline"
           >
-            Voltar ao login
+            {t("forgot.backToLogin")}
           </Link>
         </form>
       )}

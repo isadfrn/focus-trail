@@ -1,6 +1,7 @@
 import * as Label from "@radix-ui/react-label";
 import * as ToggleGroup from "@radix-ui/react-toggle-group";
 import { useState, type FormEvent } from "react";
+import { Trans, useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router-dom";
 
 import logo from "../../assets/logo.png";
@@ -24,6 +25,7 @@ const segItem =
   "rounded-lg py-2 text-sm text-muted cursor-pointer outline-none transition-colors data-[state=on]:bg-surface data-[state=on]:font-medium data-[state=on]:text-foreground data-[state=on]:shadow-sm";
 
 export function LoginPage() {
+  const { t } = useTranslation();
   const { user, login, register, verifyEmail } = useAuth();
   const navigate = useNavigate();
   const [screen, setScreen] = useState<Screen>("auth");
@@ -46,7 +48,7 @@ export function LoginPage() {
     setPendingEmail(forEmail);
     setCode("");
     setError(null);
-    setInfo("Enviamos um código de 6 dígitos para o seu e-mail.");
+    setInfo(t("auth.verify.codeSent"));
     setScreen("verify");
   };
 
@@ -95,7 +97,7 @@ export function LoginPage() {
       await verifyEmail(pendingEmail, code);
       navigate("/", { replace: true });
     } catch {
-      setError("Código inválido ou expirado. Reenvie e tente de novo.");
+      setError(t("auth.verify.invalidCode"));
     } finally {
       setBusy(false);
     }
@@ -107,7 +109,7 @@ export function LoginPage() {
       await authApi.resendVerification(pendingEmail);
     } catch {
     }
-    setInfo("Se a conta existir, um novo código foi enviado.");
+    setInfo(t("auth.verify.resent"));
   };
 
   if (screen === "verify") {
@@ -119,13 +121,17 @@ export function LoginPage() {
             alt="Focus Trail"
             className="mx-auto h-20 w-auto max-sm:h-16"
           />
-          <h1 className="sr-only">Confirmar e-mail</h1>
+          <h1 className="sr-only">{t("auth.verify.title")}</h1>
           <p className="text-center text-sm text-muted">
-            Confirme o código enviado para <strong>{pendingEmail}</strong>.
+            <Trans
+              i18nKey="auth.verify.instructions"
+              values={{ email: pendingEmail }}
+              components={{ strong: <strong /> }}
+            />
           </p>
 
           <div className="flex flex-col gap-1.5 text-sm">
-            <Label.Root htmlFor="code">Código de 6 dígitos</Label.Root>
+            <Label.Root htmlFor="code">{t("auth.verify.codeLabel")}</Label.Root>
             <input
               id="code"
               inputMode="numeric"
@@ -148,12 +154,12 @@ export function LoginPage() {
             disabled={busy || code.length !== 6}
             className="w-full"
           >
-            {busy ? "..." : "Confirmar"}
+            {busy ? "..." : t("auth.verify.confirm")}
           </Button>
 
           <div className="flex items-center justify-between text-sm">
             <Button variant="link" type="button" onClick={resend}>
-              Reenviar código
+              {t("auth.verify.resend")}
             </Button>
             <Button
               variant="link"
@@ -164,7 +170,7 @@ export function LoginPage() {
                 setInfo(null);
               }}
             >
-              Voltar
+              {t("auth.verify.back")}
             </Button>
           </div>
         </form>
@@ -194,15 +200,15 @@ export function LoginPage() {
           className="grid grid-cols-2 gap-1 rounded-xl border border-border bg-background p-1"
         >
           <ToggleGroup.Item value="login" className={segItem}>
-            Entrar
+            {t("auth.tabs.login")}
           </ToggleGroup.Item>
           <ToggleGroup.Item value="register" className={segItem}>
-            Cadastrar
+            {t("auth.tabs.register")}
           </ToggleGroup.Item>
         </ToggleGroup.Root>
 
         <div className="flex flex-col gap-1.5 text-sm">
-          <Label.Root htmlFor="email">E-mail</Label.Root>
+          <Label.Root htmlFor="email">{t("auth.fields.email")}</Label.Root>
           <input
             id="email"
             type="email"
@@ -215,7 +221,7 @@ export function LoginPage() {
         </div>
 
         <div className="flex flex-col gap-1.5 text-sm">
-          <Label.Root htmlFor="password">Senha</Label.Root>
+          <Label.Root htmlFor="password">{t("auth.fields.password")}</Label.Root>
           <input
             id="password"
             type="password"
@@ -230,7 +236,9 @@ export function LoginPage() {
 
         {mode === "register" && (
           <div className="flex flex-col gap-1.5 text-sm">
-            <Label.Root htmlFor="confirm-password">Confirmar senha</Label.Root>
+            <Label.Root htmlFor="confirm-password">
+              {t("auth.fields.confirmPassword")}
+            </Label.Root>
             <input
               id="confirm-password"
               type="password"
@@ -252,7 +260,7 @@ export function LoginPage() {
           disabled={busy}
           className="w-full"
         >
-          {busy ? "..." : mode === "login" ? "Entrar" : "Cadastrar"}
+          {busy ? "..." : t(mode === "login" ? "auth.tabs.login" : "auth.tabs.register")}
         </Button>
 
         {mode === "login" && (
@@ -260,7 +268,7 @@ export function LoginPage() {
             to="/forgot-password"
             className="text-center text-sm text-primary no-underline hover:underline"
           >
-            Esqueci minha senha
+            {t("auth.forgotLink")}
           </Link>
         )}
       </form>

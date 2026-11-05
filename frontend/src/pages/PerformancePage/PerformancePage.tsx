@@ -1,9 +1,10 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { Button } from "../../components/Button/Button";
 import { ShareDialog } from "../../components/ShareDialog/ShareDialog";
 import { usePerformance } from "../../hooks/usePerformance";
-import { formatDuration } from "../../lib/format";
+import { formatDuration, formatRatio, formatShortDay } from "../../lib/format";
 import type { DayTotals, TodayProgress } from "../../lib/performance";
 import { useAuth } from "../../providers/AuthProvider";
 
@@ -15,17 +16,13 @@ const field =
 
 const WINDOW_OPTIONS = [7, 14, 30];
 
-function shortLabel(date: string): string {
-  const [, month, day] = date.split("-");
-  return `${day}/${month}`;
-}
-
 function barHeight(value: number, max: number): string {
   if (value <= 0) return "0%";
   return `${Math.max(4, Math.round((value / max) * 100))}%`;
 }
 
 function Chart({ days }: { days: DayTotals[] }) {
+  const { t } = useTranslation();
   const max = Math.max(
     1,
     ...days.map((d) => Math.max(d.focusSeconds, d.breakSeconds)),
@@ -37,7 +34,11 @@ function Chart({ days }: { days: DayTotals[] }) {
         <div
           key={day.date}
           className="flex min-w-0 flex-1 flex-col items-center gap-1"
-          title={`${shortLabel(day.date)} — foco ${formatDuration(day.focusSeconds)}, pausa ${formatDuration(day.breakSeconds)}`}
+          title={t("performance.chartTooltip", {
+            date: formatShortDay(day.date),
+            focus: formatDuration(day.focusSeconds),
+            breakTime: formatDuration(day.breakSeconds),
+          })}
         >
           <div className="flex h-full w-full items-end justify-center gap-1">
             <div
@@ -50,7 +51,7 @@ function Chart({ days }: { days: DayTotals[] }) {
             />
           </div>
           <span className="text-[9px] tabular-nums text-muted">
-            {shortLabel(day.date)}
+            {formatShortDay(day.date)}
           </span>
         </div>
       ))}
@@ -85,14 +86,15 @@ function GoalCard({
   today: TodayProgress;
   streak: number;
 }) {
+  const { t } = useTranslation();
   const percent = Math.round(today.ratio * 100);
-  const streakLabel = `${streak} ${streak === 1 ? "dia" : "dias"}`;
+  const streakLabel = t("performance.streak", { count: streak });
 
   return (
     <div className={card}>
       <div className="flex items-center justify-between">
         <span className="text-xs uppercase tracking-wide text-muted">
-          Meta de hoje
+          {t("performance.goalToday")}
         </span>
         {goalMinutes > 0 && (
           <span className="text-xs font-semibold text-accent-500">
@@ -117,7 +119,7 @@ function GoalCard({
             aria-valuemin={0}
             aria-valuemax={100}
             aria-valuenow={percent}
-            aria-label="Progresso da meta diária de foco"
+            aria-label={t("performance.goalProgress")}
           >
             <div
               className={`h-full rounded-full ${today.reached ? "bg-ok" : "bg-primary"}`}
@@ -125,13 +127,14 @@ function GoalCard({
             />
           </div>
           {today.reached && (
-            <span className="mt-1 text-xs text-ok">Meta concluída hoje! 🎉</span>
+            <span className="mt-1 text-xs text-ok">
+              {t("performance.goalReached")}
+            </span>
           )}
         </>
       ) : (
         <span className="mt-1 text-sm text-muted">
-          Defina uma meta diária de foco no seu perfil para acompanhar seu
-          progresso e sua sequência.
+          {t("performance.goalEmpty")}
         </span>
       )}
     </div>
@@ -139,6 +142,7 @@ function GoalCard({
 }
 
 export function PerformancePage() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const goalMinutes = user?.dailyFocusGoalMinutes ?? 0;
 
@@ -158,28 +162,30 @@ export function PerformancePage() {
   const hasData = totals.sessions > 0;
 
   const ratioLabel =
-    focusBreakRatio === null ? "—" : `${focusBreakRatio.toFixed(1)}:1`;
+    focusBreakRatio === null ? "—" : formatRatio(focusBreakRatio);
   const bestDayLabel = bestDay
-    ? `${shortLabel(bestDay.date)} · ${formatDuration(bestDay.focusSeconds)}`
+    ? `${formatShortDay(bestDay.date)} · ${formatDuration(bestDay.focusSeconds)}`
     : "—";
 
   return (
     <div className="flex flex-col gap-5">
       <div className="flex items-end justify-between gap-3">
-        <h1 className="m-0 text-2xl font-bold">Performance</h1>
+        <h1 className="m-0 text-2xl font-bold">{t("performance.title")}</h1>
         <div className="flex items-end gap-3">
-          <Button onClick={() => setShareOpen(true)}>Compartilhar hoje</Button>
+          <Button onClick={() => setShareOpen(true)}>
+            {t("performance.shareToday")}
+          </Button>
           <label className="flex flex-col gap-1 text-xs text-muted">
-            Período
+            {t("performance.period")}
             <select
               value={windowDays}
               onChange={(e) => setWindowDays(Number(e.target.value))}
-              aria-label="Período"
+              aria-label={t("performance.period")}
               className={field}
             >
               {WINDOW_OPTIONS.map((option) => (
                 <option key={option} value={option}>
-                  {option} dias
+                  {t("performance.daysOption", { days: option })}
                 </option>
               ))}
             </select>
@@ -190,38 +196,51 @@ export function PerformancePage() {
       {error ? (
         <div className="mt-4 text-center text-danger">{error}</div>
       ) : loading ? (
-        <div className="mt-4 text-center text-muted">Carregando...</div>
+        <div className="mt-4 text-center text-muted">
+          {t("common.loading")}
+        </div>
       ) : (
         <>
           <GoalCard goalMinutes={goalMinutes} today={today} streak={streak} />
 
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-            <Metric label="Foco" value={formatDuration(totals.focusSeconds)} />
-            <Metric label="Pausa" value={formatDuration(totals.breakSeconds)} />
             <Metric
-              label="Conclusão"
+              label={t("performance.metrics.focus")}
+              value={formatDuration(totals.focusSeconds)}
+            />
+            <Metric
+              label={t("performance.metrics.break")}
+              value={formatDuration(totals.breakSeconds)}
+            />
+            <Metric
+              label={t("performance.metrics.completion")}
               value={`${Math.round(completionRate * 100)}%`}
             />
-            <Metric label="Foco:Pausa" value={ratioLabel} />
+            <Metric label={t("performance.metrics.ratio")} value={ratioLabel} />
           </div>
 
           {hasData ? (
             <div className={card}>
               <div className="mb-3 flex items-center justify-between gap-4">
                 <div className="flex items-center gap-4">
-                  <LegendDot className="bg-primary" label="Foco" />
-                  <LegendDot className="bg-accent-400" label="Pausa" />
+                  <LegendDot
+                    className="bg-primary"
+                    label={t("performance.metrics.focus")}
+                  />
+                  <LegendDot
+                    className="bg-accent-400"
+                    label={t("performance.metrics.break")}
+                  />
                 </div>
                 <span className="text-xs text-muted">
-                  Melhor dia: {bestDayLabel}
+                  {t("performance.bestDay", { value: bestDayLabel })}
                 </span>
               </div>
               <Chart days={days} />
             </div>
           ) : (
             <div className="mt-4 text-center text-muted">
-              Sem sessões nos últimos {windowDays} dias. Rode um timer para
-              começar a ver sua performance.
+              {t("performance.noData", { days: windowDays })}
             </div>
           )}
         </>
