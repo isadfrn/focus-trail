@@ -44,3 +44,9 @@ export function detectLocale({
 
   return defaultLocale;
 }
+
+export const nativeNameByLocale: Record<Locale, string> = {
+  pt: "Português",
+  en: "English",
+  es: "Español",
+};

@@ -317,5 +317,8 @@
   },
   "scenarios": {
     "female-japanese-student": "Japanese student"
+  },
+  "language": {
+    "label": "Language"
   }
 }
