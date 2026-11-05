@@ -1,4 +1,5 @@
 import * as RadioGroup from "@radix-ui/react-radio-group";
+import { useTranslation } from "react-i18next";
 
 import { formatClock } from "../../lib/format";
 import type { Track } from "../../lib/tracks";
@@ -63,6 +64,8 @@ function ChannelSection({
   onVolume,
   progress,
 }: ChannelProps) {
+  const { t } = useTranslation();
+
   return (
     <div className="flex flex-col gap-0.5">
       <div className="flex items-center justify-between px-3 py-1">
@@ -74,7 +77,7 @@ function ChannelSection({
           onClick={onToggle}
           disabled={tracks.length === 0}
           aria-pressed={playing}
-          aria-label={playing ? `Pausar ${label}` : `Tocar ${label}`}
+          aria-label={t(playing ? "audio.pause" : "audio.play", { channel: label })}
           className="flex h-7 w-7 items-center justify-center rounded-lg text-primary cursor-pointer outline-none hover:bg-background disabled:cursor-not-allowed disabled:opacity-40"
         >
           {playing ? <PauseIcon /> : <PlayIcon />}
@@ -84,7 +87,7 @@ function ChannelSection({
       {tracks.length > 0 && (
         <div className="flex items-center gap-2 px-3 pb-1">
           <span className="w-9 shrink-0 text-right text-[10px] uppercase tracking-wide text-muted">
-            Vol
+            {t("audio.volumeShort")}
           </span>
           <input
             type="range"
@@ -93,7 +96,7 @@ function ChannelSection({
             step={0.01}
             value={volume}
             onChange={(e) => onVolume(Number(e.target.value))}
-            aria-label={`Volume de ${label}`}
+            aria-label={t("audio.volume", { channel: label })}
             className="h-1 flex-1 cursor-pointer accent-primary"
           />
           <span className="w-9 shrink-0 text-[10px] tabular-nums text-muted">
@@ -115,7 +118,7 @@ function ChannelSection({
             value={Math.min(progress.position, progress.duration || 0)}
             onChange={(e) => progress.onSeek(Number(e.target.value))}
             disabled={!progress.duration}
-            aria-label={`Progresso de ${label}`}
+            aria-label={t("audio.progress", { channel: label })}
             className="h-1 flex-1 cursor-pointer accent-primary disabled:cursor-not-allowed"
           />
           <span className="w-9 shrink-0 text-[10px] tabular-nums text-muted">
@@ -131,25 +134,32 @@ function ChannelSection({
           aria-label={label}
           className={listClass}
         >
-          {tracks.map((t) => (
-            <RadioGroup.Item key={t.id} value={t.id} className={itemClass}>
+          {tracks.map((track) => (
+            <RadioGroup.Item
+              key={track.id}
+              value={track.id}
+              className={itemClass}
+            >
               <span className="inline-flex w-3.5 shrink-0 justify-center text-primary">
                 <RadioGroup.Indicator>
                   <DotIcon />
                 </RadioGroup.Indicator>
               </span>
-              <span className="min-w-0 flex-1 truncate">{t.name}</span>
+              <span className="min-w-0 flex-1 truncate">{track.name}</span>
             </RadioGroup.Item>
           ))}
         </RadioGroup.Root>
       ) : (
-        <p className="px-3 py-1 text-[12px] text-muted">Nenhum arquivo.</p>
+        <p className="px-3 py-1 text-[12px] text-muted">
+          {t("audio.noFiles")}
+        </p>
       )}
     </div>
   );
 }
 
 export function AudioControls() {
+  const { t } = useTranslation();
   const {
     music,
     effect,
@@ -167,7 +177,7 @@ export function AudioControls() {
   return (
     <div className="flex flex-col gap-2">
       <ChannelSection
-        label="Música"
+        label={t("audio.music")}
         tracks={music.tracks}
         currentId={music.current?.id ?? null}
         playing={music.playing}
@@ -182,7 +192,7 @@ export function AudioControls() {
         }}
       />
       <ChannelSection
-        label="Ruído"
+        label={t("audio.noise")}
         tracks={effect.tracks}
         currentId={effect.current?.id ?? null}
         playing={effect.playing}
@@ -192,12 +202,12 @@ export function AudioControls() {
         onVolume={setEffectVolume}
       />
       <label className="flex items-center justify-between gap-2 px-3 py-1 text-sm text-foreground">
-        <span>Alerta ao fim da sessão</span>
+        <span>{t("audio.endAlert")}</span>
         <input
           type="checkbox"
           checked={chimeEnabled}
           onChange={(e) => setChimeEnabled(e.target.checked)}
-          aria-label="Alerta sonoro ao fim da sessão"
+          aria-label={t("audio.endAlertLabel")}
           className="size-4 cursor-pointer accent-primary"
         />
       </label>

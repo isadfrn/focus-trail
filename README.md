@@ -157,6 +157,8 @@ To add a scenario: drop the images in the pools and add a block referencing them
 
 The character `sheet` is a single sprite sheet whose frames are detected automatically (one frame = idle, two or more = walk animation). Optional per-scenario knobs: `frames`, `height`, `terrainHeight`, `baseline`, `cameraSpeed`, `terrainSpeed`, `spriteSpeed`.
 
+The `name` is the fallback label. To translate it, add a `scenarios.<id>` key to each language file in `frontend/src/i18n/resources/` (`pt.json`, `en.json`, `es.json`); the translation parity test fails if one language is missing it.
+
 ## Sharing
 
 The share dialog (Timer after a focus session, Performance, History rows) renders a PNG card in the browser — nothing is uploaded. Two formats: Story/TikTok `1080×1920` and Post `1080×1080`.

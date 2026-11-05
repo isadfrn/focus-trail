@@ -1,5 +1,7 @@
 import * as RadioGroup from "@radix-ui/react-radio-group";
+import { useTranslation } from "react-i18next";
 
+import { scenarioName } from "../../lib/scenario-name";
 import { useCharacter } from "../../providers/CharacterProvider";
 import { useTimerActivity } from "../../providers/TimerActivityProvider";
 
@@ -22,6 +24,7 @@ function CheckIcon() {
 }
 
 export function ScenarioRadioGroup() {
+  const { t } = useTranslation();
   const { character, characters, setCharacterId } = useCharacter();
   const { running } = useTimerActivity();
 
@@ -31,7 +34,7 @@ export function ScenarioRadioGroup() {
         value={character.id}
         onValueChange={setCharacterId}
         disabled={running}
-        aria-label="Cenario"
+        aria-label={t("scenario.label")}
         className="flex flex-col gap-0.5"
       >
         {characters.map((c) => (
@@ -41,13 +44,13 @@ export function ScenarioRadioGroup() {
                 <CheckIcon />
               </RadioGroup.Indicator>
             </span>
-            {c.name}
+            {scenarioName(c)}
           </RadioGroup.Item>
         ))}
       </RadioGroup.Root>
       {running && (
         <p className="px-2.5 pt-1 text-[11px] text-muted">
-          Nao da pra trocar de cenario com o timer rodando.
+          {t("scenario.locked")}
         </p>
       )}
     </>

@@ -1,5 +1,6 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import type { ReactNode } from "react";
+import { useTranslation } from "react-i18next";
 
 import { Button } from "../Button/Button";
 
@@ -18,10 +19,12 @@ export function ConfirmDialog({
   onOpenChange,
   title,
   description,
-  confirmLabel = "Apagar",
+  confirmLabel,
   busy = false,
   onConfirm,
 }: ConfirmDialogProps) {
+  const { t } = useTranslation();
+
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
@@ -36,7 +39,7 @@ export function ConfirmDialog({
           <div className="mt-5 flex justify-end gap-2">
             <Dialog.Close asChild>
               <Button variant="ghost" type="button" disabled={busy}>
-                Cancelar
+                {t("common.cancel")}
               </Button>
             </Dialog.Close>
             <Button
@@ -45,7 +48,7 @@ export function ConfirmDialog({
               disabled={busy}
               onClick={onConfirm}
             >
-              {busy ? "..." : confirmLabel}
+              {busy ? "..." : (confirmLabel ?? t("common.delete"))}
             </Button>
           </div>
         </Dialog.Content>

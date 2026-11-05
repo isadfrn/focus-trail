@@ -1,5 +1,6 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Link, useLocation } from "react-router-dom";
 
 import logo from "../../assets/logo.png";
@@ -11,6 +12,7 @@ import { ScenarioRadioGroup } from "../ScenarioPicker/ScenarioPicker";
 const separator = "mx-1 my-1.5 h-px bg-border";
 
 export function Header() {
+  const { t } = useTranslation();
   const { user, logout } = useAuth();
   const location = useLocation();
   const [open, setOpen] = useState(false);
@@ -38,7 +40,7 @@ export function Header() {
       <div className="flex w-full items-center justify-start px-4 py-3 lg:px-6">
         <Dialog.Root open={open} onOpenChange={setOpen}>
           <Dialog.Trigger
-            aria-label="Menu"
+            aria-label={t("menu.open")}
             className={cn(
               "flex h-10 w-10 flex-col justify-center gap-[5px] rounded-[10px] border border-border p-2.5 cursor-pointer outline-none",
               isTimer ? "bg-surface/90 backdrop-blur-sm" : "bg-surface",
@@ -65,7 +67,7 @@ export function Header() {
                   <img src={logo} alt="Focus Trail" className="h-10 w-auto" />
                 </Dialog.Title>
                 <Dialog.Close
-                  aria-label="Fechar"
+                  aria-label={t("menu.close")}
                   className="flex h-8 w-8 items-center justify-center rounded-lg text-muted cursor-pointer outline-none hover:bg-background"
                 >
                   <svg viewBox="0 0 14 14" width="14" height="14" aria-hidden="true">
@@ -82,31 +84,31 @@ export function Header() {
               <div className={separator} />
 
               <Link className={navLink("/")} to="/" onClick={close}>
-                Timer
+                {t("menu.timer")}
               </Link>
               <Link className={navLink("/history")} to="/history" onClick={close}>
-                Historico
+                {t("menu.history")}
               </Link>
               <Link
                 className={navLink("/performance")}
                 to="/performance"
                 onClick={close}
               >
-                Performance
+                {t("menu.performance")}
               </Link>
               <Link className={navLink("/profile")} to="/profile" onClick={close}>
-                Perfil
+                {t("menu.profile")}
               </Link>
 
               <div className={separator} />
               <p className="px-3 py-1 text-[11px] uppercase tracking-wide text-muted">
-                Cenario
+                {t("menu.scenario")}
               </p>
               <ScenarioRadioGroup />
 
               <div className={separator} />
               <p className="px-3 py-1 text-[11px] uppercase tracking-wide text-muted">
-                Som
+                {t("menu.sound")}
               </p>
               <AudioControls />
 
@@ -122,7 +124,7 @@ export function Header() {
                 }}
                 className="rounded-lg px-3 py-2.5 text-left text-[15px] text-foreground cursor-pointer outline-none hover:bg-background"
               >
-                Sair
+                {t("menu.logout")}
               </button>
             </Dialog.Content>
           </Dialog.Portal>

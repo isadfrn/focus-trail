@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type KeyboardEvent } from "react";
+import { useTranslation } from "react-i18next";
 
 import { cn } from "../../lib/cn";
 import { formatClock } from "../../lib/format";
@@ -19,6 +20,7 @@ export function EditableClock({
   editable,
   onCommit,
 }: EditableClockProps) {
+  const { t } = useTranslation();
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
@@ -72,10 +74,12 @@ export function EditableClock({
           onChange={(event) => setDraft(event.target.value)}
           onKeyDown={handleKeyDown}
           onBlur={() => finishEditing(true)}
-          aria-label="Duração em minutos"
+          aria-label={t("timer.clock.durationLabel")}
           className="w-[3ch] bg-transparent text-center font-[inherit] tabular-nums outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
         />
-        <span className="text-[0.3em] font-semibold tracking-normal">min</span>
+        <span className="text-[0.3em] font-semibold tracking-normal">
+          {t("timer.clock.minutesUnit")}
+        </span>
       </div>
     );
   }
@@ -84,7 +88,7 @@ export function EditableClock({
     return (
       <div
         role="timer"
-        aria-label={`Tempo restante: ${clock}`}
+        aria-label={t("timer.clock.remaining", { time: clock })}
         className={cn(clockClasses, colorClass)}
       >
         {clock}
@@ -96,8 +100,8 @@ export function EditableClock({
     <button
       type="button"
       onClick={startEditing}
-      title="Clique para editar o tempo"
-      aria-label={`Tempo restante: ${clock}. Clique para editar`}
+      title={t("timer.clock.editHint")}
+      aria-label={t("timer.clock.remainingEditable", { time: clock })}
       className={cn(
         clockClasses,
         colorClass,
