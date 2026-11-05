@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { authApi } from "../api/auth.api";
 import { sessionApi } from "../api/session.api";
@@ -43,6 +44,7 @@ interface RunningSession {
 }
 
 export function useTimer() {
+  const { t } = useTranslation();
   const { user, updateUser } = useAuth();
   const focusMinutes = user?.focusMinutes ?? DEFAULT_FOCUS_MINUTES;
   const breakMinutes = user?.breakMinutes ?? DEFAULT_BREAK_MINUTES;
@@ -52,8 +54,8 @@ export function useTimer() {
   const autoCycle = user?.autoCycle ?? false;
 
   const presets: Preset[] = [
-    { type: "focus", label: "Foco", minutes: focusMinutes },
-    { type: "break", label: "Pausa", minutes: breakMinutes },
+    { type: "focus", label: t("timer.presets.focus"), minutes: focusMinutes },
+    { type: "break", label: t("timer.presets.break"), minutes: breakMinutes },
   ];
 
   const [phase, setPhase] = useState<Phase>("focus");
@@ -141,16 +143,14 @@ export function useTimer() {
           ...(trimmedTask ? { taskLabel: trimmedTask } : {}),
         });
         toast(
-          completed
-            ? "Sessao concluida e salva."
-            : "Sessao interrompida - registrada.",
+          completed ? t("timer.sessionSaved") : t("timer.sessionInterrupted"),
         );
       } catch (err) {
         const code = err instanceof ApiError ? err.code : "erro";
-        toast(`Nao consegui salvar a sessao (${code}).`);
+        toast(t("timer.sessionSaveFailed", { code }));
       }
     },
-    [toast],
+    [toast, t],
   );
 
   const persistActive = useCallback(() => {
@@ -187,8 +187,12 @@ export function useTimer() {
 
     playSessionChime();
     notify(
-      finished.type === "focus" ? "Foco concluido!" : "Pausa concluida!",
-      "Sua sessao terminou.",
+      t(
+        finished.type === "focus"
+          ? "timer.finishedTitle.focus"
+          : "timer.finishedTitle.break",
+      ),
+      t("timer.finishedBody"),
     );
     void save(finished, true, new Date(), finished.durationSec);
 
@@ -206,7 +210,7 @@ export function useTimer() {
       config.pomodorosUntilLongBreak,
     );
     beginPhaseRef.current(upcoming);
-  }, [clearTimer, save]);
+  }, [clearTimer, save, t]);
   useEffect(() => {
     tickRef.current = tick;
   }, [tick]);
@@ -288,10 +292,10 @@ export function useTimer() {
         setPhase(targetType === "focus" ? "focus" : "shortBreak");
         setStatus("idle");
       } catch {
-        toast("Nao consegui salvar o novo tempo. Tente de novo.");
+        toast(t("timer.durationSaveFailed"));
       }
     },
-    [status, updateUser, toast],
+    [status, updateUser, toast, t],
   );
 
   const start = useCallback(() => {

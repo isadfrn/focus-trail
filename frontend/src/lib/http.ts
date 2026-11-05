@@ -37,7 +37,7 @@ export async function request<T>(
   }
   if (!res.ok) {
     const code =
-      (body as { error?: string } | null)?.error ?? `http_${res.status}`;
+      (body as { code?: string } | null)?.code ?? `http_${res.status}`;
     const line = `[api] ${method} ${API_BASE}${path} -> ${res.status}`;
     if (res.status >= 500) console.error(line, body ?? text);
     else console.warn(line, body ?? text);

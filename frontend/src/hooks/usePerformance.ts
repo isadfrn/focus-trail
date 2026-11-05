@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 import { sessionApi } from "../api/session.api";
+import i18next from "../i18n";
 import {
   bestDay,
   completionRate,
@@ -74,7 +75,7 @@ export function usePerformance(
         const result = await sessionApi.stats({ from: from.toISOString() });
         if (!cancelled) setAllDays(result.days);
       } catch {
-        if (!cancelled) setError("Nao consegui carregar a performance.");
+        if (!cancelled) setError(i18next.t("loadErrors.performance"));
       } finally {
         if (!cancelled) setLoading(false);
       }

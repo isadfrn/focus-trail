@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { sessionApi } from "../api/session.api";
+import i18next from "../i18n";
 import type { PomodoroSession, SessionFilters } from "../types/session";
 
 const PAGE_SIZE = 20;
@@ -42,7 +43,7 @@ export function useSessions(): UseSessions {
       })
       .catch(() => {
         if (id !== reqId.current) return;
-        setError("Nao consegui carregar o historico.");
+        setError(i18next.t("loadErrors.history"));
       })
       .finally(() => {
         if (id === reqId.current) setLoading(false);

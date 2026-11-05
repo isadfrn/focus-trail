@@ -44,11 +44,30 @@ describe("request", () => {
     stubFetch({
       ok: false,
       status: 401,
-      text: () => Promise.resolve(JSON.stringify({ error: "invalid_credentials" })),
+      text: () =>
+        Promise.resolve(
+          JSON.stringify({
+            error: "Invalid Credentials",
+            code: "INVALID_CREDENTIALS",
+          }),
+        ),
     });
     await expect(request("/x")).rejects.toMatchObject({
       status: 401,
-      code: "invalid_credentials",
+      code: "INVALID_CREDENTIALS",
+    });
+  });
+
+  it("falls back to http_<status> when the body has no code", async () => {
+    vi.spyOn(console, "warn").mockImplementation(() => {});
+    stubFetch({
+      ok: false,
+      status: 401,
+      text: () => Promise.resolve(JSON.stringify({ error: "Unauthorized" })),
+    });
+    await expect(request("/x")).rejects.toMatchObject({
+      status: 401,
+      code: "http_401",
     });
   });
 

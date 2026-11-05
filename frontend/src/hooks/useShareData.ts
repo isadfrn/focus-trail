@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 import { sessionApi } from "../api/session.api";
+import i18next from "../i18n";
 import { computeStreak } from "../lib/performance";
 import { localDayRange } from "../lib/share/day-window";
 import type { TaskSummary } from "../types/session";
@@ -72,7 +73,7 @@ export function useShareData({
         });
         setTasks(taskList.tasks);
       } catch {
-        if (!cancelled) setError("Não consegui carregar seus dados de foco.");
+        if (!cancelled) setError(i18next.t("loadErrors.shareData"));
       } finally {
         if (!cancelled) setLoading(false);
       }

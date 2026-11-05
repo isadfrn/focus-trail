@@ -311,7 +311,7 @@ describe("useTimer", () => {
     });
     expect(mocks.updateUser).not.toHaveBeenCalled();
     expect(mocks.toast).toHaveBeenCalledWith(
-      expect.stringContaining("Nao consegui salvar o novo tempo"),
+      expect.stringContaining("Não consegui salvar o novo tempo"),
     );
   });
 
