@@ -1,6 +1,7 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import * as ToggleGroup from "@radix-ui/react-toggle-group";
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import logoUrl from "../../assets/logo.png";
 import { useMediaQuery } from "../../hooks/useMediaQuery";
@@ -74,6 +75,7 @@ function ShareDialogBody({
   date,
   initialTaskLabel,
 }: ShareDialogBodyProps) {
+  const { t } = useTranslation();
   const { character } = useCharacter();
   const { user } = useAuth();
   const toast = useToast();
@@ -139,14 +141,14 @@ function ShareDialogBody({
     if (!file) return;
     const outcome = await shareFile(file, caption);
     if (outcome === "failed") {
-      toast("Não consegui abrir o compartilhamento. Baixe a imagem e publique manualmente.");
+      toast(t("share.toasts.shareFailed"));
     }
   };
 
   const handleDownload = () => {
     if (!card.blob) return;
     downloadBlob(card.blob, fileName);
-    toast("Imagem baixada.");
+    toast(t("share.toasts.downloaded"));
   };
 
   const handleCopyImage = async () => {
@@ -154,14 +156,18 @@ function ShareDialogBody({
     const copied = await copyImageToClipboard(card.blob);
     toast(
       copied
-        ? "Imagem copiada."
-        : "Seu navegador não permite copiar imagens. Use “Baixar imagem”.",
+        ? t("share.toasts.imageCopied")
+        : t("share.toasts.imageCopyUnsupported"),
     );
   };
 
   const handleCopyCaption = async () => {
     const copied = await copyTextToClipboard(caption);
-    toast(copied ? "Legenda copiada." : "Não consegui copiar a legenda.");
+    toast(
+      copied
+        ? t("share.toasts.captionCopied")
+        : t("share.toasts.captionCopyFailed"),
+    );
   };
 
   const openComposer = (composerUrl: string) => {
@@ -171,8 +177,8 @@ function ShareDialogBody({
     void copied.then((success) =>
       toast(
         success
-          ? "Imagem copiada. Cole no post com Ctrl+V (ou Cmd+V)."
-          : "Baixe a imagem e anexe ao post.",
+          ? t("share.toasts.composerCopied")
+          : t("share.toasts.composerManual"),
       ),
     );
   };
@@ -199,17 +205,17 @@ function ShareDialogBody({
           {card.previewUrl ? (
             <img
               src={card.previewUrl}
-              alt="Pré-visualização do card de compartilhamento"
+              alt={t("share.previewAlt")}
               className="block h-full w-full object-cover"
             />
           ) : (
             <div className="flex h-full w-full items-center justify-center p-4 text-center text-sm text-muted">
               {data.error ??
                 (card.status === "error"
-                  ? "Não consegui gerar a imagem."
+                  ? t("share.generationFailed")
                   : subject === null && !data.loading
-                    ? "Nada para compartilhar ainda."
-                    : "Gerando imagem...")}
+                    ? t("share.nothingToShare")
+                    : t("share.generating"))}
             </div>
           )}
         </div>
@@ -217,21 +223,23 @@ function ShareDialogBody({
 
       <div className="flex min-w-0 flex-col gap-4">
         <div className="flex flex-col gap-1.5">
-          <span className="text-xs uppercase tracking-wide text-muted">O que compartilhar</span>
+          <span className="text-xs uppercase tracking-wide text-muted">
+            {t("share.whatToShare")}
+          </span>
           <ToggleGroup.Root
             type="single"
             value={scope}
-            aria-label="O que compartilhar"
+            aria-label={t("share.whatToShare")}
             onValueChange={(value) => {
               if (value === "day" || value === "task") setScope(value);
             }}
             className="flex gap-2"
           >
             <ToggleGroup.Item value="day" className={toggleItem}>
-              Dia
+              {t("share.scope.day")}
             </ToggleGroup.Item>
             <ToggleGroup.Item value="task" className={toggleItem}>
-              Tarefa
+              {t("share.scope.task")}
             </ToggleGroup.Item>
           </ToggleGroup.Root>
         </div>
@@ -239,13 +247,12 @@ function ShareDialogBody({
         {scope === "task" &&
           (data.tasks.length === 0 ? (
             <p className="m-0 text-sm text-muted">
-              Você ainda não tem foco registrado com tarefa. Preencha “No que vou
-              focar?” no timer para acompanhar seus totais.
+              {t("share.noTasks")}
             </p>
           ) : (
             <div className="flex flex-col gap-2">
               <label className="flex flex-col gap-1.5 text-xs uppercase tracking-wide text-muted">
-                Tarefa
+                {t("share.task")}
                 <select
                   value={selectedTask ? taskKey(selectedTask.label) : ""}
                   onChange={(event) => setSelectedTaskKey(event.target.value)}
@@ -265,17 +272,19 @@ function ShareDialogBody({
                   onChange={(event) => setShowTaskLabel(event.target.checked)}
                   className="size-4 cursor-pointer accent-primary"
                 />
-                Mostrar o nome da tarefa
+                {t("share.showTaskLabel")}
               </label>
             </div>
           ))}
 
         <div className="flex flex-col gap-1.5">
-          <span className="text-xs uppercase tracking-wide text-muted">Formato</span>
+          <span className="text-xs uppercase tracking-wide text-muted">
+            {t("share.format")}
+          </span>
           <ToggleGroup.Root
             type="single"
             value={formatId}
-            aria-label="Formato da imagem"
+            aria-label={t("share.formatLabel")}
             onValueChange={(value) => {
               if (value === "story" || value === "square") setFormatId(value);
             }}
@@ -292,35 +301,34 @@ function ShareDialogBody({
         <div className="flex flex-col gap-2">
           {nativeShareAvailable ? (
             <Button variant="primary" disabled={!ready} onClick={handleNativeShare}>
-              Compartilhar
+              {t("share.actions.share")}
             </Button>
           ) : (
             <Button variant="primary" disabled={!ready} onClick={handleDownload}>
-              Baixar imagem
+              {t("share.actions.download")}
             </Button>
           )}
           <div className="grid grid-cols-2 gap-2">
             {nativeShareAvailable && (
               <Button disabled={!ready} onClick={handleDownload}>
-                Baixar imagem
+                {t("share.actions.download")}
               </Button>
             )}
             <Button disabled={!ready} onClick={handleCopyImage}>
-              Copiar imagem
+              {t("share.actions.copyImage")}
             </Button>
             <Button disabled={!ready} onClick={handleX}>
-              Postar no X
+              {t("share.actions.postX")}
             </Button>
             <Button disabled={!ready} onClick={handleLinkedIn}>
-              Postar no LinkedIn
+              {t("share.actions.postLinkedIn")}
             </Button>
             <Button disabled={!ready} onClick={handleCopyCaption}>
-              Copiar legenda
+              {t("share.actions.copyCaption")}
             </Button>
           </div>
           <p className="m-0 text-xs text-muted">
-            Instagram e TikTok: no celular use “Compartilhar”; no computador baixe
-            a imagem e publique pelo app. O link aparece na imagem e na legenda.
+            {t("share.hint")}
           </p>
         </div>
       </div>
@@ -335,6 +343,7 @@ export function ShareDialog({
   date,
   initialTaskLabel,
 }: ShareDialogProps) {
+  const { t } = useTranslation();
   const referenceDate = useMemo(
     () => date ?? new Date(),
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -351,10 +360,10 @@ export function ShareDialog({
         >
           <div className="flex items-center justify-between">
             <Dialog.Title className="m-0 text-lg font-bold text-foreground">
-              Compartilhar
+              {t("share.title")}
             </Dialog.Title>
             <Dialog.Close
-              aria-label="Fechar"
+              aria-label={t("common.close")}
               className="flex h-8 w-8 items-center justify-center rounded-lg text-muted cursor-pointer outline-none hover:bg-background"
             >
               <svg viewBox="0 0 14 14" width="14" height="14" aria-hidden="true">

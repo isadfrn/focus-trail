@@ -1,3 +1,5 @@
+import i18next, { currentLanguageTag } from "../../i18n";
+
 export type ShareFormatId = "story" | "square";
 
 export interface ShareFormat {
@@ -63,10 +65,6 @@ export interface HeroRun {
 
 const MAX_STATS = 3;
 
-function pluralize(count: number, singular: string, plural: string): string {
-  return count === 1 ? singular : plural;
-}
-
 export function buildHeroRuns(seconds: number): HeroRun[] {
   const totalMinutes = Math.max(0, Math.floor(seconds / 60));
   const hours = Math.floor(totalMinutes / 60);
@@ -106,7 +104,7 @@ function isSameLocalDay(first: Date, second: Date): boolean {
 }
 
 export function formatLongDate(date: Date): string {
-  return new Intl.DateTimeFormat("pt-BR", {
+  return new Intl.DateTimeFormat(currentLanguageTag(), {
     weekday: "long",
     day: "numeric",
     month: "long",
@@ -114,17 +112,12 @@ export function formatLongDate(date: Date): string {
 }
 
 export function formatShortDate(date: Date, now: Date): string {
-  const parts = new Intl.DateTimeFormat("pt-BR", {
+  const sameYear = date.getFullYear() === now.getFullYear();
+  return new Intl.DateTimeFormat(currentLanguageTag(), {
     day: "2-digit",
     month: "2-digit",
-    year: "2-digit",
-  }).formatToParts(date);
-  const pick = (type: string) =>
-    parts.find((part) => part.type === type)?.value ?? "";
-  const dayAndMonth = `${pick("day")}/${pick("month")}`;
-  return date.getFullYear() === now.getFullYear()
-    ? dayAndMonth
-    : `${dayAndMonth}/${pick("year")}`;
+    ...(sameYear ? {} : { year: "2-digit" }),
+  }).format(date);
 }
 
 function formatGoalDuration(minutes: number): string {
@@ -137,20 +130,22 @@ function buildDayContent(subject: DayShareSubject, now: Date): ShareCardContent 
   if (subject.completedFocus > 0) {
     stats.push({
       value: String(subject.completedFocus),
-      label: pluralize(subject.completedFocus, "pomodoro", "pomodoros"),
+      label: i18next.t("share.card.pomodoros", {
+        count: subject.completedFocus,
+      }),
     });
   }
   if (subject.goalMinutes > 0 && subject.streak > 0) {
     stats.push({
       value: String(subject.streak),
-      label: pluralize(subject.streak, "dia seguido", "dias seguidos"),
+      label: i18next.t("share.card.streak", { count: subject.streak }),
     });
   }
   const finished = subject.completedFocus + subject.interruptedFocus;
   if (finished > 0) {
     stats.push({
       value: `${Math.round((subject.completedFocus / finished) * 100)}%`,
-      label: "concluídos",
+      label: i18next.t("share.card.completed"),
     });
   }
 
@@ -159,17 +154,23 @@ function buildDayContent(subject: DayShareSubject, now: Date): ShareCardContent 
     goalSeconds > 0
       ? {
           ratio: Math.min(1, subject.focusSeconds / goalSeconds),
-          leftLabel: `Meta diária · ${formatGoalDuration(subject.goalMinutes)}`,
+          leftLabel: i18next.t("share.card.dailyGoal", {
+            duration: formatGoalDuration(subject.goalMinutes),
+          }),
           rightLabel:
             subject.focusSeconds >= goalSeconds
-              ? "Meta batida"
+              ? i18next.t("share.card.goalReached")
               : `${Math.floor((subject.focusSeconds / goalSeconds) * 100)}%`,
         }
       : undefined;
 
   return {
     kind: "day",
-    kicker: isSameLocalDay(subject.date, now) ? "FOCO DE HOJE" : "FOCO DO DIA",
+    kicker: i18next.t(
+      isSameLocalDay(subject.date, now)
+        ? "share.card.kicker.today"
+        : "share.card.kicker.day",
+    ),
     subtitle: formatLongDate(subject.date),
     seconds: subject.focusSeconds,
     goal,
@@ -185,22 +186,27 @@ function buildTaskContent(
   if (subject.completedFocus > 0) {
     stats.push({
       value: String(subject.completedFocus),
-      label: pluralize(subject.completedFocus, "pomodoro", "pomodoros"),
+      label: i18next.t("share.card.pomodoros", {
+        count: subject.completedFocus,
+      }),
     });
   }
   if (subject.activeDays > 0) {
     stats.push({
       value: String(subject.activeDays),
-      label: pluralize(subject.activeDays, "dia", "dias"),
+      label: i18next.t("share.card.days", { count: subject.activeDays }),
     });
   }
-  stats.push({ value: formatShortDate(subject.firstAt, now), label: "desde" });
+  stats.push({
+    value: formatShortDate(subject.firstAt, now),
+    label: i18next.t("share.card.since"),
+  });
 
   return {
     kind: "task",
-    kicker: "TAREFA",
+    kicker: i18next.t("share.card.kicker.task"),
     title: subject.showLabel ? subject.label : undefined,
-    heroCaption: "de foco no total",
+    heroCaption: i18next.t("share.card.heroCaption"),
     seconds: subject.focusSeconds,
     stats: stats.slice(0, MAX_STATS),
   };
@@ -221,13 +227,16 @@ export function buildShareText(
 ): string {
   const duration = formatShareDuration(subject.focusSeconds);
   if (subject.kind === "day") {
-    const when = isSameLocalDay(subject.date, now)
-      ? "Hoje eu foquei"
-      : `Em ${formatLongDate(subject.date)} eu foquei`;
-    return `${when} ${duration} no Focus Trail 🍅`;
+    return isSameLocalDay(subject.date, now)
+      ? i18next.t("share.text.today", { duration })
+      : i18next.t("share.text.otherDay", {
+          date: formatLongDate(subject.date),
+          duration,
+        });
   }
-  const target = subject.showLabel ? `na tarefa "${subject.label}"` : "em uma tarefa";
-  return `Já foquei ${duration} ${target} com o Focus Trail 🍅`;
+  return subject.showLabel
+    ? i18next.t("share.text.taskWithLabel", { duration, label: subject.label })
+    : i18next.t("share.text.taskWithoutLabel", { duration });
 }
 
 export function buildShareCaption(

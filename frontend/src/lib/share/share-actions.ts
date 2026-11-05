@@ -1,3 +1,5 @@
+import i18next from "../../i18n";
+
 export type ShareOutcome = "shared" | "cancelled" | "failed";
 
 const X_INTENT_URL = "https://x.com/intent/post";
@@ -13,7 +15,7 @@ export function buildShareFileName(
   now: Date = new Date(),
 ): string {
   const date = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
-  return `focus-trail-${kind === "day" ? "dia" : "tarefa"}-${date}.png`;
+  return `focus-trail-${i18next.t(kind === "day" ? "share.fileKind.day" : "share.fileKind.task")}-${date}.png`;
 }
 
 export function createShareFile(blob: Blob, fileName: string): File {
