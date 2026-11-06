@@ -9,6 +9,7 @@ import { useAuth } from "../../providers/AuthProvider";
 import { AudioControls } from "../AudioControls/AudioControls";
 import { LanguageSelect } from "../LanguageSelect/LanguageSelect";
 import { ScenarioRadioGroup } from "../ScenarioPicker/ScenarioPicker";
+import { ThemeSelect } from "../ThemeSelect/ThemeSelect";
 
 const separator = "mx-1 my-1.5 h-px bg-border";
 
@@ -19,7 +20,8 @@ export function Header() {
   const [open, setOpen] = useState(false);
   if (!user) {
     return (
-      <header className="absolute right-0 top-0 z-10 w-[150px] px-4 py-3 lg:px-6">
+      <header className="absolute right-0 top-0 z-10 flex w-[300px] gap-2 px-4 py-3 lg:px-6">
+        <ThemeSelect />
         <LanguageSelect />
       </header>
     );
@@ -125,6 +127,14 @@ export function Header() {
               </p>
               <div className="px-2.5 pb-1">
                 <LanguageSelect />
+              </div>
+
+              <div className={separator} />
+              <p className="px-3 py-1 text-[11px] uppercase tracking-wide text-muted">
+                {t("theme.label")}
+              </p>
+              <div className="px-2.5 pb-1">
+                <ThemeSelect />
               </div>
 
               <div className={separator} />
