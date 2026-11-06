@@ -80,19 +80,22 @@
   --animate-drawer-out: drawerOut 150ms ease-in;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-background: var(--color-slate-900);
-    --color-surface: var(--color-slate-800);
-    --color-foreground: var(--color-slate-50);
-    --color-muted: var(--color-slate-300);
-    --color-border: var(--color-slate-700);
-    --color-primary: var(--color-primary-400);
-    --color-primary-foreground: var(--color-primary-950);
-    --color-danger: var(--color-accent-400);
-    --color-ok: var(--color-teal-400);
-    --shadow-app: 0 1px 3px rgba(0, 0, 0, 0.5), 0 8px 24px rgba(0, 0, 0, 0.4);
-  }
+:root {
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --color-background: var(--color-slate-900);
+  --color-surface: var(--color-slate-800);
+  --color-foreground: var(--color-slate-50);
+  --color-muted: var(--color-slate-300);
+  --color-border: var(--color-slate-700);
+  --color-primary: var(--color-primary-400);
+  --color-primary-foreground: var(--color-primary-950);
+  --color-danger: var(--color-accent-400);
+  --color-ok: var(--color-teal-400);
+  --shadow-app: 0 1px 3px rgba(0, 0, 0, 0.5), 0 8px 24px rgba(0, 0, 0, 0.4);
 }
 
 body {
