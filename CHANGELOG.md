@@ -1,6 +1,35 @@
 # Changelog
 
 
+## v0.5.2
+
+[compare changes](https://github.com/isadfrn/focus-trail/compare/v0.5.1...v0.5.2)
+
+### 🚀 Enhancements
+
+- **backend:** Return machine-readable error codes in API error responses ([9ede4b7](https://github.com/isadfrn/focus-trail/commit/9ede4b7))
+- **frontend:** Add i18n setup with pt, en and es resources ([489fb4b](https://github.com/isadfrn/focus-trail/commit/489fb4b))
+- **frontend:** Localize API errors, validation, formatting and hook messages ([6addc1d](https://github.com/isadfrn/focus-trail/commit/6addc1d))
+- **frontend:** Translate share dialog and share card ([cbd3c09](https://github.com/isadfrn/focus-trail/commit/cbd3c09))
+- **frontend:** Translate menu, audio controls and scenario names ([f95cfe0](https://github.com/isadfrn/focus-trail/commit/f95cfe0))
+- **frontend:** Translate login, history, performance, profile and timer pages ([8f53805](https://github.com/isadfrn/focus-trail/commit/8f53805))
+- **frontend:** Add language selector to menu and auth pages ([4a62917](https://github.com/isadfrn/focus-trail/commit/4a62917))
+- **frontend:** Add light and dark theme with light as default ([07b5522](https://github.com/isadfrn/focus-trail/commit/07b5522))
+- **frontend:** Add theme selector to menu and auth pages ([4e838c3](https://github.com/isadfrn/focus-trail/commit/4e838c3))
+- **backend:** Add hydration reminder preference ([f780978](https://github.com/isadfrn/focus-trail/commit/f780978))
+- **frontend:** Add hydration reminder alert at the bottom of the app ([a06bfc7](https://github.com/isadfrn/focus-trail/commit/a06bfc7))
+- **desktop:** Send native notifications through the tauri notification plugin ([ad89a5d](https://github.com/isadfrn/focus-trail/commit/ad89a5d))
+
+### 🏡 Chore
+
+- Move app to focustrail.com.br/app ([eba1904](https://github.com/isadfrn/focus-trail/commit/eba1904))
+- Update timer screenshot in documentation ([0963e69](https://github.com/isadfrn/focus-trail/commit/0963e69))
+
+### ❤️ Contributors
+
+- Isadfrn ([@isadfrn](https://github.com/isadfrn))
+- Isabella Nunes ([@isadfrn](https://github.com/isadfrn))
+
 ## v0.5.1
 
 [compare changes](https://github.com/isadfrn/focus-trail/compare/v0.5.0...v0.5.1)
