@@ -20,6 +20,10 @@ Configured via `plugins.updater` in `tauri.conf.json` (endpoint = `releases/late
 - CI signs artifacts and generates `latest.json` when the GitHub secrets `TAURI_SIGNING_PRIVATE_KEY` and `TAURI_SIGNING_PRIVATE_KEY_PASSWORD` are set. Generate a keypair with `npx tauri signer generate` (public key → `tauri.conf.json`, private key → secret). Keep the private key backed up; losing it breaks future signed updates.
 - The updater only activates from a version that already includes it — install that version once manually.
 
+## Native notifications
+
+The webview's `Notification` API does not work on Linux (WebKitGTK denies the permission and wry does not handle it), so desktop notifications go through `tauri-plugin-notification` (registered in `src/lib.rs`). Because the app loads a remote origin, the web code can only call the plugin through `capabilities/remote-notifications.json`, which scopes `https://focustrail.com.br/app/*` to just `is-permission-granted`, `request-permission` and `notify`. `frontend/src/lib/platform/notify.ts` picks the native path when `isTauri()` is true and the browser `Notification` otherwise. Changing any of this needs a new installer, and an installer older than this change simply shows no system notification.
+
 ## Troubleshooting "changes not showing"
 
 - **Old installer**: if login fails in the app, it's likely a pre-wrapper build that bundled local assets. Install the latest release installer.

@@ -1,0 +1,23 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "remote-notifications",
+  "description": "lets the hosted web app send native desktop notifications",
+  "windows": [
+    "main"
+  ],
+  "remote": {
+    "urls": [
+      "https://focustrail.com.br/app/*"
+    ]
+  },
+  "platforms": [
+    "linux",
+    "macOS",
+    "windows"
+  ],
+  "permissions": [
+    "notification:allow-is-permission-granted",
+    "notification:allow-request-permission",
+    "notification:allow-notify"
+  ]
+}
