@@ -38,6 +38,37 @@ describe("updatePreferencesSchema", () => {
     ).toBe(false);
   });
 
+  it("accepts disabling the hydration reminder with zero", () => {
+    expect(
+      updatePreferencesSchema.safeParse({ hydrationReminderMinutes: 0 }).success,
+    ).toBe(true);
+  });
+
+  it("accepts a hydration reminder interval within range", () => {
+    expect(
+      updatePreferencesSchema.safeParse({ hydrationReminderMinutes: 45 })
+        .success,
+    ).toBe(true);
+  });
+
+  it("rejects a hydration reminder interval above the maximum", () => {
+    expect(
+      updatePreferencesSchema.safeParse({ hydrationReminderMinutes: 481 })
+        .success,
+    ).toBe(false);
+  });
+
+  it("rejects a fractional or negative hydration reminder interval", () => {
+    expect(
+      updatePreferencesSchema.safeParse({ hydrationReminderMinutes: 1.5 })
+        .success,
+    ).toBe(false);
+    expect(
+      updatePreferencesSchema.safeParse({ hydrationReminderMinutes: -1 })
+        .success,
+    ).toBe(false);
+  });
+
   it("accepts toggling only the auto-cycle preference", () => {
     expect(updatePreferencesSchema.safeParse({ autoCycle: false }).success).toBe(
       true,

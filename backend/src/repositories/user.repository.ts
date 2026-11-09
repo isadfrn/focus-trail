@@ -10,6 +10,7 @@ const meSelect = {
   longBreakMinutes: true,
   pomodorosUntilLongBreak: true,
   dailyFocusGoalMinutes: true,
+  hydrationReminderMinutes: true,
   createdAt: true,
 } as const;
 
@@ -21,6 +22,7 @@ export interface PreferencesUpdate {
   longBreakMinutes?: number;
   pomodorosUntilLongBreak?: number;
   dailyFocusGoalMinutes?: number;
+  hydrationReminderMinutes?: number;
 }
 
 export class UserRepository {

@@ -11,6 +11,7 @@ export const updatePreferencesSchema = z
     longBreakMinutes: z.number().int().min(1).max(60).optional(),
     pomodorosUntilLongBreak: z.number().int().min(1).max(12).optional(),
     dailyFocusGoalMinutes: z.number().int().min(0).max(1440).optional(),
+    hydrationReminderMinutes: z.number().int().min(0).max(480).optional(),
   })
   .refine(
     (data) => Object.values(data).some((value) => value !== undefined),

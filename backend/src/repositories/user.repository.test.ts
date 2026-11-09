@@ -27,6 +27,7 @@ const meSelect = {
   longBreakMinutes: true,
   pomodorosUntilLongBreak: true,
   dailyFocusGoalMinutes: true,
+  hydrationReminderMinutes: true,
   createdAt: true,
 } as const;
 

@@ -18,6 +18,7 @@ model User {
   longBreakMinutes Int      @default(15) @map("long_break_minutes")
   pomodorosUntilLongBreak Int @default(4) @map("pomodoros_until_long_break")
   dailyFocusGoalMinutes Int @default(0) @map("daily_focus_goal_minutes")
+  hydrationReminderMinutes Int @default(0) @map("hydration_reminder_minutes")
   emailVerifiedAt DateTime? @map("email_verified_at") @db.Timestamptz(6)
   createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
 

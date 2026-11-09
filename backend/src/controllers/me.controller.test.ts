@@ -41,6 +41,7 @@ describe("MeController", () => {
       longBreakMinutes: 15,
       pomodorosUntilLongBreak: 4,
       dailyFocusGoalMinutes: 0,
+      hydrationReminderMinutes: 0,
       createdAt: new Date(),
     };
     vi.mocked(users.getMe).mockResolvedValue(user);
@@ -83,6 +84,7 @@ describe("MeController", () => {
       longBreakMinutes: 15,
       pomodorosUntilLongBreak: 4,
       dailyFocusGoalMinutes: 0,
+      hydrationReminderMinutes: 0,
       createdAt: new Date(),
     };
     vi.mocked(users.updatePreferences).mockResolvedValue(user);

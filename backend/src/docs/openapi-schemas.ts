@@ -33,6 +33,7 @@ export const meUserSchema = {
     "longBreakMinutes",
     "pomodorosUntilLongBreak",
     "dailyFocusGoalMinutes",
+    "hydrationReminderMinutes",
     "createdAt",
   ],
   additionalProperties: false,
@@ -46,6 +47,7 @@ export const meUserSchema = {
     longBreakMinutes: { type: "integer", minimum: 1, maximum: 60 },
     pomodorosUntilLongBreak: { type: "integer", minimum: 1, maximum: 12 },
     dailyFocusGoalMinutes: { type: "integer", minimum: 0, maximum: 1440 },
+    hydrationReminderMinutes: { type: "integer", minimum: 0, maximum: 480 },
     createdAt: { type: "string", format: "date-time" },
   },
 } as const;
@@ -62,6 +64,7 @@ export const updatePreferencesBodySchema = {
     longBreakMinutes: { type: "integer", minimum: 1, maximum: 60 },
     pomodorosUntilLongBreak: { type: "integer", minimum: 1, maximum: 12 },
     dailyFocusGoalMinutes: { type: "integer", minimum: 0, maximum: 1440 },
+    hydrationReminderMinutes: { type: "integer", minimum: 0, maximum: 480 },
   },
 } as const;
 
