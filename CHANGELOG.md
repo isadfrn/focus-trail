@@ -1,6 +1,18 @@
 # Changelog
 
 
+## v0.5.3
+
+[compare changes](https://github.com/isadfrn/focus-trail/compare/v0.5.2...v0.5.3)
+
+### 🩹 Fixes
+
+- **desktop:** Align tauri npm and crate versions on the 2.11 line ([1fedd90](https://github.com/isadfrn/focus-trail/commit/1fedd90))
+
+### ❤️ Contributors
+
+- Isadfrn ([@isadfrn](https://github.com/isadfrn))
+
 ## v0.5.2
 
 [compare changes](https://github.com/isadfrn/focus-trail/compare/v0.5.1...v0.5.2)
