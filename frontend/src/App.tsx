@@ -1,6 +1,7 @@
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 
 import { Header } from "./components/Header/Header";
+import { HydrationReminder } from "./components/HydrationReminder/HydrationReminder";
 import { RequireAuth } from "./routes/RequireAuth";
 import { ForgotPasswordPage } from "./pages/ForgotPasswordPage/ForgotPasswordPage";
 import { HistoryPage } from "./pages/HistoryPage/HistoryPage";
@@ -56,6 +57,7 @@ export default function App() {
           </Routes>
         </div>
       </main>
+      <HydrationReminder />
     </div>
   );
 }

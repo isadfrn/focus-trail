@@ -194,6 +194,12 @@
     "performance": "Could not load your performance.",
     "shareData": "Could not load your focus data."
   },
+  "hydration": {
+    "message": "Time to drink some water.",
+    "done": "Done",
+    "snooze": "Snooze {{minutes}} min",
+    "notificationTitle": "Focus Trail"
+  },
   "profile": {
     "title": "Profile",
     "preferences": {
@@ -202,6 +208,7 @@
       "focusMinutes": "Focus (minutes)",
       "breakMinutes": "Break (minutes)",
       "dailyGoal": "Daily focus goal (minutes, 0 = no goal)",
+      "hydrationReminder": "Water reminder (minutes, 0 = off)",
       "autoCycle": "Chain sessions automatically (focus → break → focus)",
       "longBreakMinutes": "Long break (minutes)",
       "cyclesUntilLongBreak": "Cycles until the long break",
@@ -214,7 +221,8 @@
         "break": "Break must be a whole number between {{min}} and {{max}} minutes.",
         "longBreak": "Long break must be a whole number between {{min}} and {{max}} minutes.",
         "cycles": "Cycles until the long break must be between {{min}} and {{max}}.",
-        "goal": "Daily goal must be a whole number between {{min}} and {{max}} minutes."
+        "goal": "Daily goal must be a whole number between {{min}} and {{max}} minutes.",
+        "hydration": "Water reminder must be a whole number between {{min}} and {{max}} minutes."
       }
     },
     "password": {

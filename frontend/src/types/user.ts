@@ -8,6 +8,7 @@ export interface User {
   longBreakMinutes: number;
   pomodorosUntilLongBreak: number;
   dailyFocusGoalMinutes: number;
+  hydrationReminderMinutes: number;
   createdAt?: string;
 }
 
@@ -19,4 +20,5 @@ export interface Preferences {
   longBreakMinutes?: number;
   pomodorosUntilLongBreak?: number;
   dailyFocusGoalMinutes?: number;
+  hydrationReminderMinutes?: number;
 }

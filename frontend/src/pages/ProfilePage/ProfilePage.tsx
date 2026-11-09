@@ -13,6 +13,7 @@ import {
   DEFAULT_LONG_BREAK_MINUTES,
   DEFAULT_POMODOROS_UNTIL_LONG_BREAK,
 } from "../../hooks/useTimer";
+import { requestNotifyPermission } from "../../lib/platform";
 import { scenarioName } from "../../lib/scenario-name";
 import { useAuth } from "../../providers/AuthProvider";
 import { useCharacter } from "../../providers/CharacterProvider";
@@ -61,6 +62,9 @@ export function ProfilePage() {
   );
   const [goalInput, setGoalInput] = useState(
     () => String(user?.dailyFocusGoalMinutes ?? 0),
+  );
+  const [hydrationInput, setHydrationInput] = useState(
+    () => String(user?.hydrationReminderMinutes ?? 0),
   );
   const [autoCycle, setAutoCycle] = useState(() => user?.autoCycle ?? false);
   const [longBreakInput, setLongBreakInput] = useState(
@@ -159,6 +163,13 @@ export function ProfilePage() {
       return;
     }
 
+    const hydration = Number(hydrationInput);
+    if (!Number.isInteger(hydration) || hydration < 0 || hydration > 480) {
+      toast(t("profile.preferences.errors.hydration", { min: 0, max: 480 }));
+      return;
+    }
+    if (hydration > 0) void requestNotifyPermission();
+
     setSavingPrefs(true);
     try {
       const { user: updated } = await authApi.updatePreferences({
@@ -169,6 +180,7 @@ export function ProfilePage() {
         longBreakMinutes: longBreak,
         pomodorosUntilLongBreak: pomodoros,
         dailyFocusGoalMinutes: goal,
+        hydrationReminderMinutes: hydration,
       });
       updateUser(updated);
       setCharacterId(updated.character);
@@ -285,6 +297,22 @@ export function ProfilePage() {
             max={1440}
             value={goalInput}
             onChange={(e) => setGoalInput(e.target.value)}
+            className={field}
+          />
+        </div>
+
+        <div className="flex flex-col gap-1.5 text-sm">
+          <Label.Root htmlFor="hydration-reminder">
+            {t("profile.preferences.hydrationReminder")}
+          </Label.Root>
+          <input
+            id="hydration-reminder"
+            type="number"
+            inputMode="numeric"
+            min={0}
+            max={480}
+            value={hydrationInput}
+            onChange={(e) => setHydrationInput(e.target.value)}
             className={field}
           />
         </div>

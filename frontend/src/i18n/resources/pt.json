@@ -194,6 +194,12 @@
     "performance": "Não consegui carregar a performance.",
     "shareData": "Não consegui carregar seus dados de foco."
   },
+  "hydration": {
+    "message": "Hora de beber água.",
+    "done": "Já bebi",
+    "snooze": "Adiar {{minutes}} min",
+    "notificationTitle": "Focus Trail"
+  },
   "profile": {
     "title": "Perfil",
     "preferences": {
@@ -202,6 +208,7 @@
       "focusMinutes": "Foco (minutos)",
       "breakMinutes": "Pausa (minutos)",
       "dailyGoal": "Meta diária de foco (minutos, 0 = sem meta)",
+      "hydrationReminder": "Lembrete de água (minutos, 0 = desligado)",
       "autoCycle": "Encadear sessões automaticamente (foco → pausa → foco)",
       "longBreakMinutes": "Pausa longa (minutos)",
       "cyclesUntilLongBreak": "Ciclos até a pausa longa",
@@ -214,7 +221,8 @@
         "break": "Pausa deve ser um número inteiro entre {{min}} e {{max}} minutos.",
         "longBreak": "Pausa longa deve ser um número inteiro entre {{min}} e {{max}} minutos.",
         "cycles": "Ciclos até a pausa longa deve ser entre {{min}} e {{max}}.",
-        "goal": "Meta diária deve ser um número inteiro entre {{min}} e {{max}} minutos."
+        "goal": "Meta diária deve ser um número inteiro entre {{min}} e {{max}} minutos.",
+        "hydration": "Lembrete de água deve ser um número inteiro entre {{min}} e {{max}} minutos."
       }
     },
     "password": {

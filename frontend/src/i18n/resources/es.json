@@ -194,6 +194,12 @@
     "performance": "No pude cargar tu rendimiento.",
     "shareData": "No pude cargar tus datos de enfoque."
   },
+  "hydration": {
+    "message": "Hora de beber agua.",
+    "done": "Ya bebí",
+    "snooze": "Posponer {{minutes}} min",
+    "notificationTitle": "Focus Trail"
+  },
   "profile": {
     "title": "Perfil",
     "preferences": {
@@ -202,6 +208,7 @@
       "focusMinutes": "Enfoque (minutos)",
       "breakMinutes": "Descanso (minutos)",
       "dailyGoal": "Meta diaria de enfoque (minutos, 0 = sin meta)",
+      "hydrationReminder": "Recordatorio de agua (minutos, 0 = apagado)",
       "autoCycle": "Encadenar sesiones automáticamente (enfoque → descanso → enfoque)",
       "longBreakMinutes": "Descanso largo (minutos)",
       "cyclesUntilLongBreak": "Ciclos hasta el descanso largo",
@@ -214,7 +221,8 @@
         "break": "El descanso debe ser un número entero entre {{min}} y {{max}} minutos.",
         "longBreak": "El descanso largo debe ser un número entero entre {{min}} y {{max}} minutos.",
         "cycles": "Los ciclos hasta el descanso largo deben estar entre {{min}} y {{max}}.",
-        "goal": "La meta diaria debe ser un número entero entre {{min}} y {{max}} minutos."
+        "goal": "La meta diaria debe ser un número entero entre {{min}} y {{max}} minutos.",
+        "hydration": "El recordatorio de agua debe ser un número entero entre {{min}} y {{max}} minutos."
       }
     },
     "password": {

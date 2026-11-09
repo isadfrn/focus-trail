@@ -20,6 +20,7 @@ export default defineConfig({
         "src/api/**",
         "src/components/AudioControls/**",
         "src/components/EditableClock/**",
+        "src/components/HydrationReminder/**",
         "src/components/ShareDialog/**",
       ],
       exclude: [
